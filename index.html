@@ -15,6 +15,10 @@
   <link rel="icon" href="icons/favicon.svg" type="image/svg+xml">
   <link rel="apple-touch-icon" href="icons/maskable-512.png">
   <link rel="stylesheet" href="assets/css/app.css">
+  <link rel="stylesheet" href="assets/css/m2.css">
+  <link rel="stylesheet" href="assets/css/games.css">
+  <link rel="stylesheet" href="assets/css/rewards.css">
+  <link rel="stylesheet" href="assets/css/parent.css">
 </head>
 <body>
   <a class="skip-link" href="#view">Bỏ qua điều hướng, vào nội dung</a>
@@ -36,6 +40,14 @@
         <a class="topnav__link" href="#/home" data-nav="home">
           <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><use href="#i-home"></use></svg>
           <span>Bài học</span>
+        </a>
+        <a class="topnav__link" href="#/rewards" data-nav="rewards">
+          <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><use href="#i-star"></use></svg>
+          <span>Kho báu</span>
+        </a>
+        <a class="topnav__link" href="#/parent" data-nav="parent">
+          <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><use href="#i-lock"></use></svg>
+          <span>Phụ huynh</span>
         </a>
         <a class="topnav__link" href="#/design" data-nav="design">
           <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><use href="#i-palette"></use></svg>
@@ -165,6 +177,12 @@
       <circle cx="12" cy="12" r="4.5"/>
       <circle cx="12" cy="12" r="1"/>
     </symbol>
+    <symbol id="i-mic" viewBox="0 0 24 24">
+      <rect x="9" y="3" width="6" height="11" rx="3"/>
+      <path d="M5.5 11a6.5 6.5 0 0 0 13 0"/>
+      <path d="M12 17.5V21"/>
+      <path d="M8.5 21h7"/>
+    </symbol>
     <symbol id="i-info" viewBox="0 0 24 24">
       <circle cx="12" cy="12" r="9"/>
       <path d="M12 11v5"/>
@@ -172,6 +190,13 @@
     </symbol>
   </svg>
 
+  <script src="assets/js/speech.js" defer></script>
+  <script src="assets/js/srs.js" defer></script>
+  <script src="assets/js/m2.js" defer></script>
+  <script src="assets/js/games.js" defer></script>
+  <script src="assets/vendor/share/lz-string.min.js" defer></script>
+  <script src="assets/vendor/share/qrcode.min.js" defer></script>
+  <script src="assets/js/parent.js" defer></script>
   <script src="assets/js/data.js" defer></script>
   <script src="assets/js/app.js" defer></script>
 </body>

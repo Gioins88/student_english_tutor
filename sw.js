@@ -1,13 +1,24 @@
 /* Space Explorer · offline app shell
    Cache-first for the app shell; navigation falls back to cached index.html. */
-const CACHE = "set-v0.1.2";
+const CACHE = "set-v1.0.1";
 const SHELL = [
   "./",
   "index.html",
   "assets/css/app.css",
+  "assets/css/m2.css",
+  "assets/css/games.css",
+  "assets/css/rewards.css",
+  "assets/css/parent.css",
+  "assets/js/speech.js",
+  "assets/js/srs.js",
+  "assets/js/m2.js",
+  "assets/js/games.js",
+  "assets/js/parent.js",
   "assets/js/data.js",
   "assets/js/app.js",
   "assets/data/lessons.json",
+  "assets/vendor/share/lz-string.min.js",
+  "assets/vendor/share/qrcode.min.js",
   "manifest.webmanifest",
   "icons/favicon.svg",
   "icons/icon-192.png",

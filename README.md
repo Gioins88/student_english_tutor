@@ -1,48 +1,57 @@
-# Space Explorer — Web (M1)
+# Space Explorer — Web App (M4)
 
-Prototype HTML5 offline-first cho `PRJ-09` · Student_English_Tutor.
+Ứng dụng HTML5 offline-first cho `PRJ-09` · Student_English_Tutor.
+Live: <https://gioins88.github.io/student_english_tutor/>
 
 ## Chạy local
 
 ```bash
 cd "01 - Project/Student_English_Tutor/web"
 python3 -m http.server 8765
-# mở http://localhost:8765
+# http://localhost:8765
 ```
 
-Không mở trực tiếp `file://` nếu muốn kiểm thử service worker và cài PWA; khi mở `file://` ứng dụng vẫn chạy nhưng dùng dữ liệu nhúng trong `assets/js/data.js` và không đăng ký service worker.
+Mở trực tiếp `file://` vẫn chạy (dùng dữ liệu nhúng + bản single-file), nhưng service worker và PDF import cần HTTP(S).
+
+## Tính năng đã có
+
+| Nhóm | Chi tiết |
+|---|---|
+| Học tương tác | Flashcard 3D + TTS, Word Builder ghép chữ, Sentence Lego lắp câu, Read-Along karaoke + chạm từng từ, Voice Coach micro (Web Speech Recognition) |
+| Mini-games | Balloon Pop, Monster Boss Battle, Treasure Memory Match, Detective Cloze, Listen & Tap — 5 game, XP/Sao/Combo |
+| Retention | Kho báu lỗi sai + Spaced Repetition half-life, Sticker Book, thú cưng, khiên chuỗi ngày |
+| Phụ huynh | Cổng toán, dashboard tiến độ, export/import JSON, in phiếu, nạp Lesson JSON, nạp PDF qua PDF.js + Gemini API (key lưu cục bộ) |
+| Chia sẻ | Link bài học, QR cho link ngắn, link dữ liệu nén LZString cho bài tự nạp |
+| PWA | Cache `set-v1.0.1`, offline app shell, cài màn hình chính |
 
 ## Cấu trúc
 
-| Đường dẫn | Vai trò |
-|---|---|
-| `index.html` | App shell, icon sprite SVG, các vùng live-region |
-| `assets/css/app.css` | Design tokens Space Explorer + toàn bộ component |
-| `assets/js/app.js` | Router hash, flashcard, Sentence Lego, Read-Along, quiz demo, Design System |
-| `assets/js/data.js` | Fallback lesson nhúng khi `fetch()` không khả dụng |
-| `assets/data/lessons.json` | Kho bài học JSON (nạp từ `Assets/lessons/*.json` của dự án) |
-| `manifest.webmanifest`, `sw.js` | PWA: cài màn hình chính, cache offline `set-v0.1.2` |
-| `icons/` | Icon PWA 192/512/maskable + favicon SVG |
+```
+index.html                 app shell + SVG icon sprite
+assets/css/                app, m2, games, rewards, parent
+assets/js/                 speech, srs, m2, games, parent, data, app
+assets/data/lessons.json   2 golden lessons
+assets/vendor/pdfjs/       PDF.js 3.11.174 (lazy load)
+assets/vendor/share/       lz-string 1.4.4 + qrcode-generator 1.4.4
+manifest.webmanifest, sw.js
+tests/srs.test.js          Node built-in test runner (SRS + speech similarity)
+```
 
 ## Deploy GitHub Pages
 
-Repo đích: `https://github.com/Gioins88/student_english_tutor` (thư mục `web/` chính là root của repo Pages).
+Repo: `https://github.com/Gioins88/student_english_tutor` — thư mục `web/` là root của repo Pages.
+Workflow `.github/workflows/pages.yml` deploy qua GitHub Actions.
 
-Workflow `.github/workflows/pages.yml` build và deploy toàn bộ thư mục này. Sau khi push lên nhánh `main`:
+## Giới hạn đã biết
 
-1. Vào **Settings → Pages**, chọn **Source: GitHub Actions** (nếu chưa tự bật).
-2. Link công khai: `https://gioins88.github.io/student_english_tutor/`.
+- PDF scan/ảnh chụp chưa có OCR (cần PDF có lớp chữ).
+- Gemini extraction cần API key của phụ huynh; key chỉ lưu `localStorage`, gửi trực tiếp tới `generativelanguage.googleapis.com` bằng header `x-goog-api-key`.
+- Link dữ liệu bài tự nạp có thể dài; QR chỉ tạo khi URL ≤ 2500 ký tự.
+- Bản single-file `Deliverables/Student_English_Tutor_App_v1.0.html` không kèm PDF.js/worker; PDF import cần bản hosted.
 
-## Phạm vi M1
+## Tests
 
-- Đã có: Design System, flashcard 3D + TTS, Sentence Lego, Read-Along chạm từng từ, quiz thám tử, XP/Sao/streak lưu `localStorage`, PWA cache.
-- Chưa có (M2–M4): Word Builder đầy đủ, 5 mini-game hoàn chỉnh, Mistake Bank + Spaced Repetition, Góc Phụ Huynh, nạp PDF trực tiếp trên trình duyệt.
-
-## Ghi chú dữ liệu
-
-`assets/data/lessons.json` hiện chứa 2 golden fixture:
-
-- `grade4_unit04_food` — từ `S4_W11_U4_Worksheet.pdf`
-- `grade4_unit03_homes` — từ `End of Unit 3 Worksheet.pdf`
-
-Mọi item `pdf_extracted` có `source_page` + `source_quote` đã được kiểm chứng verbatim bằng `Assets/tools/pdf_to_lesson/verify.py`.
+```bash
+node --test tests/srs.test.js
+cd ../.. && python3 -m pytest Scenarios/tests -q
+```

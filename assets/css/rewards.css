@@ -1,0 +1,192 @@
+/* Space Explorer · M3 rewards, pet and sticker book */
+
+.reward-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 340px), 1fr));
+  gap: 16px;
+}
+
+.pet-card,
+.shield-card {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  gap: 12px 16px;
+  align-items: center;
+  padding: clamp(18px, 3vw, 26px);
+}
+
+.pet-card__art,
+.shield-card__art {
+  display: grid;
+  place-items: center;
+  width: 78px;
+  height: 78px;
+  border-radius: 24px;
+  background:
+    radial-gradient(70% 70% at 72% 18%, rgba(6, 182, 212, 0.5), transparent 68%),
+    linear-gradient(150deg, #16233f, #0b1220);
+  border: 1px solid rgba(6, 182, 212, 0.4);
+  color: var(--star);
+}
+
+.shield-card__art {
+  background:
+    radial-gradient(70% 70% at 72% 18%, rgba(34, 197, 94, 0.4), transparent 68%),
+    linear-gradient(150deg, #16233f, #0b1220);
+  color: #86efac;
+}
+
+.pet-card .eyebrow,
+.shield-card .eyebrow {
+  color: var(--primary-strong);
+}
+
+.pet-card__name {
+  color: var(--ink);
+  font-size: 24px;
+  line-height: 1.15;
+  font-weight: 900;
+}
+
+.pet-card__level {
+  margin-top: 2px;
+  color: var(--primary-deep);
+  font-size: 16px;
+  font-weight: 800;
+}
+
+.pet-card__hint {
+  margin-top: 4px;
+  color: var(--muted-on-card);
+  font-size: 15px;
+}
+
+.pet-card__stars {
+  grid-column: 2;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  color: #92400e;
+  font-size: 15px;
+  font-weight: 800;
+}
+
+.pet-card .btn {
+  grid-column: 1 / -1;
+  justify-self: start;
+}
+
+.pet-card .btn:disabled {
+  opacity: 0.55;
+}
+
+.shield-card {
+  grid-template-columns: auto minmax(0, 1fr);
+}
+
+.sticker-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 190px), 1fr));
+  gap: 12px;
+}
+
+.sticker {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  min-height: 160px;
+  padding: 18px 12px;
+  border-radius: var(--radius-md);
+  text-align: center;
+  border: 1px dashed var(--line-dark-strong);
+  background: rgba(17, 28, 51, 0.68);
+  color: var(--muted);
+}
+
+.sticker.is-unlocked {
+  border-style: solid;
+  border-color: rgba(251, 191, 36, 0.45);
+  background:
+    radial-gradient(80% 60% at 50% 0%, rgba(251, 191, 36, 0.14), transparent 70%),
+    rgba(17, 28, 51, 0.86);
+  color: var(--text-on-dark);
+}
+
+.sticker__icon {
+  display: grid;
+  place-items: center;
+  width: 64px;
+  height: 64px;
+  border-radius: 20px;
+  background: rgba(148, 163, 184, 0.14);
+  color: var(--muted);
+}
+
+.sticker.is-unlocked .sticker__icon {
+  background: rgba(251, 191, 36, 0.16);
+  color: var(--star);
+}
+
+.sticker__name {
+  font-size: 16px;
+  font-weight: 850;
+  line-height: 1.2;
+}
+
+.sticker__meta {
+  color: var(--muted);
+  font-size: 13px;
+}
+
+.game-stat-list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.game-stat {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 10px 0;
+  border-bottom: 1px dashed var(--line-card);
+  color: var(--ink);
+  font-size: 16px;
+  font-weight: 750;
+}
+
+.game-stat:last-child {
+  border-bottom: 0;
+}
+
+.game-stat small {
+  color: var(--muted-on-card);
+  font-weight: 650;
+}
+
+.game-stat__score {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  color: #92400e;
+  font-size: 14px;
+  font-weight: 850;
+  white-space: nowrap;
+}
+
+@media (max-width: 560px) {
+  .pet-card,
+  .shield-card {
+    grid-template-columns: 1fr;
+    justify-items: start;
+  }
+
+  .pet-card__stars {
+    grid-column: 1;
+  }
+}

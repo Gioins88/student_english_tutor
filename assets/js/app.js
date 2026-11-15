@@ -86,6 +86,14 @@
       remembered: {},
       review: {},
       answered: {},
+      voice: {},
+      lego: {},
+      mistakes: {},
+      games: {},
+      stickers: {},
+      pet: { fed: 0, level: 1 },
+      shields: 0,
+      shieldGrantedFor: 0,
       lastLesson: null
     };
   }
@@ -101,7 +109,7 @@
           base[key] = parsed[key] == null && base[key] !== null ? base[key] : parsed[key];
         }
       });
-      ["remembered", "review", "answered"].forEach(function (key) {
+      ["remembered", "review", "answered", "voice", "lego", "mistakes", "games", "stickers"].forEach(function (key) {
         if (!base[key] || typeof base[key] !== "object") base[key] = {};
       });
       return base;
@@ -169,88 +177,8 @@
 
   /* ---------------- speech ---------------- */
 
-  var TTS = (function () {
-    var supported = "speechSynthesis" in window && "SpeechSynthesisUtterance" in window;
-    var voices = [];
-    var preferred = null;
-    var rate = 1;
-
-    function pickVoice() {
-      if (!supported) return;
-      voices = window.speechSynthesis.getVoices() || [];
-      var english = voices.filter(function (v) {
-        return /^en(-|_)/i.test(v.lang || "");
-      });
-      var preferredNames = ["Samantha", "Daniel", "Google UK English Female", "Google US English", "Microsoft Aria", "Microsoft Jenny"];
-      preferred = null;
-      for (var i = 0; i < preferredNames.length && !preferred; i += 1) {
-        preferred = english.filter(function (v) {
-          return (v.name || "").indexOf(preferredNames[i]) !== -1;
-        })[0] || null;
-      }
-      if (!preferred) {
-        preferred = english.filter(function (v) {
-          return /en-GB/i.test(v.lang || "");
-        })[0] || english[0] || null;
-      }
-    }
-
-    if (supported) {
-      pickVoice();
-      if (typeof window.speechSynthesis.addEventListener === "function") {
-        window.speechSynthesis.addEventListener("voiceschanged", pickVoice);
-      } else {
-        window.speechSynthesis.onvoiceschanged = pickVoice;
-      }
-    }
-
-    function speak(text, options) {
-      if (!supported || !text) return null;
-      options = options || {};
-      try {
-        window.speechSynthesis.cancel();
-        var utter = new window.SpeechSynthesisUtterance(String(text));
-        utter.lang = (preferred && preferred.lang) || "en-US";
-        if (preferred) utter.voice = preferred;
-        utter.rate = options.rate || rate;
-        utter.pitch = 1.05;
-        if (typeof options.onStart === "function") utter.onstart = options.onStart;
-        if (typeof options.onEnd === "function") utter.onend = options.onEnd;
-        if (typeof options.onError === "function") utter.onerror = options.onError;
-        if (typeof options.onBoundary === "function") utter.onboundary = options.onBoundary;
-        window.speechSynthesis.speak(utter);
-        return utter;
-      } catch (err) {
-        showBanner();
-        return null;
-      }
-    }
-
-    function stop() {
-      if (supported) {
-        try {
-          window.speechSynthesis.cancel();
-        } catch (err) {
-          /* noop */
-        }
-      }
-    }
-
-    function setRate(next) {
-      rate = next === 0.75 ? 0.75 : 1;
-      return rate;
-    }
-
-    return {
-      supported: supported,
-      speak: speak,
-      stop: stop,
-      setRate: setRate,
-      getRate: function () {
-        return rate;
-      }
-    };
-  })();
+  var TTS = window.SETSpeech.tts;
+  var STT = window.SETSpeech.stt;
 
   function showBanner() {
     if (ttsBanner) ttsBanner.hidden = false;
@@ -303,6 +231,7 @@
   function loadData() {
     if (!/^https?:$/.test(window.location.protocol) && window.SET_FALLBACK_DATA) {
       setData(window.SET_FALLBACK_DATA, "embedded");
+      mergeCustomLessons();
       return Promise.resolve();
     }
     return fetch("assets/data/lessons.json", { cache: "no-cache" })
@@ -312,10 +241,14 @@
       })
       .then(function (payload) {
         setData(payload, "json");
+        mergeCustomLessons();
       })
       .catch(function () {
         var fallback = window.SET_FALLBACK_DATA;
-        if (fallback) setData(fallback, "embedded");
+        if (fallback) {
+          setData(fallback, "embedded");
+          mergeCustomLessons();
+        }
       });
   }
 
@@ -343,6 +276,304 @@
       if (key.length > 3 && normWord(candidate.word).indexOf(key) !== -1) return candidate;
     }
     return null;
+  }
+
+  /* ---------------- practice module API ---------------- */
+
+  function setupPracticeApi() {
+    if (!window.SET_M2) return;
+    window.SET_M2.setApi({
+      esc: esc,
+      icon: icon,
+      toast: toast,
+      confetti: burstConfetti,
+      speak: TTS.speak,
+      onWordComplete: function (lesson, item) {
+        var key = lesson.id + ":" + item.id;
+        var first = !progress.remembered[key];
+        progress.remembered[key] = true;
+        delete progress.review[key];
+        award(first ? 8 : 2, first ? 1 : 0);
+        maybeAwardLessonSticker(lesson);
+        saveProgress();
+        toast(first ? "Ghép đúng! +8 XP và +1 Sao." : "Ghép lại đúng rồi! +2 XP.");
+      },
+      onLegoComplete: function (lesson, pattern) {
+        var key = lesson.id + ":" + pattern.id;
+        var first = !progress.lego[key];
+        progress.lego[key] = true;
+        award(first ? 8 : 2, first ? 1 : 0);
+        saveProgress();
+        toast(first ? "Lắp câu đúng! +8 XP và +1 Sao." : "Lắp lại đúng rồi! +2 XP.");
+      },
+      onVoiceScore: function (payload) {
+        var today = todayKey();
+        var key = "voice:" + payload.key;
+        var record = progress.voice[key];
+        var best = record && record.day === today ? record.stars : 0;
+        var improved = payload.stars > best;
+        if (!record || record.day !== today || improved) {
+          progress.voice[key] = {
+            day: today,
+            stars: Math.max(best, payload.stars),
+            score: Math.round(payload.score * 100) / 100
+          };
+        }
+        if (improved) {
+          if (payload.stars >= 2) award(4, 1);
+          else if (payload.stars === 1) award(1, 0);
+        }
+        saveProgress();
+      }
+    });
+  }
+
+  /* ---------------- M3 retention + games API ---------------- */
+
+  var STICKER_LABELS = {
+    sticker_balloon: "Bóng bay tinh nghịch",
+    sticker_boss: "Hiệp sĩ diệt Boss",
+    sticker_memory: "Nhà thám hiểm kho báu",
+    sticker_detective: "Thám tử từ vựng",
+    sticker_listen: "Tai thính vàng",
+    sticker_lesson: "Ngôi sao bài học"
+  };
+
+  function maybeAwardLessonSticker(lesson) {
+    if (!lesson || !progress || !progress.remembered) return;
+    var all = lesson.vocabulary.length > 0 && lesson.vocabulary.every(function (item) {
+      return !!progress.remembered[lesson.id + ":" + item.id];
+    });
+    if (all && !progress.stickers.sticker_lesson) {
+      progress.stickers.sticker_lesson = {
+        id: "sticker_lesson",
+        label: STICKER_LABELS.sticker_lesson,
+        lessonId: lesson.id,
+        date: todayKey()
+      };
+      award(10, 2);
+      toast("Con đã nhớ hết từ vựng! Mở Sticker Ngôi sao bài học.");
+    }
+  }
+
+  function mistakeKey(lesson, item) {
+    return lesson.id + ":" + item.id;
+  }
+
+  function recordMistake(lesson, item) {
+    if (!window.SET_SRS || !lesson || !item) return;
+    var key = mistakeKey(lesson, item);
+    var record = progress.mistakes[key];
+    var now = Date.now();
+    if (!record) {
+      record = window.SET_SRS.createRecord({
+        lessonId: lesson.id,
+        itemId: item.id,
+        quizId: item.id,
+        skill: item.skill,
+        section: "quiz_bank",
+        now: now
+      });
+    }
+    progress.mistakes[key] = window.SET_SRS.recordWrong(record, now);
+    saveProgress();
+  }
+
+  function reviewItem(lesson, item, correct) {
+    if (!window.SET_SRS || !lesson || !item) return;
+    var key = mistakeKey(lesson, item);
+    var record = progress.mistakes[key];
+    if (!record) return;
+    progress.mistakes[key] = window.SET_SRS.recordReview(record, correct, Date.now());
+    saveProgress();
+  }
+
+  function dueMistakes(lessonId) {
+    if (!window.SET_SRS) return [];
+    var now = Date.now();
+    var records = Object.keys(progress.mistakes).map(function (key) {
+      return progress.mistakes[key];
+    }).filter(function (record) {
+      return record && (!lessonId || record.lessonId === lessonId);
+    });
+    return window.SET_SRS.prioritise(window.SET_SRS.dueRecords(records, now), now);
+  }
+
+  function makeGamesApi(lesson) {
+    return {
+      esc: esc,
+      icon: icon,
+      toast: toast,
+      confetti: burstConfetti,
+      speak: TTS.speak,
+      recordMistake: function (item) {
+        recordMistake(lesson, item);
+      },
+      completeGame: function (payload) {
+        return completeGame(lesson, payload);
+      }
+    };
+  }
+
+  function completeGame(lesson, payload) {
+    var key = "game:" + lesson.id + ":" + payload.type;
+    var previous = progress.games[key];
+    var first = !previous;
+    var best = previous ? previous.bestStars || 0 : 0;
+    progress.games[key] = {
+      plays: previous ? (previous.plays || 0) + 1 : 1,
+      bestStars: Math.max(best, payload.stars || 0),
+      lastPlayed: Date.now()
+    };
+    var stickerId = payload.sticker;
+    var newSticker = false;
+    if (stickerId && !progress.stickers[stickerId]) {
+      progress.stickers[stickerId] = {
+        id: stickerId,
+        label: STICKER_LABELS[stickerId] || "Sticker mới",
+        lessonId: lesson.id,
+        date: todayKey()
+      };
+      newSticker = true;
+    }
+    if (first) {
+      award((payload.xp || 0) + 12, Math.max(1, payload.stars || 1));
+    } else if ((payload.stars || 0) > best) {
+      award(4, 1);
+    } else {
+      award(2, 0);
+    }
+    saveProgress();
+    return {
+      newSticker: newSticker,
+      stickerLabel: stickerId ? STICKER_LABELS[stickerId] : ""
+    };
+  }
+
+  /* ---------------- custom lessons / parent backup API ---------------- */
+
+  var CUSTOM_LESSONS_KEY = "set.prj09.customLessons.v1";
+
+  function readCustomLessons() {
+    try {
+      var raw = window.localStorage.getItem(CUSTOM_LESSONS_KEY);
+      var list = raw ? JSON.parse(raw) : [];
+      return Array.isArray(list) ? list : [];
+    } catch (err) {
+      return [];
+    }
+  }
+
+  function writeCustomLessons(list) {
+    try {
+      window.localStorage.setItem(CUSTOM_LESSONS_KEY, JSON.stringify(list));
+    } catch (err) {
+      toast("Không lưu được bài học mới trên thiết bị này.");
+    }
+  }
+
+  function mergeCustomLessons() {
+    var custom = readCustomLessons();
+    if (!custom.length) return;
+    var byId = {};
+    MODEL.lessons.forEach(function (lesson) {
+      byId[lesson.id] = lesson;
+    });
+    custom.forEach(function (raw) {
+      var normalized = normalizeLesson(raw);
+      if (normalized) byId[normalized.id] = normalized;
+    });
+    MODEL.lessons = Object.keys(byId).map(function (key) {
+      return byId[key];
+    });
+  }
+
+  function addLessonFromParent(raw) {
+    if (!raw || typeof raw !== "object") throw new Error("Dữ liệu bài học không hợp lệ.");
+    if (!raw.lesson_id || !raw.title) throw new Error("Bài học thiếu lesson_id hoặc title.");
+    if (!Array.isArray(raw.vocabulary) || !raw.vocabulary.length) throw new Error("Bài học chưa có vocabulary.");
+    if (!Array.isArray(raw.grammar_patterns) || !raw.grammar_patterns.length) throw new Error("Bài học chưa có grammar_patterns.");
+    if (!Array.isArray(raw.quiz_bank) || raw.quiz_bank.length < 5) throw new Error("Bài học cần ít nhất 5 quiz item.");
+    var normalized = normalizeLesson(raw);
+    var custom = readCustomLessons().filter(function (entry) {
+      return entry && entry.lesson_id !== raw.lesson_id;
+    });
+    custom.push(raw);
+    writeCustomLessons(custom);
+    MODEL.lessons = MODEL.lessons.filter(function (entry) {
+      return entry.id !== normalized.id;
+    }).concat([normalized]);
+    return normalized;
+  }
+
+  function exportBackup() {
+    return {
+      app: "student_english_tutor",
+      project: "PRJ-09",
+      exported_at: new Date().toISOString(),
+      progress: progress,
+      custom_lessons: readCustomLessons()
+    };
+  }
+
+  function restoreBackup(payload) {
+    if (!payload || typeof payload !== "object" || !payload.progress || typeof payload.progress !== "object") {
+      throw new Error("Tệp sao lưu không đúng định dạng.");
+    }
+    var base = defaultProgress();
+    Object.keys(base).forEach(function (key) {
+      if (payload.progress[key] !== undefined) base[key] = payload.progress[key];
+    });
+    ["remembered", "review", "answered", "voice", "lego", "mistakes", "games", "stickers"].forEach(function (key) {
+      if (!base[key] || typeof base[key] !== "object" || Array.isArray(base[key])) base[key] = {};
+    });
+    progress = base;
+    saveProgress();
+    if (Array.isArray(payload.custom_lessons)) {
+      writeCustomLessons(payload.custom_lessons);
+    }
+  }
+
+  function makeParentApi() {
+    var parentApi = {
+      esc: esc,
+      icon: icon,
+      toast: toast,
+      confetti: burstConfetti,
+      addLesson: addLessonFromParent,
+      exportBackup: exportBackup,
+      restoreBackup: restoreBackup,
+      saveProgress: saveProgress,
+      readCustomLessons: readCustomLessons
+    };
+    Object.defineProperty(parentApi, "lessons", { get: function () { return MODEL.lessons; } });
+    Object.defineProperty(parentApi, "progress", { get: function () { return progress; } });
+    return parentApi;
+  }
+
+  /* ---------------- shared lesson import ---------------- */
+
+  function handleSharedImport() {
+    var raw = window.location.hash || "";
+    var query = raw.indexOf("?") !== -1 ? raw.slice(raw.indexOf("?") + 1) : "";
+    var encoded = "";
+    try {
+      encoded = new URLSearchParams(query).get("data") || "";
+    } catch (err) {
+      encoded = "";
+    }
+    if (!encoded || !window.LZString) {
+      setView('<div class="card empty-state">' + icon("globe", "icon--lg") + '<h2 class="empty-state__title">Link chia sẻ không hợp lệ</h2><p>Link thiếu dữ liệu bài học hoặc trình duyệt chưa tải thư viện giải nén.</p><a class="btn btn--primary" href="#/home">Về trang chủ</a></div>');
+      return;
+    }
+    try {
+      var json = window.LZString.decompressFromEncodedURIComponent(encoded);
+      var lesson = addLessonFromParent(JSON.parse(json));
+      toast("Đã thêm bài “" + lesson.title + "” từ link chia sẻ.");
+      window.location.replace("#/lesson/" + encodeURIComponent(lesson.id));
+    } catch (err) {
+      setView('<div class="card empty-state">' + icon("globe", "icon--lg") + '<h2 class="empty-state__title">Không nhập được bài chia sẻ</h2><p>' + esc(err.message || "Dữ liệu bài học bị lỗi.") + '</p><a class="btn btn--primary" href="#/home">Về trang chủ</a></div>');
+    }
   }
 
   /* ---------------- view lifecycle ---------------- */
@@ -513,6 +744,12 @@
       '<div class="stat"><span class="stat__icon stat__icon--flame">' + icon("flame") + '</span><span><span class="stat__value">' + progress.streak + ' ngày</span><span class="stat__label">Chuỗi học tập</span></span></div>' +
       '<div class="stat"><span class="stat__icon">' + icon("bolt") + '</span><span><span class="stat__value">' + progress.xp + '</span><span class="stat__label">XP tích lũy</span></span></div>' +
       "</div>" +
+      (function () {
+        var due = dueMistakes(null).length;
+        return '<a class="hint-card" href="#/rewards" style="text-decoration:none">' + icon("star") +
+          "<div><strong>Kho báu cần chinh phục:</strong> " + (due ? due + " mục đang chờ con ôn lại. " : "hôm nay chưa có mục nào đến hạn. ") +
+          "Mở Kho báu để xem Sao, Sticker và thú cưng.</div></a>";
+      })() +
       '<section class="section"><div class="section__head"><div><div class="eyebrow">Kho bài học</div><h2 class="section__title">Chọn chuyến phiêu lưu</h2></div>' +
       '<span class="section__hint">' + learned + "/" + totalVocab + " từ đã nhớ toàn kho</span></div>" +
       '<div class="lesson-grid">' + cards + "</div></section>" +
@@ -530,7 +767,8 @@
       { key: "vocab", label: "Từ vựng", icon: "book", href: "#/lesson/" + encodeURIComponent(lesson.id) + "/vocab" },
       { key: "grammar", label: "Ngữ pháp", icon: "target", href: "#/lesson/" + encodeURIComponent(lesson.id) + "/grammar" },
       { key: "read", label: "Đọc & Nghe", icon: "ear", href: "#/lesson/" + encodeURIComponent(lesson.id) + "/read" },
-      { key: "quiz", label: "Thử thách", icon: "spark", href: "#/lesson/" + encodeURIComponent(lesson.id) + "/quiz" }
+      { key: "games", label: "Games", icon: "spark", href: "#/lesson/" + encodeURIComponent(lesson.id) + "/games" },
+      { key: "review", label: "Ôn tập", icon: "refresh", href: "#/lesson/" + encodeURIComponent(lesson.id) + "/review" }
     ];
     return (
       '<div class="lesson-bar"><a class="backlink" href="#/home">' + icon("arrow-left") + "Bài học</a>" +
@@ -552,11 +790,14 @@
     setTitle(lesson.title);
     var remembered = countRemembered(lesson);
     var percent = pct(remembered, lesson.vocabulary.length);
+    var dueCount = dueMistakes(lesson.id).length;
     var modules = [
-      { key: "vocab", icon: "book", title: "Flashcard 3D", desc: "Lật thẻ, nghe phát âm và đánh dấu từ đã nhớ.", meta: lesson.vocabulary.length + " thẻ · chạm để lật" },
+      { key: "vocab", icon: "book", title: "Flashcard 3D + Word Builder", desc: "Lật thẻ, nghe phát âm, ghép chữ và luyện đọc to.", meta: lesson.vocabulary.length + " thẻ" },
       { key: "grammar", icon: "target", title: "Sentence Lego", desc: "Xếp khối từ theo màu để lắp mẫu câu đúng.", meta: lesson.grammar.length + " mẫu câu" },
-      { key: "read", icon: "ear", title: "Đọc & Nghe", desc: "Chạm từng từ để nghe, đọc đuổi theo từng câu.", meta: lesson.readings.length + " đoạn hội thoại" },
-      { key: "quiz", icon: "spark", title: "Thử thách", desc: "Chơi thử thám tử điền khuyết và nhận Sao.", meta: lesson.quiz.length + " câu hỏi" }
+      { key: "read", icon: "ear", title: "Đọc & Nghe", desc: "Chạm từng từ để nghe, đọc đuổi và luyện micro.", meta: lesson.readings.length + " đoạn hội thoại" },
+      { key: "games", icon: "spark", title: "5 Mini-games", desc: "Bóng bay, Boss, Kho báu, Thám tử và Nghe & chạm.", meta: "5 trò chơi" },
+      { key: "quiz", icon: "bolt", title: "Luyện nhanh", desc: "Thử nhanh một lượt câu hỏi trắc nghiệm.", meta: lesson.quiz.length + " câu hỏi" },
+      { key: "review", icon: "refresh", title: "Kho báu cần chinh phục", desc: "Ôn lại đúng lúc con sắp quên theo Spaced Repetition.", meta: dueCount + " mục cần ôn" }
     ];
     var objectiveHtml = lesson.objectives.map(function (text) {
       return '<li class="objective">' + icon("check") + "<span>" + esc(text) + "</span></li>";
@@ -641,6 +882,10 @@
       '<button class="btn btn--outline" id="mark-review" type="button" aria-pressed="' + needsReview + '">' + icon("refresh") + (needsReview ? "Đang cần ôn" : "Cần ôn thêm") + "</button>" +
       '<button class="btn btn--success" id="mark-known" type="button" aria-pressed="' + remembered + '">' + icon("check") + (remembered ? "Đã nhớ" : "Đã nhớ rồi") + "</button>" +
       "</div>" +
+      '<div class="cta-row" style="margin-top:12px;justify-content:center">' +
+      '<button class="btn btn--primary" id="open-word-builder" type="button">' + icon("target") + "Ghép chữ</button>" +
+      '<button class="btn btn--outline mic-btn" id="mic-word" type="button">' + icon("mic") + "Đọc to</button>" +
+      "</div>" +
       '<p class="vocab-note">Tiến độ được lưu trên thiết bị này. Chạm loa để nghe lại bất cứ lúc nào.</p>' +
       '<div class="cta-row" style="margin-top:18px"><a class="btn btn--outline" href="#/lesson/' + encodeURIComponent(lesson.id) + '/grammar">Học ngữ pháp ' + icon("arrow-right") + "</a></div>"
     );
@@ -683,11 +928,23 @@
       button.innerHTML = icon("gauge") + (slow ? "Đọc chậm" : "Đọc thường");
       TTS.speak(item.word, {});
     });
+    $("#open-word-builder").addEventListener("click", function () {
+      if (window.SET_M2) {
+        window.SET_M2.openWordBuilder({ lesson: lesson, item: item });
+      }
+    });
+    if (window.SET_M2) {
+      window.SET_M2.attachMic($("#mic-word"), {
+        target: item.word,
+        key: lesson.id + ":" + item.id + ":vocab"
+      });
+    }
     $("#mark-known").addEventListener("click", function (event) {
       var was = !!progress.remembered[key];
       progress.remembered[key] = true;
       delete progress.review[key];
       if (!was) award(5, 1);
+      maybeAwardLessonSticker(lesson);
       saveProgress();
       event.currentTarget.setAttribute("aria-pressed", "true");
       event.currentTarget.innerHTML = icon("check") + "Đã nhớ";
@@ -746,6 +1003,7 @@
         '<div class="lego-row">' + blocks + "</div>" +
         '<div class="lego-sentence">' + esc(sentence) + "</div></div>" +
         '<div class="cta-row"><button class="btn btn--primary btn--sm" type="button" data-speak="' + esc(sentence) + '">' + icon("speaker") + "Nghe cả câu</button>" +
+        '<button class="btn btn--outline btn--sm" type="button" data-build-pattern="' + esc(pattern.id) + '">' + icon("target") + "Lắp câu</button>" +
         '<span class="chip">Trang ' + esc(pattern.source_page || "?") + "</span>" +
         '<span class="chip">' + (pattern.source_type === "generated" ? "Bổ sung" : "Từ PDF") + "</span></div>" +
         "</article>"
@@ -764,7 +1022,170 @@
         TTS.speak(button.getAttribute("data-speak") || "", {});
       });
     });
+    $$("[data-build-pattern]", view).forEach(function (button) {
+      button.addEventListener("click", function () {
+        var patternId = button.getAttribute("data-build-pattern");
+        var pattern = patterns.filter(function (entry) { return entry.id === patternId; })[0];
+        if (pattern && window.SET_M2) {
+          window.SET_M2.openLego({ lesson: lesson, pattern: pattern });
+        }
+      });
+    });
     announce(patterns.length + " mẫu ngữ pháp.");
+  }
+
+  /* ---------------- games hub ---------------- */
+
+  function renderGamesHub(lesson) {
+    setTitle("Mini-games · " + lesson.title);
+    var meta = window.SET_GAMES ? window.SET_GAMES.meta : null;
+    if (!meta) {
+      setView(lessonTabs(lesson, "games") + '<div class="card empty-state">' + icon("spark", "icon--lg") + '<h2 class="empty-state__title">Mini-games chưa tải</h2><p>Hãy kiểm tra kết nối hoặc tải lại trang.</p></div>');
+      return;
+    }
+    var order = ["balloon", "boss", "memory", "detective", "listen"];
+    var cards = order.map(function (key) {
+      var info = meta[key];
+      if (!info) return "";
+      var plays = progress.games["game:" + lesson.id + ":" + key];
+      var countText = key === "memory" ? Math.min(6, lesson.vocabulary.length) + " cặp thẻ" : key === "listen" ? "5 câu nghe" : "6 câu";
+      return '<button class="module-card" type="button" data-game="' + key + '">' +
+        '<span class="module-card__icon">' + icon(info.icon, "icon--lg") + "</span>" +
+        '<span class="module-card__title">' + esc(info.title) + "</span>" +
+        '<span class="module-card__desc">' + esc(info.subtitle) + "</span>" +
+        '<span class="module-card__meta">' + esc(countText) + (plays ? " · đã chơi " + plays.plays + " lần" : "") + "</span>" +
+        "</button>";
+    }).join("");
+
+    setView(
+      lessonTabs(lesson, "games") +
+      moduleHeader("Phân hệ 5", "Mini-games", "Năm trò chơi kiểm tra từ vựng, ngữ pháp, đọc hiểu và nghe. Mọi thao tác đều bằng chạm.") +
+      '<div class="module-grid">' + cards + "</div>" +
+      '<div class="hint-card">' + icon("info") + "<div><strong>Mẹo nhỏ:</strong> mỗi mini-game thắng lần đầu sẽ mở một Sticker mới trong Kho báu. Trả lời sai sẽ được đưa vào Kho báu cần chinh phục để ôn lại đúng lúc.</div></div>" +
+      '<div class="cta-row" style="margin-top:18px"><a class="btn btn--outline" href="#/lesson/' + encodeURIComponent(lesson.id) + '/review">' + icon("refresh") + "Ôn tập kho báu</a></div>"
+    );
+
+    $$("[data-game]", view).forEach(function (button) {
+      button.addEventListener("click", function () {
+        var key = button.getAttribute("data-game");
+        window.SET_GAMES.open(key, {
+          lesson: lesson,
+          items: lesson.quiz,
+          api: makeGamesApi(lesson)
+        });
+      });
+    });
+    announce("Năm mini-game của bài " + lesson.title + ".");
+  }
+
+  /* ---------------- spaced repetition review ---------------- */
+
+  function renderReview(lesson) {
+    setTitle("Ôn tập · " + lesson.title);
+    var records = dueMistakes(lesson.id);
+    var items = records.map(function (record) {
+      return lesson.quiz.filter(function (item) {
+        return item.id === record.quizId || item.id === record.itemId;
+      })[0];
+    }).filter(Boolean);
+    var bankSize = Object.keys(progress.mistakes).filter(function (key) {
+      var record = progress.mistakes[key];
+      return record && record.lessonId === lesson.id;
+    }).length;
+
+    if (!items.length) {
+      setView(
+        lessonTabs(lesson, "review") +
+        moduleHeader("Spaced Repetition", "Kho báu cần chinh phục", "Khi con trả lời sai, từ hoặc câu đó được cất vào kho báu và nhắc ôn lại đúng lúc con sắp quên.") +
+        '<div class="card empty-state">' + icon("star", "icon--lg") + '<h2 class="empty-state__title">' + (bankSize ? "Hôm nay chưa có mục nào cần ôn" : "Kho báu đang trống") + "</h2>" +
+        "<p>" + (bankSize ? "Con đã ôn đúng lịch. Quay lại sau nhé — hệ thống sẽ nhắc khi trí nhớ bắt đầu phai." : "Hãy chơi mini-game hoặc luyện nhanh; những câu sai sẽ tự động được đưa vào đây.") + "</p>" +
+        '<a class="btn btn--primary" href="#/lesson/' + encodeURIComponent(lesson.id) + '/games">' + icon("spark") + "Chơi mini-game</a></div>"
+      );
+      announce("Kho báu chưa có mục cần ôn.");
+      return;
+    }
+
+    setView(
+      lessonTabs(lesson, "review") +
+      moduleHeader("Spaced Repetition", "Kho báu cần chinh phục", "Ôn lại đúng thời điểm giúp con nhớ lâu hơn mà không phải học lại từ đầu.") +
+      '<div class="quiz-wrap"><section class="card quiz-card" id="review-card"></section></div>'
+    );
+
+    var index = 0;
+    var correct = 0;
+    var card = $("#review-card");
+
+    function renderQuestion() {
+      if (index >= items.length) {
+        card.classList.add("quiz-done");
+        card.innerHTML = icon("star", "icon--lg") +
+          '<h2 class="quiz-done__title">Đã ôn xong kho báu!</h2>' +
+          "<p>Con đã ôn " + items.length + " mục và trả lời đúng " + correct + " câu. Hệ thống đã hẹn lịch nhắc lại.</p>" +
+          '<div class="btn-row" style="width:100%;max-width:520px;margin-top:8px">' +
+          '<a class="btn btn--primary" href="#/lesson/' + encodeURIComponent(lesson.id) + '/games">' + icon("spark") + "Chơi mini-game</a>" +
+          '<a class="btn btn--outline" href="#/lesson/' + encodeURIComponent(lesson.id) + '">Về bài học</a></div>';
+        burstConfetti();
+        announce("Đã ôn xong " + items.length + " mục.");
+        return;
+      }
+      var item = items[index];
+      var options = (item.options || []).map(function (option, optionIndex) {
+        return '<button class="answer" type="button" data-review-option="' + optionIndex + '">' +
+          '<span class="answer__key">' + "ABCD".charAt(optionIndex) + "</span>" +
+          '<span class="answer__text">' + esc(option) + "</span>" +
+          '<span class="answer__mark" aria-hidden="true"></span></button>';
+      }).join("");
+      card.classList.remove("quiz-done");
+      card.innerHTML =
+        '<div class="quiz-top"><span class="quiz-count">Mục ' + (index + 1) + " / " + items.length + "</span>" +
+        '<span class="quiz-xp">' + icon("refresh") + " +5 XP</span></div>" +
+        '<div class="meta-row"><span class="chip chip--cyan">' + esc(SKILL_LABEL[item.skill] || item.skill || "") + "</span>" +
+        '<span class="chip">' + esc(item.difficulty || "easy") + "</span></div>" +
+        '<h2 class="quiz-prompt">' + esc(item.prompt_en || "").replace(/_{2,}/g, '<span class="cloze-blank">____</span>') + "</h2>" +
+        (item.prompt_vi ? '<p class="muted" style="color:var(--muted-on-card);font-size:16px">' + esc(item.prompt_vi) + "</p>" : "") +
+        '<div class="answers" role="group" aria-label="Các đáp án">' + options + "</div>" +
+        '<div class="feedback" id="review-feedback" role="status" aria-live="polite">' + icon("info") + '<div><span class="feedback__title">Ôn lại nào</span><span class="feedback__text">Chọn đáp án con nhớ được.</span></div></div>' +
+        '<div class="quiz-footer"><button class="btn btn--primary" id="review-next" type="button" hidden>Tiếp tục ' + icon("arrow-right") + "</button></div>";
+
+      var feedback = $("#review-feedback");
+      var next = $("#review-next");
+      $$("[data-review-option]", card).forEach(function (button) {
+        button.addEventListener("click", function () {
+          if (button.disabled) return;
+          var choice = parseInt(button.getAttribute("data-review-option"), 10);
+          if (choice === item.answer_index) {
+            button.classList.add("is-correct");
+            button.querySelector(".answer__mark").innerHTML = icon("check");
+            $$("[data-review-option]", card).forEach(function (node) { node.disabled = true; });
+            reviewItem(lesson, item, true);
+            correct += 1;
+            award(5, 0);
+            feedback.className = "feedback feedback--ok";
+            feedback.innerHTML = icon("check") + '<div><span class="feedback__title">Nhớ lại chính xác! +5 XP</span><span class="feedback__text">' + esc(item.explanation_vi || "Con nhớ rất tốt.") + "</span></div>";
+            next.hidden = false;
+            next.focus({ preventScroll: true });
+            burstConfetti();
+          } else {
+            button.classList.add("is-wrong");
+            button.disabled = true;
+            button.querySelector(".answer__mark").innerHTML = icon("x");
+            reviewItem(lesson, item, false);
+            feedback.className = "feedback feedback--hint";
+            feedback.innerHTML = icon("spark") + '<div><span class="feedback__title">Chưa đúng, thử lại nhé</span><span class="feedback__text">' + esc(item.hint_vi || "Con đọc lại câu hỏi và chọn đáp án khác.") + "</span></div>";
+          }
+        });
+      });
+      next.addEventListener("click", function () {
+        index += 1;
+        renderQuestion();
+      });
+    }
+
+    renderQuestion();
+    onCleanup(function () {
+      TTS.stop();
+    });
+    announce("Ôn tập " + items.length + " mục đến hạn.");
   }
 
   /* ---------------- read-along ---------------- */
@@ -798,13 +1219,14 @@
         '<button class="btn btn--ghost btn--icon btn--sm read-turn__play" type="button" data-play-turn="' + index + '" aria-label="Nghe ' + esc(line.speaker || "") + '">' + icon("play") + "</button></div>" +
         '<div class="read-line">' + wordButtons + "</div>" +
         (line.vi ? '<p class="read-trans">' + esc(line.vi) + "</p>" : "") +
+        '<div class="read-turn__voice"><button class="btn btn--outline btn--sm mic-btn" type="button" data-mic-turn="' + index + '" aria-label="Đọc to câu của ' + esc(line.speaker || "") + '">' + icon("mic") + "Đọc to</button></div>" +
         "</div></div>"
       );
     }).join("");
 
     setView(
       lessonTabs(lesson, "read") +
-      moduleHeader("Phân hệ 4", dialogue.title || "Read-Along", "Chạm vào từng từ để nghe và xem nghĩa. Bật “Nghe cả đoạn” để đọc đuổi theo từng câu.") +
+      moduleHeader("Phân hệ 4", dialogue.title || "Read-Along", "Chạm vào từng từ để nghe và xem nghĩa. Bật “Nghe cả đoạn” để đọc đuổi, hoặc bấm “Đọc to” để luyện micro.") +
       '<div class="read-tools"><button class="btn btn--primary" id="play-all" type="button">' + icon("play") + "Nghe cả đoạn</button>" +
       '<button class="btn btn--outline" id="stop-read" type="button" disabled>' + icon("stop") + "Dừng</button>" +
       '<button class="btn btn--outline btn--sm slow-toggle" id="slow-toggle" type="button" aria-pressed="false">' + icon("gauge") + "Đọc chậm</button>" +
@@ -826,24 +1248,31 @@
       });
     }
 
+    function wordButtonsFor(index) {
+      return $$('.word-btn[data-turn="' + index + '"]', view);
+    }
+
+    function highlightWord(index, charIndex) {
+      var buttons = wordButtonsFor(index);
+      var active = null;
+      buttons.forEach(function (button) {
+        var start = parseInt(button.getAttribute("data-start"), 10);
+        if (start <= charIndex) active = button;
+      });
+      buttons.forEach(function (button) {
+        button.classList.toggle("is-speaking", button === active);
+      });
+    }
+
     function speakTurn(index) {
       var line = dialogue.lines[index];
       if (!line) return;
       clearHighlight();
       var turn = $('.read-turn[data-turn="' + index + '"]', view);
       if (turn) turn.classList.add("is-speaking");
-      var buttons = $$('.word-btn[data-turn="' + index + '"]', view);
       TTS.speak(line.en, {
         onBoundary: function (event) {
-          var charIndex = event.charIndex || 0;
-          var active = null;
-          buttons.forEach(function (button) {
-            var start = parseInt(button.getAttribute("data-start"), 10);
-            if (start <= charIndex) active = button;
-          });
-          buttons.forEach(function (button) {
-            button.classList.toggle("is-speaking", button === active);
-          });
+          highlightWord(index, event.charIndex || 0);
         },
         onEnd: clearHighlight,
         onError: clearHighlight
@@ -886,6 +1315,10 @@
           turn.classList.add("is-speaking");
         }
         TTS.speak(line.en, {
+          onBoundary: function (event) {
+            if (myToken !== ui.readToken) return;
+            highlightWord(index, event.charIndex || 0);
+          },
           onEnd: function () {
             if (myToken !== ui.readToken) return;
             if (turn) turn.classList.remove("is-speaking");
@@ -916,6 +1349,16 @@
       button.addEventListener("click", function () {
         speakTurn(parseInt(button.getAttribute("data-play-turn"), 10) || 0);
       });
+    });
+    $$("[data-mic-turn]", view).forEach(function (button) {
+      var index = parseInt(button.getAttribute("data-mic-turn"), 10) || 0;
+      var line = dialogue.lines[index];
+      if (line && window.SET_M2) {
+        window.SET_M2.attachMic(button, {
+          target: line.en,
+          key: lesson.id + ":" + dialogue.id + ":" + index
+        });
+      }
     });
     $$(".word-btn", view).forEach(function (button) {
       button.addEventListener("click", function () {
@@ -1023,6 +1466,7 @@
 
       $$(".answer", card).forEach(function (button) {
         button.addEventListener("click", function () {
+          if (button.disabled) return;
           var choice = parseInt(button.getAttribute("data-index"), 10);
           if (choice === item.answer_index) {
             button.classList.add("is-correct");
@@ -1042,6 +1486,7 @@
             $$(".answer", card).forEach(function (node) {
               node.disabled = true;
             });
+            reviewItem(lesson, item, true);
             feedback.className = "feedback feedback--ok";
             feedback.innerHTML = icon("check") +
               '<div><span class="feedback__title">Chính xác! +12 XP</span><span class="feedback__text">' +
@@ -1054,6 +1499,7 @@
             button.classList.add("is-wrong");
             button.disabled = true;
             button.querySelector(".answer__mark").innerHTML = icon("x");
+            recordMistake(lesson, item);
             feedback.className = "feedback feedback--hint";
             feedback.innerHTML = icon("spark") +
               '<div><span class="feedback__title">Gần đúng rồi!</span><span class="feedback__text">' +
@@ -1096,6 +1542,110 @@
       TTS.stop();
     });
     announce("Thử thách " + pool.length + " câu hỏi.");
+  }
+
+  /* ---------------- rewards ---------------- */
+
+  function refreshShields() {
+    var streak = progress.streak || 0;
+    var allowed = Math.min(3, Math.floor(streak / 3));
+    if (allowed > (progress.shields || 0) && streak > (progress.shieldGrantedFor || 0)) {
+      progress.shields = allowed;
+      progress.shieldGrantedFor = streak;
+      saveProgress();
+    }
+    return progress.shields || 0;
+  }
+
+  function renderRewards() {
+    setTitle("Kho báu");
+    var pet = progress.pet || { fed: 0, level: 1 };
+    var fed = pet.fed || 0;
+    var level = 1 + Math.floor(fed / 3);
+    var shields = refreshShields();
+    var stickerKeys = Object.keys(STICKER_LABELS);
+    var unlocked = stickerKeys.filter(function (key) { return !!progress.stickers[key]; });
+    var stickerHtml = stickerKeys.map(function (key) {
+      var sticker = progress.stickers[key];
+      var label = STICKER_LABELS[key];
+      return '<div class="sticker' + (sticker ? " is-unlocked" : " is-locked") + '">' +
+        '<span class="sticker__icon">' + icon(sticker ? "star" : "lock", "icon--lg") + "</span>" +
+        '<span class="sticker__name">' + esc(label) + "</span>" +
+        '<span class="sticker__meta">' + (sticker ? "Đã mở " + esc(sticker.date || "") : "Chưa mở khóa") + "</span></div>";
+    }).join("");
+    var gameRows = Object.keys(progress.games).map(function (key) {
+      var entry = progress.games[key];
+      var parts = key.split(":");
+      var lessonId = parts[1] || "";
+      var type = parts[2] || "";
+      var meta = window.SET_GAMES && window.SET_GAMES.meta ? window.SET_GAMES.meta[type] : null;
+      return '<li class="game-stat"><span>' + esc((meta && meta.title) || type) + '<small> · ' + esc(lessonId) + "</small></span>" +
+        '<span class="game-stat__score">' + icon("star") + " " + (entry.bestStars || 0) + " · " + (entry.plays || 0) + " lượt</span></li>";
+    }).join("");
+    var dueCount = dueMistakes(null).length;
+    var mistakeTotal = Object.keys(progress.mistakes).length;
+
+    setView(
+      '<section class="design-hero"><div class="eyebrow">Kho báu</div>' +
+      '<h1 class="design-hero__title">Phần thưởng của con</h1>' +
+      '<p class="design-hero__sub">Sao, Sticker, thú cưng và khiên chuỗi ngày là những phần thưởng nhỏ giúp con học đều mỗi ngày.</p></section>' +
+      '<div class="reward-grid">' +
+      '<section class="card pet-card"><div class="pet-card__art">' + icon("rocket", "icon--lg") + "</div>" +
+      '<div><div class="eyebrow">Thú cưng đồng hành</div><h2 class="pet-card__name">Cún Phi Hành Gia</h2>' +
+      '<p class="pet-card__level">Cấp ' + level + " · Đã cho ăn " + fed + " lần</p>" +
+      '<p class="pet-card__hint">Dùng 3 Sao để cho bạn ấy ăn và mở khóa cấp mới.</p></div>' +
+      '<button class="btn btn--primary" id="feed-pet" type="button"' + (progress.stars < 3 ? " disabled" : "") + ">" + icon("star") + "Cho ăn · 3 Sao</button>" +
+      '<span class="pet-card__stars">' + icon("star") + " " + progress.stars + " Sao</span></section>" +
+      '<section class="card shield-card"><div class="shield-card__art">' + icon("check", "icon--lg") + "</div>" +
+      '<div><div class="eyebrow">Khiên chuỗi ngày</div><h2 class="pet-card__name">' + shields + " / 3 khiên</h2>" +
+      '<p class="pet-card__level">Chuỗi hiện tại: ' + (progress.streak || 0) + ' ngày</p>' +
+      '<p class="pet-card__hint">Học đủ 3 ngày liên tiếp sẽ nhận 1 khiên. Khiên giúp con nghỉ một ngày mà không mất chuỗi.</p></div></section>' +
+      "</div>" +
+      '<section class="section"><div class="section__head"><div><div class="eyebrow">Bộ sưu tập</div><h2 class="section__title">Sticker Book</h2></div>' +
+      '<span class="section__hint">' + unlocked.length + "/" + stickerKeys.length + " sticker đã mở</span></div>" +
+      '<div class="sticker-grid">' + stickerHtml + "</div></section>" +
+      '<section class="section"><div class="section__head"><div><div class="eyebrow">Hành trình</div><h2 class="section__title">Kho báu cần chinh phục</h2></div></div>' +
+      '<div class="panel--light"><div class="progress-summary">' +
+      '<span class="summary-chip">' + icon("refresh") + "Cần ôn hôm nay <b>" + dueCount + "</b></span>" +
+      '<span class="summary-chip">' + icon("book") + "Tổng mục trong kho <b>" + mistakeTotal + "</b></span>" +
+      '<span class="summary-chip">' + icon("star") + "Sao <b>" + progress.stars + "</b></span>" +
+      '<span class="summary-chip">' + icon("bolt") + "XP <b>" + progress.xp + "</b></span></div>" +
+      (dueCount ? '<a class="btn btn--primary" href="#/lesson/' + encodeURIComponent((dueMistakes(null)[0] || {}).lessonId || "") + '/review">' + icon("refresh") + "Ôn ngay</a>" : '<p class="dev-note">Hôm nay chưa có mục nào đến hạn. Con cứ học và chơi, hệ thống sẽ nhắc đúng lúc.</p>') +
+      "</div></section>" +
+      '<section class="section"><div class="section__head"><div><div class="eyebrow">Thành tích</div><h2 class="section__title">Mini-games đã chơi</h2></div></div>' +
+      '<div class="panel--light">' + (gameRows ? '<ul class="game-stat-list">' + gameRows + "</ul>" : '<p class="dev-note">Chưa có lượt chơi nào. Hãy mở một bài học và chọn Mini-games nhé.</p>') + "</div></section>"
+    );
+
+    var feed = $("#feed-pet");
+    if (feed) {
+      feed.addEventListener("click", function () {
+        if (progress.stars < 3) {
+          toast("Con cần thêm Sao để cho thú cưng ăn nhé.");
+          return;
+        }
+        progress.stars -= 3;
+        progress.pet = progress.pet || { fed: 0, level: 1 };
+        progress.pet.fed = (progress.pet.fed || 0) + 1;
+        progress.pet.level = 1 + Math.floor(progress.pet.fed / 3);
+        saveProgress();
+        toast("Thú cưng đã ăn ngon! Cấp " + progress.pet.level + ".");
+        renderRewards();
+      });
+    }
+    announce("Kho báu: " + unlocked.length + " sticker, " + dueCount + " mục cần ôn.");
+  }
+
+  /* ---------------- parent dashboard ---------------- */
+
+  function renderParent() {
+    setTitle("Góc Phụ huynh");
+    setView('<div id="parent-root"></div>');
+    if (!window.SET_PARENT) {
+      setView('<div class="card empty-state">' + icon("lock", "icon--lg") + '<h2 class="empty-state__title">Góc Phụ Huynh chưa tải</h2><p>Hãy tải lại trang để nạp module phụ huynh.</p><a class="btn btn--primary" href="#/home">Về trang chủ</a></div>');
+      return;
+    }
+    window.SET_PARENT.mount($("#parent-root"), makeParentApi());
+    announce("Góc phụ huynh, khu vực được bảo vệ bằng câu hỏi toán.");
   }
 
   /* ---------------- design system ---------------- */
@@ -1259,6 +1809,20 @@
       renderDesign();
       return;
     }
+    if (path === "rewards") {
+      updateNav("rewards");
+      renderRewards();
+      return;
+    }
+    if (path === "parent") {
+      updateNav("parent");
+      renderParent();
+      return;
+    }
+    if (path === "import") {
+      handleSharedImport();
+      return;
+    }
     if (path === "lesson") {
       var lesson = lessonById(parts[1]);
       if (!lesson) return notFound("Bài học này không có trong kho.");
@@ -1271,6 +1835,8 @@
       } else if (moduleName === "grammar") renderGrammar(lesson);
       else if (moduleName === "read") renderRead(lesson);
       else if (moduleName === "quiz") renderQuiz(lesson);
+      else if (moduleName === "games") renderGamesHub(lesson);
+      else if (moduleName === "review") renderReview(lesson);
       else if (moduleName === "hub") renderLessonHub(lesson);
       else return notFound("Phần học này chưa có.");
       return;
@@ -1312,6 +1878,7 @@
 
   function init() {
     if (!view) return;
+    setupPracticeApi();
     window.addEventListener("hashchange", onRouteChange);
     window.addEventListener("resize", hideWordTip);
     window.addEventListener("scroll", hideWordTip, { passive: true });

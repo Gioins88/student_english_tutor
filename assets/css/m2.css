@@ -1,0 +1,358 @@
+/* Space Explorer · M2 practice overlays */
+
+body.m2-open {
+  overflow: hidden;
+}
+
+.m2-modal {
+  position: fixed;
+  inset: 0;
+  z-index: 90;
+  display: grid;
+  place-items: center;
+  padding: max(16px, env(safe-area-inset-top)) 16px max(16px, env(safe-area-inset-bottom));
+  background: rgba(2, 8, 23, 0.74);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  animation: m2-fade 0.18s var(--ease-out);
+}
+
+@keyframes m2-fade {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.m2-sheet {
+  width: min(720px, 100%);
+  max-height: 92dvh;
+  overflow: auto;
+  padding: clamp(20px, 3.4vw, 30px);
+  border-radius: var(--radius-xl);
+  background: var(--card);
+  color: var(--ink);
+  border: 1px solid rgba(255, 255, 255, 0.7);
+  box-shadow: var(--shadow-card);
+  animation: m2-rise 0.22s var(--ease-spring);
+}
+
+@keyframes m2-rise {
+  from { opacity: 0; transform: translateY(14px) scale(0.98); }
+  to { opacity: 1; transform: none; }
+}
+
+.m2-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 14px;
+  margin-bottom: 18px;
+}
+
+.m2-kicker {
+  color: var(--primary-strong);
+  font-size: 14px;
+  font-weight: 850;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.m2-title {
+  margin-top: 2px;
+  font-size: clamp(26px, 4.4vw, 36px);
+  line-height: 1.1;
+  font-weight: 900;
+  letter-spacing: -0.02em;
+  overflow-wrap: anywhere;
+}
+
+.m2-sub {
+  margin-top: 4px;
+  color: var(--muted-on-card);
+  font-size: 16px;
+}
+
+.m2-head .btn--ghost {
+  border-color: var(--line-card);
+  background: #ffffff;
+  color: var(--ink);
+}
+
+.m2-body {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.wb-clue {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+}
+
+.wb-meaning {
+  font-size: clamp(24px, 4vw, 30px);
+  line-height: 1.2;
+  font-weight: 900;
+  letter-spacing: -0.015em;
+}
+
+.wb-example {
+  padding: 10px 14px;
+  border-left: 4px solid var(--primary);
+  border-radius: 0 12px 12px 0;
+  background: #ffffff;
+  color: var(--muted-on-card);
+  font-size: 17px;
+}
+
+.wb-slots {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  padding: 14px;
+  border-radius: 18px;
+  background: #ffffff;
+  border: 1px dashed var(--line-card);
+}
+
+.wb-slot {
+  width: 50px;
+  height: 58px;
+  border: 2px dashed #b9cde3;
+  border-radius: 12px;
+  background: #f8fbff;
+  color: var(--ink);
+  font-size: 25px;
+  font-weight: 900;
+  text-transform: lowercase;
+  touch-action: manipulation;
+}
+
+.wb-slot.is-filled {
+  border-style: solid;
+  border-color: var(--primary);
+  background: #ecfeff;
+  animation: pop 0.22s var(--ease-spring);
+}
+
+.wb-slot.is-hint {
+  border-color: var(--star);
+  background: #fffbeb;
+  box-shadow: 0 0 0 3px rgba(251, 191, 36, 0.32);
+}
+
+.wb-gap {
+  width: 18px;
+  height: 58px;
+}
+
+.wb-fixed {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 28px;
+  height: 58px;
+  color: var(--muted-on-card);
+  font-size: 25px;
+  font-weight: 900;
+}
+
+.wb-tray {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  padding: 14px;
+  border-radius: 18px;
+  background: var(--card-soft);
+  border: 1px solid var(--line-card);
+}
+
+.wb-tile {
+  width: 54px;
+  height: 54px;
+  border: 1px solid #b9cde3;
+  border-radius: 13px;
+  background: #ffffff;
+  color: var(--ink);
+  font-size: 24px;
+  font-weight: 900;
+  text-transform: lowercase;
+  box-shadow: 0 4px 0 rgba(15, 23, 42, 0.1);
+  touch-action: manipulation;
+}
+
+.wb-tile:active {
+  transform: translateY(2px);
+  box-shadow: 0 2px 0 rgba(15, 23, 42, 0.1);
+}
+
+.wb-tile.is-used {
+  opacity: 0.34;
+  box-shadow: none;
+}
+
+.wb-status {
+  min-height: 28px;
+  padding: 8px 12px;
+  border-radius: 12px;
+  background: var(--info-soft);
+  border: 1px solid #a5f3fc;
+  color: var(--info-ink);
+  font-size: 16px;
+  font-weight: 750;
+}
+
+.wb-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.wb-actions .btn {
+  flex: 1 1 150px;
+}
+
+.wb-success {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 14px 16px;
+  border-radius: 16px;
+  background: var(--success-soft);
+  border: 1px solid #bbf7d0;
+  color: var(--success-ink);
+  font-size: 17px;
+  animation: pop 0.3s var(--ease-spring);
+}
+
+.wb-success strong {
+  font-weight: 900;
+}
+
+.lego-builder-zone {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.lego-slots {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  min-height: 78px;
+  padding: 14px;
+  border-radius: 18px;
+  background: #ffffff;
+  border: 2px dashed var(--line-card);
+}
+
+.lego-slot {
+  min-width: 64px;
+  min-height: 52px;
+  padding: 6px 14px;
+  border: 2px dashed #b9cde3;
+  border-radius: 13px;
+  background: #f8fbff;
+  color: var(--muted-on-card);
+  font-size: 19px;
+  font-weight: 850;
+  touch-action: manipulation;
+}
+
+.lego-slot.is-filled {
+  border-style: solid;
+  border-color: rgba(15, 23, 42, 0.16);
+  box-shadow: 0 4px 0 rgba(15, 23, 42, 0.16);
+  animation: pop 0.2s var(--ease-spring);
+}
+
+.m2-lego-block.is-used {
+  opacity: 0.34;
+  box-shadow: none;
+}
+
+.mic-btn {
+  border-color: #a5f3fc;
+  background: #ecfeff;
+  color: var(--info-ink);
+}
+
+.mic-btn.is-listening {
+  background: #fff7ed;
+  border-color: #fed7aa;
+  color: var(--hint-ink);
+  animation: pulse 1s ease-in-out infinite;
+}
+
+.voice-result {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  margin-top: 8px;
+  padding: 10px 12px;
+  border-radius: 12px;
+  background: #ffffff;
+  border: 1px solid var(--line-card);
+  color: var(--muted-on-card);
+  font-size: 14px;
+}
+
+.voice-stars {
+  color: #b45309;
+  font-size: 20px;
+  letter-spacing: 2px;
+  line-height: 1.1;
+}
+
+.voice-msg {
+  color: var(--ink);
+  font-weight: 750;
+}
+
+.voice-heard,
+.voice-target {
+  color: var(--muted-on-card);
+  font-size: 13px;
+}
+
+@media (max-width: 560px) {
+  .m2-modal {
+    padding: 0;
+    align-items: end;
+  }
+
+  .m2-sheet {
+    width: 100%;
+    max-height: 94dvh;
+    border-radius: 24px 24px 0 0;
+    padding: 18px 16px max(20px, env(safe-area-inset-bottom));
+  }
+
+  .wb-slot {
+    width: 44px;
+    height: 54px;
+    font-size: 22px;
+  }
+
+  .wb-gap {
+    width: 12px;
+    height: 54px;
+  }
+
+  .wb-tile {
+    width: 50px;
+    height: 50px;
+  }
+
+  .wb-actions .btn {
+    flex: 1 1 100%;
+  }
+}
+
+@media print {
+  .m2-modal {
+    display: none !important;
+  }
+}
