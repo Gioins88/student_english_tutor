@@ -21,7 +21,7 @@ Không mở trực tiếp `file://` nếu muốn kiểm thử service worker và
 | `assets/js/app.js` | Router hash, flashcard, Sentence Lego, Read-Along, quiz demo, Design System |
 | `assets/js/data.js` | Fallback lesson nhúng khi `fetch()` không khả dụng |
 | `assets/data/lessons.json` | Kho bài học JSON (nạp từ `Assets/lessons/*.json` của dự án) |
-| `manifest.webmanifest`, `sw.js` | PWA: cài màn hình chính, cache offline `set-v0.1.1` |
+| `manifest.webmanifest`, `sw.js` | PWA: cài màn hình chính, cache offline `set-v0.1.2` |
 | `icons/` | Icon PWA 192/512/maskable + favicon SVG |
 
 ## Deploy GitHub Pages

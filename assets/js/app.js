@@ -620,14 +620,14 @@
       '<button class="btn btn--ghost btn--sm" id="vocab-next" type="button"' + (ui.vocabIndex === items.length - 1 ? " disabled" : "") + ">Sau " + icon("arrow-right") + "</button>" +
       '</div><button class="btn btn--outline btn--sm slow-toggle" id="slow-toggle" type="button" aria-pressed="false">' + icon("gauge") + "Đọc chậm</button></div>" +
       '<div class="vocab-progress"><div class="progress-dots" aria-hidden="true">' + dots + "</div></div>" +
-      '<div class="flashcard-scene"><div class="flashcard" id="flashcard" role="button" tabindex="0" aria-pressed="false" aria-label="Thẻ từ ' + esc(item.word) + '. Chạm hoặc nhấn Enter để lật.">' +
+      '<div class="flashcard-scene"><div class="flashcard" id="flashcard" data-flipped="false">' +
       '<div class="flashcard__face flashcard__front">' +
       '<span class="flashcard__tag">' + esc(POS_LABEL[item.pos] || item.pos || "từ mới") + "</span>" +
       (item.icon ? '<div style="font-size:56px;line-height:1" aria-hidden="true">' + esc(item.icon) + "</div>" : "") +
       '<div class="flashcard__word">' + esc(item.word) + "</div>" +
       (item.ipa ? '<div class="flashcard__ipa">' + esc(item.ipa) + "</div>" : "") +
       '<button class="btn btn--primary btn--icon flashcard__speaker" id="say-word" type="button" aria-label="Nghe phát âm ' + esc(item.word) + '">' + icon("speaker") + "</button>" +
-      '<span class="flashcard__hint">' + icon("refresh") + "Chạm thẻ để xem nghĩa</span>" +
+      '<button class="flashcard__hint" id="flip-card" type="button">' + icon("refresh") + "Chạm thẻ hoặc bấm để xem nghĩa</button>" +
       "</div>" +
       '<div class="flashcard__face flashcard__back">' +
       '<span class="flashcard__tag">' + icon("check") + "Nghĩa tiếng Việt" + "</span>" +
@@ -646,16 +646,18 @@
     );
 
     var card = $("#flashcard");
+    var flipButton = $("#flip-card");
     function flip() {
       var flipped = card.classList.toggle("is-flipped");
-      card.setAttribute("aria-pressed", String(flipped));
+      card.setAttribute("data-flipped", String(flipped));
+      if (flipButton) {
+        flipButton.innerHTML = icon("refresh") + (flipped ? "Bấm để lật lại mặt trước" : "Chạm thẻ hoặc bấm để xem nghĩa");
+      }
     }
     card.addEventListener("click", flip);
-    card.addEventListener("keydown", function (event) {
-      if (event.key === "Enter" || event.key === " ") {
-        event.preventDefault();
-        flip();
-      }
+    flipButton.addEventListener("click", function (event) {
+      event.stopPropagation();
+      flip();
     });
     $("#say-word").addEventListener("click", function (event) {
       event.stopPropagation();
@@ -715,13 +717,10 @@
   /* ---------------- grammar ---------------- */
 
   function textColorFor(hex) {
-    var value = String(hex || "").replace("#", "");
-    if (value.length !== 6) return "#0f172a";
-    var r = parseInt(value.slice(0, 2), 16);
-    var g = parseInt(value.slice(2, 4), 16);
-    var b = parseInt(value.slice(4, 6), 16);
-    var luminance = (0.299 * r + 0.587 * g + 0.114 * b) / 255;
-    return luminance > 0.62 ? "#0f172a" : "#ffffff";
+    var onWhite = contrastRatio("#ffffff", hex);
+    var onInk = contrastRatio("#0f172a", hex);
+    if (!isFinite(onWhite) || !isFinite(onInk)) return "#0f172a";
+    return onWhite >= onInk ? "#ffffff" : "#0f172a";
   }
 
   function renderGrammar(lesson) {
@@ -1165,12 +1164,13 @@
 
       '<section class="design-section"><h2 class="design-section__title">Nút & trạng thái</h2>' +
       '<p class="design-section__sub">Nút chính cao 52px; nút phụ và icon tối thiểu 48px. Sai được phản hồi bằng rung nhẹ và gợi ý, không chớp đỏ.</p>' +
-      '<div class="panel--light"><div class="demo-grid"><div class="btn-row">' +
+      '<div class="panel--light"><div class="demo-grid"><div><div class="btn-row">' +
       '<button class="btn btn--primary" type="button">' + icon("play") + "Bắt đầu</button>" +
       '<button class="btn btn--success" type="button">' + icon("check") + "Đã nhớ</button>" +
       '<button class="btn btn--outline" type="button">' + icon("refresh") + "Cần ôn</button>" +
-      '<button class="btn btn--ghost" type="button">' + icon("arrow-left") + "Quay lại</button>" +
-      "</div><div class=\"state-row\">" +
+      '</div><div class="surface" style="padding:16px;border-radius:16px;margin-top:12px"><div class="btn-row">' +
+      '<button class="btn btn--ghost" type="button">' + icon("arrow-left") + "Quay lại (trên nền tối)</button>" +
+      '</div></div></div><div class="state-row">' +
       '<span class="state-pill state-pill--default">Mặc định</span>' +
       '<span class="state-pill state-pill--active">Đang chọn</span>' +
       '<span class="state-pill state-pill--ok">' + icon("check") + "Đúng</span>" +

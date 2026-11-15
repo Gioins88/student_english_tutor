@@ -1329,9 +1329,21 @@ a {
   display: inline-flex;
   align-items: center;
   gap: 6px;
+  min-height: var(--tap);
+  padding: 4px 12px;
+  border: 0;
+  border-radius: 12px;
+  background: transparent;
   color: var(--muted-on-card);
   font-size: 15px;
   font-weight: 700;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  touch-action: manipulation;
+}
+
+.flashcard__hint:hover {
+  background: var(--card-soft);
 }
 
 .flashcard__meaning {
@@ -2334,7 +2346,9 @@ a {
 }
 
 .state-pill--disabled {
-  opacity: 0.45;
+  background: #e2e8f0;
+  border-color: #cbd5e1;
+  color: #475569;
 }
 
 .token-table {
@@ -2439,7 +2453,7 @@ a {
 }
 
 .dev-note {
-  color: var(--muted);
+  color: var(--muted-on-card);
   font-size: 15px;
 }
 
