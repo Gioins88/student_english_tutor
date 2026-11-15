@@ -240,7 +240,7 @@
         <section class="card parent-card">
           <div class="eyebrow">Cách 1 · Nhanh</div>
           <h2 class="parent-card__title">Nạp bài học JSON</h2>
-          <p class="parent-card__sub">Chọn tệp <code>.json</code> đã biên dịch sẵn theo Lesson Contract. Bài học sẽ được kiểm tra cấu trúc trước khi thêm.</p>
+          <p class="parent-card__sub">Chọn tệp <code>.json</code> một bài hoặc bộ nhiều bài (Family Edition). Bài học sẽ được kiểm tra cấu trúc trước khi thêm.</p>
           <label class="file-drop" for="json-file">${icon("book", "icon--lg")}<span>Chọn tệp JSON từ máy</span><input id="json-file" type="file" accept="application/json,.json" hidden></label>
           <p class="dev-note" id="json-status" role="status" aria-live="polite"></p>
         </section>
@@ -359,18 +359,35 @@
         if (!file) return;
         status.textContent = "Đang đọc tệp…";
         file.text().then(function (text) {
-          var raw;
+          var payload;
           try {
-            raw = JSON.parse(text);
+            payload = JSON.parse(text);
           } catch (err) {
             throw new Error("Tệp không phải JSON hợp lệ.");
           }
-          var lesson = sanitizeLesson(normalizeCandidate(raw, file.name), file.name, 1, 4);
-          var result = validateLesson(lesson);
-          if (!result.ok) throw new Error("Bài học chưa hợp lệ: " + result.errors.slice(0, 3).join("; "));
-          api.addLesson(lesson);
-          status.innerHTML = 'Đã thêm bài “' + esc(lesson.title) + '”. <a class="link" href="#/lesson/' + encodeURIComponent(lesson.lesson_id) + '">Mở bài học</a>';
-          toast("Đã thêm bài học mới.");
+          var list = Array.isArray(payload.lessons) ? payload.lessons : [payload];
+          var added = [];
+          var problems = [];
+          list.forEach(function (raw, index) {
+            try {
+              var lesson = sanitizeLesson(normalizeCandidate(raw, file.name), file.name, 1, 4);
+              var result = validateLesson(lesson);
+              if (!result.ok) {
+                problems.push("Bài " + (index + 1) + ": " + result.errors.slice(0, 2).join("; "));
+                return;
+              }
+              api.addLesson(lesson);
+              added.push(lesson);
+            } catch (err) {
+              problems.push("Bài " + (index + 1) + ": " + (err.message || "lỗi"));
+            }
+          });
+          if (!added.length) {
+            throw new Error("Không có bài hợp lệ. " + problems.slice(0, 3).join(" | "));
+          }
+          status.innerHTML = 'Đã thêm ' + added.length + "/" + list.length + ' bài. <a class="link" href="#/lesson/' + encodeURIComponent(added[0].lesson_id) + '">Mở bài đầu tiên</a>' +
+            (problems.length ? '<span class="parent-error-list">' + problems.slice(0, 3).map(function (p) { return "<br>" + esc(p); }).join("") + "</span>" : "");
+          toast("Đã thêm " + added.length + " bài học.");
         }).catch(function (err) {
           status.textContent = err.message || "Không đọc được tệp.";
         });

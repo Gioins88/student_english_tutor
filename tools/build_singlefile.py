@@ -7,6 +7,7 @@ PDF import requires the hosted app (it is a network/Gemini feature anyway).
 from __future__ import annotations
 
 import argparse
+import json
 import re
 from pathlib import Path
 
@@ -17,7 +18,7 @@ def read(path: Path) -> str:
     return path.read_text(encoding="utf-8")
 
 
-def build(web_dir: Path, out_path: Path) -> None:
+def build(web_dir: Path, out_path: Path, lessons_path: Path | None = None) -> None:
     index = read(web_dir / "index.html")
 
     index = re.sub(r'\s*<link rel="manifest"[^>]*>', "", index)
@@ -49,6 +50,18 @@ def build(web_dir: Path, out_path: Path) -> None:
         "<head>\n  <!-- Single-file snapshot generated from web/ by tools/build_singlefile.py -->",
         1,
     )
+    if lessons_path is not None:
+        payload = json.loads(lessons_path.read_text(encoding="utf-8"))
+        lessons = payload.get("lessons") if isinstance(payload, dict) else payload
+        if not isinstance(lessons, list):
+            raise ValueError("--lessons must contain a lessons array")
+        fallback = json.dumps({"schema_version": "1.0.0", "lessons": lessons}, ensure_ascii=False)
+        fallback = fallback.replace("</", "<\\/")
+        index = index.replace(
+            "</body>",
+            f'  <script>window.SET_FALLBACK_DATA = {fallback};</script>\n</body>',
+            1,
+        )
 
     out_path.parent.mkdir(parents=True, exist_ok=True)
     out_path.write_text(index, encoding="utf-8")
@@ -62,8 +75,14 @@ def main() -> int:
         type=Path,
         default=Path(__file__).resolve().parents[2] / "Deliverables" / "Student_English_Tutor_App_v1.0.html",
     )
+    parser.add_argument(
+        "--lessons",
+        type=Path,
+        default=None,
+        help="Optional local lesson bundle JSON to embed as the offline fallback (private Family Edition).",
+    )
     args = parser.parse_args()
-    build(args.web, args.out)
+    build(args.web, args.out, args.lessons)
     size_kb = args.out.stat().st_size / 1024
     print(f"Wrote {args.out} ({size_kb:.0f} KB)")
     return 0
