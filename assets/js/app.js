@@ -301,6 +301,10 @@
   }
 
   function loadData() {
+    if (!/^https?:$/.test(window.location.protocol) && window.SET_FALLBACK_DATA) {
+      setData(window.SET_FALLBACK_DATA, "embedded");
+      return Promise.resolve();
+    }
     return fetch("assets/data/lessons.json", { cache: "no-cache" })
       .then(function (res) {
         if (!res.ok) throw new Error("HTTP " + res.status);
