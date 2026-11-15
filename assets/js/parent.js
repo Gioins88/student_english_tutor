@@ -365,7 +365,7 @@
           } catch (err) {
             throw new Error("Tệp không phải JSON hợp lệ.");
           }
-          var lesson = normalizeCandidate(raw, file.name);
+          var lesson = sanitizeLesson(normalizeCandidate(raw, file.name), file.name, 1, 4);
           var result = validateLesson(lesson);
           if (!result.ok) throw new Error("Bài học chưa hợp lệ: " + result.errors.slice(0, 3).join("; "));
           api.addLesson(lesson);
@@ -415,6 +415,42 @@
     setSteps(state.status);
   }
 
+  function evaluateCandidate(raw, pages, grade, file) {
+    var lesson = sanitizeLesson(normalizeCandidate(raw, file.name, pages.length), file.name, pages.length, grade);
+    var quote = verifyQuotes(lesson, pages);
+    lesson.metadata.qa = {
+      quote_match_rate: quote.rate,
+      warning_count: quote.warnings.length,
+      warnings: quote.warnings.slice(0, 20)
+    };
+    var result = validateLesson(lesson);
+    return { lesson: lesson, result: result, quote: quote };
+  }
+
+  function buildFeedback(evaluation) {
+    var parts = [];
+    if (!evaluation.result.ok) {
+      parts.push("Schema errors: " + evaluation.result.errors.slice(0, 10).join(" | "));
+    }
+    if (evaluation.quote.rate < 0.9) {
+      parts.push("Quote match is only " + Math.round(evaluation.quote.rate * 100) + "%. Quote problems: " + evaluation.quote.warnings.slice(0, 8).join(" | "));
+    }
+    parts.push("Return the complete corrected JSON. Use ids voc_01, gram_01, read_01, q_01 with two digits and update quiz vocab_id/grammar_id. Every pdf_extracted item must have source_page and a verbatim source_quote. If the worksheet has no reading passage, create one short generated dialogue with source_type=generated and source_quote=null. Use only the exact enums in the schema.");
+    return parts.join("\n");
+  }
+
+  function detailedError(evaluation) {
+    var reason = !evaluation.result.ok
+      ? "Lesson JSON chưa đúng cấu trúc: " + evaluation.result.errors.slice(0, 3).join("; ")
+      : "Chỉ " + Math.round(evaluation.quote.rate * 100) + "% trích dẫn khớp PDF (cần ≥90%).";
+    var error = new Error(reason);
+    error.details = []
+      .concat(evaluation.result.errors.map(function (item) { return "Schema: " + item; }))
+      .concat(evaluation.quote.warnings.map(function (item) { return "Quote: " + item; }))
+      .slice(0, 14);
+    return error;
+  }
+
   function runPdfImport(file) {
     if (state.pdfBusy) return;
     if (file.size > 25 * 1024 * 1024) {
@@ -441,6 +477,7 @@
     var grade = parseInt((gradeInput && gradeInput.value) || "4", 10);
     state.pdfBusy = true;
     state.currentStep = 0;
+    state.lastRaw = null;
     state.status = [
       { status: "active", text: "Đọc PDF trên thiết bị…" },
       { status: "wait", text: "Gọi Gemini tạo Lesson JSON…" },
@@ -455,47 +492,60 @@
         if (textLength < 120) {
           throw new Error("PDF gần như không có lớp chữ (có thể là bản scan). Bản M4 chưa hỗ trợ OCR.");
         }
+        if (pages.length > 15) {
+          throw new Error("PDF có " + pages.length + " trang; Góc Phụ Huynh xử lý tối đa 15 trang/lần. Hãy tách PDF hoặc dùng CLI trên laptop.");
+        }
         updateStep(0, "done", "Đã đọc " + pages.length + " trang, " + textLength + " ký tự.");
         state.currentStep = 1;
         updateStep(1, "active");
         return callGemini(key, model, pages, grade).then(function (raw) {
-          updateStep(1, "done", "Gemini đã trả về Lesson JSON.");
-          state.currentStep = 2;
-          updateStep(2, "active");
-          var lesson = normalizeCandidate(raw, file.name, pages.length);
-          lesson.grade_level = grade;
-          var result = validateLesson(lesson);
-          var quote = verifyQuotes(lesson, pages);
-          lesson.metadata.qa = {
-            quote_match_rate: quote.rate,
-            warning_count: quote.warnings.length,
-            warnings: quote.warnings.slice(0, 20)
-          };
-          if (quote.rate < 0.9) {
-            throw new Error("Chỉ " + Math.round(quote.rate * 100) + "% trích dẫn khớp PDF. Bài học chưa được lưu để tránh sai nội dung.");
-          }
-          if (!result.ok) {
-            throw new Error("Lesson JSON thiếu trường: " + result.errors.slice(0, 3).join("; "));
-          }
-          updateStep(2, "done", "Cấu trúc hợp lệ; trích dẫn khớp " + Math.round(quote.rate * 100) + "%.");
-          state.currentStep = 3;
-          updateStep(3, "active");
-          api.addLesson(lesson);
-          updateStep(3, "done", "Đã lưu bài “" + lesson.title + "”.");
-          state.pdfBusy = false;
-          toast("Đã tạo bài học từ PDF.");
-          var panel = rootEl.querySelector("#pdf-steps");
-          if (panel) {
-            panel.insertAdjacentHTML("beforeend", '<a class="btn btn--primary" href="#/lesson/' + encodeURIComponent(lesson.lesson_id) + '">' + icon("rocket") + "Mở bài học mới</a>");
-          }
+          state.lastRaw = raw;
+          var first = evaluateCandidate(raw, pages, grade, file);
+          if (first.result.ok && first.quote.rate >= 0.9) return first;
+          updateStep(1, "active", "Gemini trả JSON nhưng chưa đạt; đang yêu cầu sửa…");
+          return callGemini(key, model, pages, grade, buildFeedback(first)).then(function (raw2) {
+            state.lastRaw = raw2;
+            return evaluateCandidate(raw2, pages, grade, file);
+          });
         });
+      })
+      .then(function (evaluation) {
+        if (!evaluation.result.ok || evaluation.quote.rate < 0.9) {
+          throw detailedError(evaluation);
+        }
+        var lesson = evaluation.lesson;
+        updateStep(1, "done", "Gemini đã trả về Lesson JSON.");
+        updateStep(2, "done", "Cấu trúc hợp lệ; trích dẫn khớp " + Math.round(evaluation.quote.rate * 100) + "%.");
+        state.currentStep = 3;
+        updateStep(3, "active");
+        api.addLesson(lesson);
+        updateStep(3, "done", "Đã lưu bài “" + lesson.title + "”.");
+        state.pdfBusy = false;
+        toast("Đã tạo bài học từ PDF.");
+        var panel = rootEl.querySelector("#pdf-steps");
+        if (panel) {
+          panel.insertAdjacentHTML("beforeend", '<a class="btn btn--primary" href="#/lesson/' + encodeURIComponent(lesson.lesson_id) + '">' + icon("rocket") + "Mở bài học mới</a>");
+        }
       })
       .catch(function (err) {
         state.pdfBusy = false;
         var message = err && err.message ? err.message : "Không xử lý được PDF.";
         updateStep(typeof state.currentStep === "number" ? state.currentStep : 0, "error", message);
         var panel = rootEl.querySelector("#pdf-steps");
-        if (panel) panel.insertAdjacentHTML("beforeend", '<p class="parent-error">' + esc(message) + "</p>");
+        if (!panel) return;
+        var details = Array.isArray(err.details) ? err.details : [];
+        panel.insertAdjacentHTML(
+          "beforeend",
+          '<div class="parent-error">' + esc(message) + "</div>" +
+          (details.length ? '<ul class="parent-error-list">' + details.map(function (item) { return "<li>" + esc(item) + "</li>"; }).join("") + "</ul>" : "") +
+          (state.lastRaw ? '<button class="btn btn--outline btn--sm" type="button" id="download-candidate">' + icon("download") + "Tải JSON nháp để kiểm tra</button>" : "")
+        );
+        var download = rootEl.querySelector("#download-candidate");
+        if (download && state.lastRaw) {
+          download.addEventListener("click", function () {
+            downloadJson("lesson_candidate_" + today() + ".json", state.lastRaw);
+          });
+        }
         toast(message);
       });
   }
@@ -655,7 +705,7 @@
     };
   }
 
-  function callGemini(key, model, pages, grade) {
+  function callGemini(key, model, pages, grade, feedback) {
     var system = [
       "You extract English lesson content for Vietnamese primary school children (grade 3-5, CEFR Pre-A1 to A1+).",
       "Return only JSON that matches the provided schema.",
@@ -667,17 +717,24 @@
       "5. Produce 8-14 vocabulary items, 2-4 grammar patterns, 1 reading dialogue using PDF text, and at least 10 quiz items.",
       "6. Quiz game_type must be one of: balloon_pop, boss_battle, memory_match, detective_cloze, listen_tap. skill must be vocabulary, grammar, reading or listening.",
       "7. answer_index is 0-based and must point to a correct option. Use 2-4 options.",
-      "8. For grade level use the provided grade. Add no markdown, no code fences, JSON only."
+      "8. Use exact ids: voc_01, gram_01, read_01, q_01 with two zero-padded digits. IDs must be unique and every quiz vocab_id/grammar_id must reference an existing item.",
+      "9. pos must be one of: noun, verb, adjective, adverb, preposition, pronoun, conjunction, determiner, interjection, phrase. difficulty: easy, medium, hard.",
+      "10. If the worksheet has no reading passage, create one short generated dialogue (6-8 lines) from the worksheet vocabulary and set source_type=generated, source_page=null, source_quote=null.",
+      "11. For grade level use the provided grade. Add no markdown, no code fences, JSON only."
     ].join("\n");
     var pageText = pages.map(function (page) {
       return "<page number=\"" + page.page + "\">\n" + page.text + "\n</page>";
     }).join("\n\n");
     var user = "Grade: " + grade + "\nExtract the lesson from these worksheet pages:\n" + pageText;
+    if (feedback) {
+      user += "\n\n<validation_feedback>\nThe previous JSON failed. Fix every error below and return the complete corrected JSON.\n" + feedback + "\n</validation_feedback>";
+    }
     var body = {
       systemInstruction: { parts: [{ text: system }] },
       contents: [{ role: "user", parts: [{ text: user }] }],
       generationConfig: {
         temperature: 0,
+        max_output_tokens: 8192,
         response_mime_type: "application/json",
         response_schema: geminiSchema()
       }
@@ -699,8 +756,21 @@
     }).then(function (response) {
       return response.text().then(function (text) {
         if (!response.ok) {
-          var error = new Error(response.status === 400 ? "Gemini từ chối yêu cầu (kiểm tra model/schema)." : response.status === 403 ? "API key không hợp lệ hoặc chưa bật quyền." : "Gemini lỗi " + response.status + ".");
-          error.retryWithoutSchema = response.status === 400;
+          var serverMessage = "";
+          try {
+            var errorPayload = JSON.parse(text);
+            serverMessage = errorPayload && errorPayload.error && errorPayload.error.message ? String(errorPayload.error.message) : "";
+          } catch (parseErr) {
+            serverMessage = String(text || "").slice(0, 180);
+          }
+          var keyProblem = /api key|api_key|permission|unauthorized|invalid key/i.test(serverMessage);
+          var message;
+          if (response.status === 429) message = "Gemini hết quota hoặc bị giới hạn tần suất. Thử lại sau ít phút.";
+          else if (response.status === 403 || keyProblem) message = "Gemini API key không hợp lệ hoặc chưa có quyền.";
+          else if (response.status === 400) message = "Gemini từ chối yêu cầu: " + (serverMessage || "kiểm tra model/schema");
+          else message = "Gemini lỗi " + response.status + (serverMessage ? ": " + serverMessage : ".");
+          var error = new Error(message.slice(0, 300));
+          error.retryWithoutSchema = response.status === 400 && !keyProblem;
           throw error;
         }
         var payload;
@@ -713,11 +783,14 @@
         var content = candidate && candidate.content && candidate.content.parts && candidate.content.parts[0];
         var output = content && content.text ? content.text.trim() : "";
         output = output.replace(/^```(?:json)?\s*/i, "").replace(/\s*```$/i, "");
-        if (!output) throw new Error("Gemini không trả về nội dung.");
+        if (!output) {
+          var block = payload.promptFeedback && payload.promptFeedback.blockReason;
+          throw new Error(block ? "Gemini chặn nội dung (lý do: " + block + ")." : "Gemini không trả về nội dung; có thể output bị cắt do quá dài.");
+        }
         try {
           return JSON.parse(output);
         } catch (err) {
-          throw new Error("Gemini trả về JSON không hợp lệ.");
+          throw new Error("Gemini trả về JSON không hợp lệ; thử lại hoặc giảm số trang PDF.");
         }
       });
     });
@@ -747,6 +820,233 @@
       qa: { quote_match_rate: 1, warning_count: 0, warnings: [] }
     };
     return lesson;
+  }
+
+  function pad2(value) {
+    return String(value).padStart(2, "0");
+  }
+
+  function slugify(value) {
+    return String(value || "")
+      .toLowerCase()
+      .normalize("NFD")
+      .replace(/[\u0300-\u036f]/g, "")
+      .replace(/[^a-z0-9]+/g, "_")
+      .replace(/^_+|_+$/g, "")
+      .slice(0, 60) || "lesson_new";
+  }
+
+  function normalizePos(value) {
+    var raw = String(value || "").toLowerCase().trim();
+    var aliases = {
+      n: "noun", noun: "noun",
+      v: "verb", verb: "verb",
+      adj: "adjective", adjective: "adjective",
+      adv: "adverb", adverb: "adverb",
+      prep: "preposition", preposition: "preposition",
+      pron: "pronoun", pronoun: "pronoun",
+      conj: "conjunction", conjunction: "conjunction",
+      det: "determiner", determiner: "determiner",
+      interj: "interjection", interjection: "interjection",
+      phrase: "phrase", phr: "phrase"
+    };
+    return aliases[raw] || "phrase";
+  }
+
+  function normalizeGameType(value) {
+    var raw = String(value || "").toLowerCase().replace(/[\s-]+/g, "_");
+    var aliases = {
+      balloon: "balloon_pop", balloon_pop: "balloon_pop", balloonpop: "balloon_pop",
+      boss: "boss_battle", boss_battle: "boss_battle", monster: "boss_battle", monster_boss: "boss_battle",
+      memory: "memory_match", memory_match: "memory_match", memorymatch: "memory_match", matching: "memory_match",
+      detective: "detective_cloze", detective_cloze: "detective_cloze", cloze: "detective_cloze", fill_blank: "detective_cloze",
+      listen: "listen_tap", listen_tap: "listen_tap", listening: "listen_tap", listen_and_tap: "listen_tap"
+    };
+    return aliases[raw] || "detective_cloze";
+  }
+
+  function normalizeSkill(value) {
+    var raw = String(value || "").toLowerCase();
+    var aliases = {
+      vocab: "vocabulary", vocabulary: "vocabulary",
+      gram: "grammar", grammar: "grammar",
+      read: "reading", reading: "reading",
+      listen: "listening", listening: "listening"
+    };
+    return aliases[raw] || "vocabulary";
+  }
+
+  function normalizeDifficulty(value) {
+    var raw = String(value || "").toLowerCase();
+    return ["easy", "medium", "hard"].includes(raw) ? raw : "medium";
+  }
+
+  function sourceTypeOf(item) {
+    if (item && (item.source_type === "pdf_extracted" || item.source_type === "generated")) return item.source_type;
+    return item && typeof item.source_quote === "string" && item.source_quote.trim() ? "pdf_extracted" : "generated";
+  }
+
+  function sanitizeLesson(raw, fileName, pageCount, grade) {
+    var source = raw && typeof raw === "object" ? raw : {};
+    var fallbackGrade = [3, 4, 5].includes(Number(grade)) ? Number(grade) : 4;
+    var gradeLevel = [3, 4, 5].includes(Number(source.grade_level)) ? Number(source.grade_level) : fallbackGrade;
+    var title = String(source.title || "Bài học mới").trim().slice(0, 120);
+    if (title.length < 3) title = "Bài học mới";
+    var lessonId = String(source.lesson_id || "").trim();
+    if (!/^[a-z0-9][a-z0-9_-]{2,63}$/.test(lessonId)) lessonId = slugify("grade" + gradeLevel + "_" + title);
+    if (lessonId.length < 3) lessonId = "lesson_" + Date.now();
+
+    var objectives = (Array.isArray(source.learning_objectives) ? source.learning_objectives : []).map(function (item) {
+      if (typeof item === "string") return item.trim();
+      return String((item && (item.text_vi || item.text_en)) || "").trim();
+    }).filter(Boolean).slice(0, 8);
+    if (!objectives.length) objectives = ["Học từ vựng và mẫu câu trong bài."];
+
+    var vocabMap = {};
+    var vocabulary = (Array.isArray(source.vocabulary) ? source.vocabulary : []).map(function (item, index) {
+      item = item && typeof item === "object" ? item : {};
+      var oldId = String(item.id || "").trim();
+      var newId = "voc_" + pad2(index + 1);
+      if (oldId) vocabMap[oldId] = newId;
+      return {
+        id: newId,
+        word: String(item.word || "").trim().slice(0, 60),
+        ipa: item.ipa ? String(item.ipa).slice(0, 80) : null,
+        pos: normalizePos(item.pos),
+        meaning_vi: String(item.meaning_vi || item.meaning || "").trim().slice(0, 160),
+        example_en: String(item.example_en || item.example || "").trim().slice(0, 300),
+        example_vi: String(item.example_vi || "").trim().slice(0, 300),
+        mnemonic_vi: item.mnemonic_vi ? String(item.mnemonic_vi).slice(0, 240) : null,
+        icon: item.icon ? String(item.icon).slice(0, 24) : null,
+        source_page: Number.isInteger(item.source_page) && item.source_page >= 1 ? item.source_page : 1,
+        source_type: sourceTypeOf(item),
+        source_quote: item.source_quote ? String(item.source_quote).slice(0, 600) : null
+      };
+    });
+
+    var grammarMap = {};
+    var grammar = (Array.isArray(source.grammar_patterns) ? source.grammar_patterns : []).map(function (item, index) {
+      item = item && typeof item === "object" ? item : {};
+      var oldId = String(item.id || "").trim();
+      var newId = "gram_" + pad2(index + 1);
+      if (oldId) grammarMap[oldId] = newId;
+      var blocks = (Array.isArray(item.lego_blocks) ? item.lego_blocks : []).map(function (block) {
+        block = block && typeof block === "object" ? block : {};
+        var role = String(block.role || "other").toLowerCase();
+        var allowed = ["subject", "verb", "object", "adverb", "question", "adjective", "preposition", "article", "auxiliary", "conjunction", "other"];
+        var color = /^#[0-9A-Fa-f]{6}$/.test(String(block.color || "")) ? String(block.color) : "#64748B";
+        return { text: String(block.text || "").trim().slice(0, 80), role: allowed.includes(role) ? role : "other", color: color };
+      }).filter(function (block) { return block.text; }).slice(0, 10);
+      if (blocks.length < 2) {
+        var words = String(item.pattern || "I learn English").split(/\s+/).filter(Boolean).slice(0, 6);
+        blocks = words.map(function (word, wordIndex) {
+          return { text: word, role: wordIndex === 0 ? "subject" : "other", color: wordIndex === 0 ? "#38BDF8" : "#64748B" };
+        });
+        while (blocks.length < 2) blocks.push({ text: "English", role: "object", color: "#22C55E" });
+      }
+      return {
+        id: newId,
+        pattern: String(item.pattern || "I learn English.").trim().slice(0, 240),
+        explanation_vi: String(item.explanation_vi || "Cùng luyện mẫu câu này nhé.").trim().slice(0, 400),
+        lego_blocks: blocks,
+        source_page: Number.isInteger(item.source_page) && item.source_page >= 1 ? item.source_page : null,
+        source_type: sourceTypeOf(item),
+        source_quote: item.source_quote ? String(item.source_quote).slice(0, 600) : null
+      };
+    });
+
+    var readings = (Array.isArray(source.reading_dialogues) ? source.reading_dialogues : []).map(function (item, index) {
+      item = item && typeof item === "object" ? item : {};
+      var lines = (Array.isArray(item.lines) ? item.lines : []).map(function (line) {
+        line = line && typeof line === "object" ? line : {};
+        return {
+          speaker: String(line.speaker || "Narrator").trim().slice(0, 60),
+          en: String(line.en || line.text || "").trim().slice(0, 400),
+          vi: line.vi ? String(line.vi).trim().slice(0, 400) : null
+        };
+      }).filter(function (line) { return line.en; }).slice(0, 40);
+      return {
+        id: "read_" + pad2(index + 1),
+        title: String(item.title || "Practice dialogue").trim().slice(0, 120),
+        lines: lines,
+        source_page: Number.isInteger(item.source_page) && item.source_page >= 1 ? item.source_page : null,
+        source_type: sourceTypeOf(item),
+        source_quote: item.source_quote ? String(item.source_quote).slice(0, 1200) : null
+      };
+    }).filter(function (item) { return item.lines.length; });
+
+    if (!readings.length) {
+      var first = vocabulary[0];
+      readings.push({
+        id: "read_01",
+        title: "Practice dialogue",
+        lines: [
+          { speaker: "Mai", en: "What is this?", vi: "Đây là gì?" },
+          { speaker: "Nam", en: first ? "It's " + first.word + "." : "It's a new word.", vi: first ? "Đó là " + first.meaning_vi + "." : "Đó là một từ mới." }
+        ],
+        source_page: null,
+        source_type: "generated",
+        source_quote: null
+      });
+    }
+
+    var quiz = (Array.isArray(source.quiz_bank) ? source.quiz_bank : []).map(function (item, index) {
+      item = item && typeof item === "object" ? item : {};
+      var options = (Array.isArray(item.options) ? item.options : []).map(function (option) {
+        return String(option == null ? "" : option).trim().slice(0, 120);
+      }).filter(Boolean).slice(0, 4);
+      var answerIndex = Number(item.answer_index);
+      if (!Number.isInteger(answerIndex) || answerIndex < 0) answerIndex = 0;
+      if (options.length && answerIndex >= options.length) answerIndex = Math.max(0, options.length - 1);
+      var gameType = normalizeGameType(item.game_type);
+      var audioText = item.audio_text ? String(item.audio_text).slice(0, 300) : gameType === "listen_tap" && options[answerIndex] ? options[answerIndex] : null;
+      return {
+        id: "q_" + pad2(index + 1),
+        game_type: gameType,
+        skill: normalizeSkill(item.skill),
+        prompt_en: String(item.prompt_en || "").trim().slice(0, 300),
+        prompt_vi: String(item.prompt_vi || "Chọn đáp án đúng.").trim().slice(0, 300),
+        options: options,
+        answer_index: answerIndex,
+        hint_vi: String(item.hint_vi || "Con đọc lại câu hỏi và thử nhé.").trim().slice(0, 240),
+        explanation_vi: item.explanation_vi ? String(item.explanation_vi).slice(0, 400) : null,
+        audio_text: audioText,
+        difficulty: normalizeDifficulty(item.difficulty),
+        vocab_id: item.vocab_id && vocabMap[String(item.vocab_id)] ? vocabMap[String(item.vocab_id)] : null,
+        grammar_id: item.grammar_id && grammarMap[String(item.grammar_id)] ? grammarMap[String(item.grammar_id)] : null,
+        source_page: Number.isInteger(item.source_page) && item.source_page >= 1 ? item.source_page : null,
+        source_type: sourceTypeOf(item),
+        source_quote: item.source_quote ? String(item.source_quote).slice(0, 600) : null
+      };
+    });
+
+    return {
+      schema_version: "1.0.0",
+      lesson_id: lessonId,
+      grade_level: gradeLevel,
+      cefr: ["Pre-A1", "A1", "A1+"].includes(source.cefr) ? source.cefr : "A1",
+      unit: source.unit ? String(source.unit).slice(0, 60) : null,
+      title: title,
+      subtitle_vi: source.subtitle_vi ? String(source.subtitle_vi).slice(0, 200) : null,
+      source_pdf: String(fileName || source.source_pdf || "lesson.pdf").slice(0, 260),
+      theme: "space_explorer",
+      estimated_minutes: Math.max(3, Math.min(60, Number(source.estimated_minutes) || 15)),
+      learning_objectives: objectives,
+      vocabulary: vocabulary,
+      grammar_patterns: grammar,
+      reading_dialogues: readings,
+      quiz_bank: quiz,
+      metadata: Object.assign({}, source.metadata || {}, {
+        extraction: Object.assign({}, (source.metadata && source.metadata.extraction) || {}, {
+          engine: fileName && /\.pdf$/i.test(fileName) ? "gemini_structured_v1" : "manual_curation_v1",
+          extracted_at: new Date().toISOString(),
+          model: (source.metadata && source.metadata.extraction && source.metadata.extraction.model) || null,
+          temperature: 0,
+          page_count: Math.max(1, pageCount || (source.metadata && source.metadata.extraction && source.metadata.extraction.page_count) || 1)
+        }),
+        qa: { quote_match_rate: 1, warning_count: 0, warnings: [] }
+      })
+    };
   }
 
   function normalizeText(value) {

@@ -22,7 +22,7 @@ Mở trực tiếp `file://` vẫn chạy (dùng dữ liệu nhúng + bản sing
 | Retention | Kho báu lỗi sai + Spaced Repetition half-life, Sticker Book, thú cưng, khiên chuỗi ngày |
 | Phụ huynh | Cổng toán, dashboard tiến độ, export/import JSON, in phiếu, nạp Lesson JSON, nạp PDF qua PDF.js + Gemini API (key lưu cục bộ) |
 | Chia sẻ | Link bài học, QR cho link ngắn, link dữ liệu nén LZString cho bài tự nạp |
-| PWA | Cache `set-v1.0.1`, offline app shell, cài màn hình chính |
+| PWA | Cache `set-v1.0.2`, offline app shell, cài màn hình chính |
 
 ## Cấu trúc
 

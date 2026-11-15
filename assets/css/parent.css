@@ -245,6 +245,22 @@
   font-weight: 700;
 }
 
+.parent-error-list {
+  margin: 8px 0 0;
+  padding-left: 20px;
+  color: var(--danger-ink);
+  font-size: 13px;
+  line-height: 1.45;
+}
+
+.parent-error-list li {
+  margin-bottom: 3px;
+}
+
+#download-candidate {
+  margin-top: 10px;
+}
+
 .parent-gate {
   max-width: 540px;
   margin: clamp(24px, 8vh, 90px) auto;
