@@ -816,8 +816,9 @@
   function normalizeCandidate(raw, fileName, pageCount) {
     if (!raw || typeof raw !== "object") throw new Error("Gemini không trả về JSON bài học.");
     var lesson = raw;
+    var isPdf = Boolean(fileName && /\.pdf$/i.test(fileName));
     lesson.schema_version = "1.0.0";
-    lesson.source_pdf = fileName;
+    lesson.source_pdf = lesson.source_pdf || fileName || "lesson.pdf";
     lesson.theme = "space_explorer";
     lesson.cefr = lesson.cefr || "A1";
     lesson.estimated_minutes = lesson.estimated_minutes || 15;
@@ -826,15 +827,17 @@
     lesson.grammar_patterns = Array.isArray(lesson.grammar_patterns) ? lesson.grammar_patterns : [];
     lesson.reading_dialogues = Array.isArray(lesson.reading_dialogues) ? lesson.reading_dialogues : [];
     lesson.quiz_bank = Array.isArray(lesson.quiz_bank) ? lesson.quiz_bank : [];
+    var previous = (lesson.metadata && typeof lesson.metadata === "object") ? lesson.metadata : {};
+    var previousExtraction = (previous.extraction && typeof previous.extraction === "object") ? previous.extraction : {};
     lesson.metadata = {
       extraction: {
-        engine: fileName.toLowerCase().endsWith(".pdf") ? "gemini_structured_v1" : "manual_curation_v1",
-        extracted_at: new Date().toISOString(),
-        model: fileName.toLowerCase().endsWith(".pdf") ? ((rootEl.querySelector("#gemini-model") || {}).value || DEFAULT_MODEL) : null,
-        temperature: 0,
-        page_count: Math.max(1, pageCount || (lesson.metadata && lesson.metadata.extraction && lesson.metadata.extraction.page_count) || 1)
+        engine: previousExtraction.engine || (isPdf ? "gemini_structured_v1" : "manual_curation_v1"),
+        extracted_at: previousExtraction.extracted_at || new Date().toISOString(),
+        model: previousExtraction.model || (isPdf ? ((rootEl.querySelector("#gemini-model") || {}).value || DEFAULT_MODEL) : null),
+        temperature: previousExtraction.temperature === undefined ? 0 : previousExtraction.temperature,
+        page_count: Math.max(1, pageCount || previousExtraction.page_count || 1)
       },
-      qa: { quote_match_rate: 1, warning_count: 0, warnings: [] }
+      qa: previous.qa || { quote_match_rate: 1, warning_count: 0, warnings: [] }
     };
     return lesson;
   }
@@ -1045,7 +1048,7 @@
       unit: source.unit ? String(source.unit).slice(0, 60) : null,
       title: title,
       subtitle_vi: source.subtitle_vi ? String(source.subtitle_vi).slice(0, 200) : null,
-      source_pdf: String(fileName || source.source_pdf || "lesson.pdf").slice(0, 260),
+      source_pdf: String(source.source_pdf || fileName || "lesson.pdf").slice(0, 260),
       theme: "space_explorer",
       estimated_minutes: Math.max(3, Math.min(60, Number(source.estimated_minutes) || 15)),
       learning_objectives: objectives,
@@ -1053,16 +1056,20 @@
       grammar_patterns: grammar,
       reading_dialogues: readings,
       quiz_bank: quiz,
-      metadata: Object.assign({}, source.metadata || {}, {
-        extraction: Object.assign({}, (source.metadata && source.metadata.extraction) || {}, {
-          engine: fileName && /\.pdf$/i.test(fileName) ? "gemini_structured_v1" : "manual_curation_v1",
-          extracted_at: new Date().toISOString(),
-          model: (source.metadata && source.metadata.extraction && source.metadata.extraction.model) || null,
-          temperature: 0,
-          page_count: Math.max(1, pageCount || (source.metadata && source.metadata.extraction && source.metadata.extraction.page_count) || 1)
-        }),
-        qa: { quote_match_rate: 1, warning_count: 0, warnings: [] }
-      })
+      metadata: (function () {
+        var previous = (source.metadata && typeof source.metadata === "object") ? source.metadata : {};
+        var previousExtraction = (previous.extraction && typeof previous.extraction === "object") ? previous.extraction : {};
+        return {
+          extraction: {
+            engine: previousExtraction.engine || (fileName && /\.pdf$/i.test(fileName) ? "gemini_structured_v1" : "manual_curation_v1"),
+            extracted_at: previousExtraction.extracted_at || new Date().toISOString(),
+            model: previousExtraction.model || null,
+            temperature: previousExtraction.temperature === undefined ? 0 : previousExtraction.temperature,
+            page_count: Math.max(1, pageCount || previousExtraction.page_count || 1)
+          },
+          qa: previous.qa || { quote_match_rate: 1, warning_count: 0, warnings: [] }
+        };
+      })()
     };
   }
 
