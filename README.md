@@ -1,7 +1,7 @@
 # Space Explorer — Web App (M4)
 
 Ứng dụng HTML5 offline-first cho `PRJ-09` · Student_English_Tutor.
-Live: <https://gioins88.github.io/student_english_tutor/>
+Hosting: repo private. GitHub Pages Free không hỗ trợ private Pages; xem `HOSTING_PRIVATE.md` để cấu hình Cloudflare Pages + Access. URL `gioins88.github.io` cũ chỉ còn cache.
 
 ## Chạy local
 
