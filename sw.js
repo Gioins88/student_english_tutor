@@ -1,6 +1,6 @@
 /* Space Explorer · offline app shell
    Cache-first for the app shell; navigation falls back to cached index.html. */
-const CACHE = "set-v1.0.5";
+const CACHE = "set-v1.0.6";
 const SHELL = [
   "./",
   "index.html",
