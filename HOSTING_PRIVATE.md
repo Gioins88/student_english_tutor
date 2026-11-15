@@ -1,4 +1,6 @@
-# Private hosting — Family Edition
+# Private hosting options — Family Edition
+
+> **Hiện trạng 2026-11-15:** owner đã chọn public (`D-026`); GitHub Pages live 18 bài. Tài liệu này giữ lại cho phương án private trong tương lai.
 
 ## Trạng thái hiện tại (2026-11-15)
 
