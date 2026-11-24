@@ -1,0 +1,205 @@
+/* Space Academy · Math Cartridge styles */
+
+.math-frac {
+  display: inline-flex;
+  flex-direction: column;
+  align-items: center;
+  vertical-align: middle;
+  margin: 0 3px;
+  line-height: 1.05;
+  font-weight: 900;
+}
+
+.math-frac__num {
+  padding: 0 4px 2px;
+  border-bottom: 2px solid currentColor;
+}
+
+.math-frac__den {
+  padding: 2px 4px 0;
+}
+
+.math-step-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.math-step-card {
+  padding: 14px 16px;
+  border-radius: 16px;
+  background: #ffffff;
+  border: 1.5px solid var(--line-card);
+  border-left: 5px solid #fbbf24;
+  animation: pop 0.22s var(--ease-spring);
+}
+
+.math-step-card__label {
+  font-size: 13px;
+  font-weight: 850;
+  color: #b45309;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.math-step-card__expr {
+  margin: 4px 0;
+  font-size: 22px;
+  font-weight: 900;
+  color: var(--ink);
+}
+
+.math-step-card__exp {
+  font-size: 16px;
+  color: var(--muted-on-card);
+}
+
+.math-workspace {
+  display: grid;
+  grid-template-columns: minmax(0, 1.05fr) minmax(0, 0.95fr);
+  gap: 16px;
+  align-items: start;
+}
+
+.math-problem-card {
+  padding: clamp(18px, 3vw, 24px);
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.math-answer-box {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 16px;
+  border-radius: 16px;
+  background: #f8fbff;
+  border: 2px solid #cbd5e1;
+}
+
+.math-field {
+  min-width: 96px;
+  min-height: 52px;
+  padding: 6px 14px;
+  border-radius: 12px;
+  border: 2px dashed #94a3b8;
+  background: #ffffff;
+  color: var(--ink);
+  font-size: 24px;
+  font-weight: 900;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  touch-action: manipulation;
+}
+
+.math-field.is-active {
+  border-style: solid;
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px rgba(6, 182, 212, 0.3);
+}
+
+.math-frac-input {
+  display: inline-flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+}
+
+.math-frac-bar {
+  width: 96px;
+  height: 3px;
+  background: var(--ink);
+  border-radius: 2px;
+}
+
+.math-numpad {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 8px;
+}
+
+.math-key {
+  min-height: 52px;
+  border-radius: 14px;
+  border: 1px solid #cbd5e1;
+  background: #ffffff;
+  color: var(--ink);
+  font-size: 21px;
+  font-weight: 900;
+  box-shadow: 0 3px 0 rgba(15, 23, 42, 0.1);
+  cursor: pointer;
+  touch-action: manipulation;
+}
+
+.math-key:active {
+  transform: translateY(2px);
+  box-shadow: 0 1px 0 rgba(15, 23, 42, 0.1);
+}
+
+.math-key--op {
+  background: #fffbeb;
+  border-color: #fde68a;
+  color: #92400e;
+}
+
+.math-key--cmp {
+  min-height: 58px;
+  font-size: 26px;
+}
+
+.math-scratchpad {
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.math-pad-tools {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.math-pad-colors {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.math-color-dot {
+  width: 36px;
+  height: 36px;
+  border-radius: 999px;
+  border: 3px solid #ffffff;
+  box-shadow: 0 0 0 1px #94a3b8;
+  cursor: pointer;
+  touch-action: manipulation;
+}
+
+.math-color-dot.is-active {
+  box-shadow: 0 0 0 3px var(--primary);
+  transform: scale(1.08);
+}
+
+.math-canvas {
+  width: 100%;
+  height: 300px;
+  border-radius: 16px;
+  background: #fffdf7;
+  border: 2px dashed #cbd5e1;
+  touch-action: none;
+  cursor: crosshair;
+  display: block;
+}
+
+@media (max-width: 920px) {
+  .math-workspace {
+    grid-template-columns: 1fr;
+  }
+}

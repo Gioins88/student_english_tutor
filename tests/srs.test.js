@@ -5,6 +5,7 @@ const assert = require("node:assert/strict");
 const srs = require("../assets/js/srs.js");
 const speech = require("../assets/js/speech.js");
 const m2 = require("../assets/js/m2.js");
+const math = require("../assets/js/math.js");
 
 const DAY = srs.DAY_MS;
 const T0 = Date.UTC(2026, 10, 15, 0, 0, 0);
@@ -94,4 +95,22 @@ test("calcListenTimeout gives >= 20s and scales with sentence length up to 45s",
   assert.equal(speech.calcListenTimeout("apple"), 20000);
   assert.equal(speech.calcListenTimeout("I like playing football on Sunday"), 30000);
   assert.equal(speech.calcListenTimeout("one two three four five six seven eight nine ten eleven twelve"), 45000);
+});
+
+test("math helpers parse comma decimals, validate fractions, and format math HTML", () => {
+  assert.equal(math.parseDecimal("3,5"), 3.5);
+  assert.equal(math.parseDecimal("-6"), -6);
+  assert.ok(Number.isNaN(math.parseDecimal("abc")));
+  assert.equal(math.checkNumeric("3,5", 3.5).ok, true);
+  assert.equal(math.checkNumeric("-4", -4).ok, true);
+  const f1 = math.checkFraction("2", "4", 1, 2);
+  assert.equal(f1.ok, true);
+  assert.equal(f1.simplified, false);
+  const f2 = math.checkFraction("1", "2", 1, 2);
+  assert.equal(f2.ok, true);
+  assert.equal(f2.simplified, true);
+  assert.equal(math.checkFraction("1", "0", 1, 2).ok, false);
+  assert.ok(math.formatMathHtml("3/4").includes("math-frac"));
+  const rec = srs.createRecord({ subject: "math", lessonId: "m1", itemId: "q1", now: T0 });
+  assert.equal(rec.subject, "math");
 });

@@ -254,6 +254,12 @@
           <label class="parent-key"><span>Model</span>
             <input id="gemini-model" type="text" value="${esc(DEFAULT_MODEL)}" spellcheck="false">
           </label>
+          <label class="parent-key"><span>Môn học</span>
+            <select id="pdf-subject"><option value="english" selected>Tiếng Anh (English)</option><option value="science">Khoa học (Science)</option><option value="math">Toán học (Math)</option></select>
+          </label>
+          <label class="parent-key"><span>Ngôn ngữ nội dung</span>
+            <select id="pdf-lang"><option value="bilingual" selected>Song ngữ (Tiếng Việt + Tiếng Anh)</option><option value="vi">Tiếng Việt</option><option value="en">Tiếng Anh</option></select>
+          </label>
           <label class="parent-key"><span>Lớp của bài học</span>
             <select id="pdf-grade"><option value="3">Lớp 3</option><option value="4" selected>Lớp 4</option><option value="5">Lớp 5</option></select>
           </label>
@@ -432,8 +438,8 @@
     setSteps(state.status);
   }
 
-  function evaluateCandidate(raw, pages, grade, file) {
-    var lesson = sanitizeLesson(normalizeCandidate(raw, file.name, pages.length), file.name, pages.length, grade);
+  function evaluateCandidate(raw, pages, grade, file, subject, contentLang) {
+    var lesson = sanitizeLesson(normalizeCandidate(raw, file.name, pages.length), file.name, pages.length, grade, subject, contentLang);
     var quote = verifyQuotes(lesson, pages);
     lesson.metadata.qa = {
       quote_match_rate: quote.rate,
@@ -477,6 +483,8 @@
     var keyInput = rootEl.querySelector("#gemini-key");
     var modelInput = rootEl.querySelector("#gemini-model");
     var gradeInput = rootEl.querySelector("#pdf-grade");
+    var subjectInput = rootEl.querySelector("#pdf-subject");
+    var langInput = rootEl.querySelector("#pdf-lang");
     var key = (keyInput && keyInput.value.trim()) || "";
     if (!key) {
       try {
@@ -492,21 +500,23 @@
     }
     var model = (modelInput && modelInput.value.trim()) || DEFAULT_MODEL;
     var grade = parseInt((gradeInput && gradeInput.value) || "4", 10);
+    var subject = (subjectInput && subjectInput.value) || "english";
+    var contentLang = (langInput && langInput.value) || "bilingual";
     state.pdfBusy = true;
     state.currentStep = 0;
     state.lastRaw = null;
     state.status = [
-      { status: "active", text: "Đọc PDF trên thiết bị…" },
+      { status: "active", text: subject === "english" ? "Đọc PDF trên thiết bị…" : "Đọc chữ & xuất ảnh trang PDF (Multimodal)…" },
       { status: "wait", text: "Gọi Gemini tạo Lesson JSON…" },
       { status: "wait", text: "Kiểm tra cấu trúc và trích dẫn…" },
       { status: "wait", text: "Lưu bài học…" }
     ];
     setSteps(state.status);
 
-    extractPdfPages(file)
+    extractPdfPages(file, subject !== "english")
       .then(function (pages) {
         var textLength = pages.reduce(function (sum, page) { return sum + page.text.length; }, 0);
-        if (textLength < 120) {
+        if (subject === "english" && textLength < 120) {
           throw new Error("PDF gần như không có lớp chữ (có thể là bản scan). Bản M4 chưa hỗ trợ OCR.");
         }
         if (pages.length > 15) {
@@ -515,19 +525,20 @@
         updateStep(0, "done", "Đã đọc " + pages.length + " trang, " + textLength + " ký tự.");
         state.currentStep = 1;
         updateStep(1, "active");
-        return callGemini(key, model, pages, grade).then(function (raw) {
+        return callGemini(key, model, pages, grade, null, subject, contentLang).then(function (raw) {
           state.lastRaw = raw;
-          var first = evaluateCandidate(raw, pages, grade, file);
-          if (first.result.ok && first.quote.rate >= 0.9) return first;
+          var first = evaluateCandidate(raw, pages, grade, file, subject, contentLang);
+          var minQuote = subject === "english" ? 0.9 : 0.6;
+          if (first.result.ok && (subject !== "english" || first.quote.rate >= minQuote)) return first;
           updateStep(1, "active", "Gemini trả JSON nhưng chưa đạt; đang yêu cầu sửa…");
-          return callGemini(key, model, pages, grade, buildFeedback(first)).then(function (raw2) {
+          return callGemini(key, model, pages, grade, buildFeedback(first), subject, contentLang).then(function (raw2) {
             state.lastRaw = raw2;
-            return evaluateCandidate(raw2, pages, grade, file);
+            return evaluateCandidate(raw2, pages, grade, file, subject, contentLang);
           });
         });
       })
       .then(function (evaluation) {
-        if (!evaluation.result.ok || evaluation.quote.rate < 0.9) {
+        if (!evaluation.result.ok || (subject === "english" && evaluation.quote.rate < 0.9)) {
           throw detailedError(evaluation);
         }
         var lesson = evaluation.lesson;
@@ -583,7 +594,7 @@
     });
   }
 
-  function extractPdfPages(file) {
+  function extractPdfPages(file, withImages) {
     return loadPdfJs().then(function (pdfjsLib) {
       return new Promise(function (resolve, reject) {
       pdfjsLib.GlobalWorkerOptions.workerSrc = "assets/vendor/pdfjs/pdf.worker.min.js";
@@ -601,7 +612,18 @@
               return pdf.getPage(pageNumber).then(function (page) {
                 return page.getTextContent().then(function (content) {
                   var text = content.items.map(function (item) { return item.str; }).join(" ").replace(/\s+/g, " ").trim();
-                  pages.push({ page: pageNumber, text: text });
+                  if (withImages && pageNumber <= 6 && typeof document !== "undefined") {
+                    var viewport = page.getViewport({ scale: 1.2 });
+                    var canvas = document.createElement("canvas");
+                    canvas.width = Math.floor(viewport.width);
+                    canvas.height = Math.floor(viewport.height);
+                    var ctx = canvas.getContext("2d");
+                    return page.render({ canvasContext: ctx, viewport: viewport }).promise.then(function () {
+                      var dataUrl = canvas.toDataURL("image/jpeg", 0.72);
+                      pages.push({ page: pageNumber, text: text, imageBase64: dataUrl.split(",")[1] || null });
+                    });
+                  }
+                  pages.push({ page: pageNumber, text: text, imageBase64: null });
                 });
               });
             }.bind(null, i));
@@ -722,39 +744,73 @@
     };
   }
 
-  function callGemini(key, model, pages, grade, feedback) {
-    var system = [
-      "You extract English lesson content for Vietnamese primary school children (grade 3-5, CEFR Pre-A1 to A1+).",
-      "Return only JSON that matches the provided schema.",
-      "Rules:",
-      "1. Use only vocabulary, grammar, reading text and questions that appear in the provided PDF pages.",
-      "2. Every item with source_type='pdf_extracted' MUST include source_page (1-based) and source_quote copied verbatim from that page.",
-      "3. If you add a practice item that is not in the PDF, set source_type='generated' and source_quote=null.",
-      "4. Vietnamese meanings must be natural, accurate and child-friendly. Never invent words or meanings.",
-      "5. Produce 8-14 vocabulary items, 2-4 grammar patterns, 1 reading dialogue using PDF text, and at least 10 quiz items.",
-      "6. Quiz game_type must be one of: balloon_pop, boss_battle, memory_match, detective_cloze, listen_tap. skill must be vocabulary, grammar, reading or listening.",
-      "7. answer_index is 0-based and must point to a correct option. Use 2-4 options.",
-      "8. Use exact ids: voc_01, gram_01, read_01, q_01 with two zero-padded digits. IDs must be unique and every quiz vocab_id/grammar_id must reference an existing item.",
-      "9. pos must be one of: noun, verb, adjective, adverb, preposition, pronoun, conjunction, determiner, interjection, phrase. difficulty: easy, medium, hard.",
-      "10. If the worksheet has no reading passage, create one short generated dialogue (6-8 lines) from the worksheet vocabulary and set source_type=generated, source_page=null, source_quote=null.",
-      "11. For grade level use the provided grade. Add no markdown, no code fences, JSON only."
-    ].join("\n");
+  function callGemini(key, model, pages, grade, feedback, subject, contentLang) {
+    subject = subject || "english";
+    contentLang = contentLang || "bilingual";
+    var system;
+    if (subject === "science") {
+      system = [
+        "You extract primary-school Science (grade 3-5) lesson content from the provided PDF pages (text + page images).",
+        "Return ONLY valid JSON matching the schema. Content language mode: " + contentLang + ".",
+        "Rules:",
+        "1. Set subject='science', content_lang='" + contentLang + "'.",
+        "2. Populate science_blocks with: concept_cards (3-6 cards with term_vi, term_en, definition_vi, definition_en, example_vi, example_en, icon), sort_challenges (1-2 challenges with 2-3 buckets and 4-8 items), and sequence_challenges (1 challenge with 3-5 ordered steps).",
+        "3. Populate reading_dialogues (1 short science reading summary) and quiz_bank (5-8 multiple-choice questions with game_type in [boss_battle, balloon_pop, detective_cloze], skill='reading').",
+        "4. Leave vocabulary=[] and grammar_patterns=[]. Output JSON only, no markdown fences."
+      ].join("\n");
+    } else if (subject === "math") {
+      system = [
+        "You extract primary-school Math (grade 3-5) lesson content from the provided PDF pages (text + page images).",
+        "Return ONLY valid JSON matching the schema. Content language mode: " + contentLang + ".",
+        "Rules:",
+        "1. Set subject='math', content_lang='" + contentLang + "'.",
+        "2. Populate math_blocks with: worked_examples (1-2 examples with step-by-step steps[] and final_answer), and math_problems (3-6 problems covering numeric_input, fraction_input, comparison, step_word_problem).",
+        "3. CRITICAL: Every math_problem MUST include steps_solution[] showing exact calculation steps before stating answer_num / answer_den / answer_cmp.",
+        "4. Populate quiz_bank (5-8 questions with game_type in [boss_battle, balloon_pop, detective_cloze], skill='grammar'). Leave vocabulary=[] and grammar_patterns=[]. Output JSON only."
+      ].join("\n");
+    } else {
+      system = [
+        "You extract English lesson content for Vietnamese primary school children (grade 3-5, CEFR Pre-A1 to A1+).",
+        "Return only JSON that matches the provided schema.",
+        "Rules:",
+        "1. Use only vocabulary, grammar, reading text and questions that appear in the provided PDF pages.",
+        "2. Every item with source_type='pdf_extracted' MUST include source_page (1-based) and source_quote copied verbatim from that page.",
+        "3. If you add a practice item that is not in the PDF, set source_type='generated' and source_quote=null.",
+        "4. Vietnamese meanings must be natural, accurate and child-friendly. Never invent words or meanings.",
+        "5. Produce 8-14 vocabulary items, 2-4 grammar patterns, 1 reading dialogue using PDF text, and at least 10 quiz items.",
+        "6. Quiz game_type must be one of: balloon_pop, boss_battle, memory_match, detective_cloze, listen_tap. skill must be vocabulary, grammar, reading or listening.",
+        "7. answer_index is 0-based and must point to a correct option. Use 2-4 options.",
+        "8. Use exact ids: voc_01, gram_01, read_01, q_01 with two zero-padded digits. IDs must be unique and every quiz vocab_id/grammar_id must reference an existing item.",
+        "9. pos must be one of: noun, verb, adjective, adverb, preposition, pronoun, conjunction, determiner, interjection, phrase. difficulty: easy, medium, hard.",
+        "10. If the worksheet has no reading passage, create one short generated dialogue (6-8 lines) from the worksheet vocabulary and set source_type=generated, source_page=null, source_quote=null.",
+        "11. For grade level use the provided grade. Add no markdown, no code fences, JSON only."
+      ].join("\n");
+    }
     var pageText = pages.map(function (page) {
       return "<page number=\"" + page.page + "\">\n" + page.text + "\n</page>";
     }).join("\n\n");
-    var user = "Grade: " + grade + "\nExtract the lesson from these worksheet pages:\n" + pageText;
+    var userText = "Subject: " + subject + "\nContentLang: " + contentLang + "\nGrade: " + grade + "\nExtract the lesson from these worksheet pages:\n" + pageText;
     if (feedback) {
-      user += "\n\n<validation_feedback>\nThe previous JSON failed. Fix every error below and return the complete corrected JSON.\n" + feedback + "\n</validation_feedback>";
+      userText += "\n\n<validation_feedback>\nThe previous JSON failed. Fix every error below and return the complete corrected JSON.\n" + feedback + "\n</validation_feedback>";
     }
+    var parts = [{ text: userText }];
+    if (subject !== "english") {
+      pages.forEach(function (page) {
+        if (page.imageBase64) {
+          parts.push({ inlineData: { mimeType: "image/jpeg", data: page.imageBase64 } });
+        }
+      });
+    }
+    var genConfig = {
+      temperature: 0,
+      max_output_tokens: 8192,
+      response_mime_type: "application/json"
+    };
+    if (subject === "english") genConfig.response_schema = geminiSchema();
     var body = {
       systemInstruction: { parts: [{ text: system }] },
-      contents: [{ role: "user", parts: [{ text: user }] }],
-      generationConfig: {
-        temperature: 0,
-        max_output_tokens: 8192,
-        response_mime_type: "application/json",
-        response_schema: geminiSchema()
-      }
+      contents: [{ role: "user", parts: parts }],
+      generationConfig: genConfig
     };
     return postGemini(key, model, body).catch(function (err) {
       if (!err.retryWithoutSchema) throw err;
@@ -906,8 +962,10 @@
     return item && typeof item.source_quote === "string" && item.source_quote.trim() ? "pdf_extracted" : "generated";
   }
 
-  function sanitizeLesson(raw, fileName, pageCount, grade) {
+  function sanitizeLesson(raw, fileName, pageCount, grade, forcedSubject, forcedLang) {
     var source = raw && typeof raw === "object" ? raw : {};
+    var subject = forcedSubject || (source.subject === "science" || source.subject === "math" ? source.subject : "english");
+    var contentLang = forcedLang || source.content_lang || (subject === "english" ? "en" : "bilingual");
     var fallbackGrade = [3, 4, 5].includes(Number(grade)) ? Number(grade) : 4;
     var gradeLevel = [3, 4, 5].includes(Number(source.grade_level)) ? Number(source.grade_level) : fallbackGrade;
     var title = String(source.title || "Bài học mới").trim().slice(0, 120);
@@ -1043,6 +1101,8 @@
     return {
       schema_version: "1.0.0",
       lesson_id: lessonId,
+      subject: subject,
+      content_lang: contentLang,
       grade_level: gradeLevel,
       cefr: ["Pre-A1", "A1", "A1+"].includes(source.cefr) ? source.cefr : "A1",
       unit: source.unit ? String(source.unit).slice(0, 60) : null,
@@ -1056,6 +1116,8 @@
       grammar_patterns: grammar,
       reading_dialogues: readings,
       quiz_bank: quiz,
+      science_blocks: subject === "science" ? (source.science_blocks || null) : undefined,
+      math_blocks: subject === "math" ? (source.math_blocks || null) : undefined,
       metadata: (function () {
         var previous = (source.metadata && typeof source.metadata === "object") ? source.metadata : {};
         var previousExtraction = (previous.extraction && typeof previous.extraction === "object") ? previous.extraction : {};
@@ -1146,13 +1208,18 @@
 
   function validateLesson(lesson) {
     var errors = [];
+    var subj = lesson.subject === "science" || lesson.subject === "math" ? lesson.subject : "english";
     if (!lesson.lesson_id || !/^[a-z0-9][a-z0-9_-]{2,63}$/.test(lesson.lesson_id)) errors.push("lesson_id không hợp lệ");
     if (!lesson.title) errors.push("thiếu title");
     if (![3, 4, 5].includes(lesson.grade_level)) errors.push("grade_level phải là 3, 4 hoặc 5");
-    if (!Array.isArray(lesson.vocabulary) || !lesson.vocabulary.length) errors.push("thiếu vocabulary");
-    if (!Array.isArray(lesson.grammar_patterns) || !lesson.grammar_patterns.length) errors.push("thiếu grammar_patterns");
-    if (!Array.isArray(lesson.reading_dialogues) || !lesson.reading_dialogues.length) errors.push("thiếu reading_dialogues");
-    if (!Array.isArray(lesson.quiz_bank) || lesson.quiz_bank.length < 5) errors.push("cần ít nhất 5 quiz item");
+    if (subj === "english") {
+      if (!Array.isArray(lesson.vocabulary) || !lesson.vocabulary.length) errors.push("thiếu vocabulary");
+      if (!Array.isArray(lesson.grammar_patterns) || !lesson.grammar_patterns.length) errors.push("thiếu grammar_patterns");
+      if (!Array.isArray(lesson.reading_dialogues) || !lesson.reading_dialogues.length) errors.push("thiếu reading_dialogues");
+      if (!Array.isArray(lesson.quiz_bank) || lesson.quiz_bank.length < 5) errors.push("cần ít nhất 5 quiz item");
+    } else if (!Array.isArray(lesson.quiz_bank) || lesson.quiz_bank.length < 3) {
+      errors.push("cần ít nhất 3 quiz item");
+    }
     var ids = {};
     (lesson.vocabulary || []).forEach(function (item, index) {
       if (!item.id || !item.word || !item.meaning_vi) errors.push("vocabulary[" + index + "] thiếu id/word/meaning_vi");
@@ -1164,7 +1231,7 @@
     (lesson.quiz_bank || []).forEach(function (item, index) {
       if (!Array.isArray(item.options) || item.options.length < 2 || item.options.length > 4) errors.push("quiz_bank[" + index + "] options phải 2-4");
       if (typeof item.answer_index !== "number" || item.answer_index < 0 || item.answer_index >= (item.options || []).length) errors.push("quiz_bank[" + index + "] answer_index sai");
-      if (!["balloon_pop", "boss_battle", "memory_match", "detective_cloze", "listen_tap"].includes(item.game_type)) errors.push("quiz_bank[" + index + "] game_type sai");
+      if (!["balloon_pop", "boss_battle", "memory_match", "detective_cloze", "listen_tap", "word_typing", "voice_challenge", "category_sort", "process_sequence", "speed_math"].includes(item.game_type)) errors.push("quiz_bank[" + index + "] game_type sai");
     });
     return { ok: errors.length === 0, errors: Array.from(new Set(errors)) };
   }

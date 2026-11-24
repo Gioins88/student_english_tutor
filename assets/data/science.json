@@ -1,0 +1,700 @@
+{
+  "schema_version": "1.0.0",
+  "subject": "science",
+  "lessons": [
+    {
+      "schema_version": "1.0.0",
+      "lesson_id": "grade3_sci_u1_skeleton_muscles",
+      "subject": "science",
+      "content_lang": "bilingual",
+      "grade_level": 3,
+      "cefr": "A1",
+      "unit": "Chương 1 · Vật sống",
+      "title": "Bộ xương, Hệ cơ & Phân loại Động vật",
+      "subtitle_vi": "Cấu tạo bộ xương, cách cơ co giãn và động vật có xương sống / không xương sống",
+      "source_pdf": "K3_TỔNG KẾT NỘI DUNG CHƯƠNG 1_VẬT SỐNG.pdf",
+      "theme": "space_explorer",
+      "estimated_minutes": 15,
+      "learning_objectives": [
+        "Nhận biết các xương chính: hộp sọ, cột sống, khung xương sườn, xương hông, xương tay, xương chân.",
+        "Hiểu chức năng bảo vệ, nâng đỡ, tạo hình và giúp vận động của bộ xương cùng cặp cơ co - giãn.",
+        "Phân biệt động vật có xương sống và động vật không xương sống (bộ xương ngoài)."
+      ],
+      "vocabulary": [],
+      "grammar_patterns": [],
+      "reading_dialogues": [
+        {
+          "id": "read_01",
+          "title": "Bộ xương và Hệ cơ giúp chúng ta vận động",
+          "lines": [
+            {
+              "speaker": "Narrator",
+              "en": "Inside our body, the skeleton is made of different bones such as the skull, rib cage, spine, and hip.",
+              "vi": "Bên trong cơ thể, bộ xương được tạo thành từ nhiều xương khác nhau như hộp sọ, khung xương sườn, cột sống và xương hông."
+            },
+            {
+              "speaker": "Narrator",
+              "en": "The skeleton protects important organs, supports our body, and helps us move. Muscles work in pairs: they pull bones, they cannot push.",
+              "vi": "Bộ xương bảo vệ các cơ quan quan trọng, nâng đỡ cơ thể và giúp chúng ta vận động. Cơ bắp hoạt động theo cặp: cơ chỉ kéo xương chứ không thể đẩy."
+            },
+            {
+              "speaker": "Narrator",
+              "en": "Animals with a backbone are vertebrates. Animals without a backbone are invertebrates, and many have a hard exoskeleton outside.",
+              "vi": "Động vật có xương sống gọi là vertebrates. Động vật không có xương sống gọi là invertebrates, nhiều loài có bộ xương ngoài cứng như côn trùng, cua, tôm."
+            }
+          ],
+          "source_page": 1,
+          "source_type": "pdf_extracted",
+          "source_quote": "Cơ bắp không thể đẩy; chúng chỉ kéo xương để tạo ra chuyển động."
+        }
+      ],
+      "science_blocks": {
+        "concept_cards": [
+          {
+            "id": "con_01",
+            "term_vi": "Bộ xương (Skeleton)",
+            "term_en": "Skeleton",
+            "definition_vi": "Khung nâng đỡ bên trong cơ thể, bảo vệ nội tạng (hộp sọ bảo vệ não, khung sườn bảo vệ tim phổi) và giúp cơ thể lớn lên.",
+            "definition_en": "The internal framework of bones that supports the body, protects organs, and helps us move.",
+            "example_vi": "Hộp sọ bảo vệ não; khung xương sườn bảo vệ tim và phổi.",
+            "example_en": "The skull protects the brain; the rib cage protects the heart and lungs.",
+            "icon": "🦴",
+            "source_page": 1
+          },
+          {
+            "id": "con_02",
+            "term_vi": "Cặp cơ co – giãn",
+            "term_en": "Muscles work in pairs",
+            "definition_vi": "Cơ bắp chỉ có thể kéo xương chứ không thể đẩy. Một cơ co lại kéo xương lên thì cơ đối diện giãn ra.",
+            "definition_en": "Muscles only pull on bones, they cannot push. When one muscle contracts, the partner muscle relaxes.",
+            "example_vi": "Khi gập cánh tay lên, cơ bắp trước co lại và cơ phía sau giãn ra.",
+            "example_en": "When you bend your arm, the biceps contracts and the triceps relaxes.",
+            "icon": "💪",
+            "source_page": 1
+          },
+          {
+            "id": "con_03",
+            "term_vi": "Động vật có xương sống",
+            "term_en": "Vertebrate",
+            "definition_vi": "Những động vật có bộ xương và cột sống nằm bên trong cơ thể (như cá, chim, chó, mèo, con người).",
+            "definition_en": "Animals that have a backbone and an internal skeleton.",
+            "example_vi": "Cá, ếch, chim đại bàng và con người đều là động vật có xương sống.",
+            "example_en": "Fish, frogs, eagles, and humans are vertebrates.",
+            "icon": "🐟",
+            "source_page": 1
+          },
+          {
+            "id": "con_04",
+            "term_vi": "Động vật không xương sống & Bộ xương ngoài",
+            "term_en": "Invertebrate & Exoskeleton",
+            "definition_vi": "Động vật không có xương sống; nhiều loài có lớp vỏ cứng bên ngoài gọi là bộ xương ngoài để bảo vệ cơ thể.",
+            "definition_en": "Animals without a backbone; many have a hard outer covering called an exoskeleton.",
+            "example_vi": "Côn trùng, nhện, cua, tôm và cuốn chiếu có bộ xương ngoài.",
+            "example_en": "Insects, spiders, crabs, and shrimp have an exoskeleton.",
+            "icon": "🦀",
+            "source_page": 1
+          }
+        ],
+        "sort_challenges": [
+          {
+            "id": "sort_01",
+            "title_vi": "Phân loại Động vật Có xương sống & Không xương sống",
+            "title_en": "Vertebrates vs. Invertebrates",
+            "prompt_vi": "Chạm vào từng loài vật rồi thả vào đúng nhóm bộ xương của chúng.",
+            "prompt_en": "Sort each animal into Vertebrate or Invertebrate.",
+            "buckets": [
+              { "id": "b_vert", "label_vi": "Có xương sống", "label_en": "Vertebrate", "color": "#06b6d4" },
+              { "id": "b_invert", "label_vi": "Không xương sống (Bộ xương ngoài / mềm)", "label_en": "Invertebrate", "color": "#f97316" }
+            ],
+            "items": [
+              { "id": "it1", "text_vi": "Con cá chép", "text_en": "Carp fish", "bucket_id": "b_vert", "icon": "🐟" },
+              { "id": "it2", "text_vi": "Con cua", "text_en": "Crab", "bucket_id": "b_invert", "icon": "🦀" },
+              { "id": "it3", "text_vi": "Con chim sẻ", "text_en": "Sparrow", "bucket_id": "b_vert", "icon": "🐦" },
+              { "id": "it4", "text_vi": "Con nhện", "text_en": "Spider", "bucket_id": "b_invert", "icon": "🕷️" },
+              { "id": "it5", "text_vi": "Con mèo", "text_en": "Cat", "bucket_id": "b_vert", "icon": "🐱" },
+              { "id": "it6", "text_vi": "Con tôm", "text_en": "Shrimp", "bucket_id": "b_invert", "icon": "🦐" }
+            ],
+            "hint_vi": "Cá, chim, thú có cột sống bên trong; cua, nhện, tôm có vỏ cứng bên ngoài (không có xương sống)."
+          }
+        ],
+        "sequence_challenges": [
+          {
+            "id": "seq_01",
+            "title_vi": "Quy trình Cặp cơ hoạt động khi gập cánh tay",
+            "title_en": "How muscles work in pairs",
+            "prompt_vi": "Xếp các bước theo đúng trình tự khi con gập cánh tay lên:",
+            "prompt_en": "Order the steps when you bend your arm:",
+            "steps": [
+              { "order": 1, "text_vi": "Não gửi tín hiệu tới cơ cánh tay", "text_en": "Brain sends signal to arm muscles", "icon": "🧠" },
+              { "order": 2, "text_vi": "Cơ phía trước cánh tay co ngắn lại và kéo xương cẳng tay lên", "text_en": "Front muscle contracts and pulls the bone up", "icon": "💪" },
+              { "order": 3, "text_vi": "Đồng thời, cơ phía sau cánh tay giãn ra", "text_en": "At the same time, the back muscle relaxes", "icon": "😌" },
+              { "order": 4, "text_vi": "Cánh tay gập lại gọn gàng", "text_en": "The arm bends smoothly", "icon": "🦾" }
+            ],
+            "explanation_vi": "Cơ chỉ biết KÉO xương chứ không đẩy được, nên luôn cần một cặp cơ hoạt động ngược chiều nhau (một co, một giãn)."
+          }
+        ]
+      },
+      "quiz_bank": [
+        {
+          "id": "q_01",
+          "game_type": "boss_battle",
+          "skill": "reading",
+          "prompt_en": "Bộ phận nào của bộ xương giúp bảo vệ não bộ của chúng ta?",
+          "prompt_vi": "Which bone protects our brain?",
+          "options": ["Hộp sọ (Skull)", "Xương hông (Hip)", "Xương chân (Leg bone)", "Xương ngón tay"],
+          "answer_index": 0,
+          "hint_vi": "Xương bao quanh phần đầu gọi là hộp sọ.",
+          "explanation_vi": "Hộp sọ cứng bảo vệ bộ não ở bên trong.",
+          "audio_text": null,
+          "difficulty": "easy",
+          "vocab_id": null,
+          "grammar_id": null,
+          "source_page": 1,
+          "source_type": "pdf_extracted",
+          "source_quote": "Hộp sọ"
+        },
+        {
+          "id": "q_02",
+          "game_type": "balloon_pop",
+          "skill": "reading",
+          "prompt_en": "Cơ bắp tạo ra chuyển động bằng cách nào?",
+          "prompt_vi": "How do muscles move bones?",
+          "options": ["Chỉ kéo xương", "Chỉ đẩy xương", "Vừa kéo vừa đẩy", "Tự tách khỏi xương"],
+          "answer_index": 0,
+          "hint_vi": "Hãy nhớ quy tắc: cơ bắp không thể đẩy!",
+          "explanation_vi": "Cơ bắp không thể đẩy; chúng chỉ kéo xương theo cặp (1 cơ co - 1 cơ giãn).",
+          "audio_text": null,
+          "difficulty": "easy",
+          "vocab_id": null,
+          "grammar_id": null,
+          "source_page": 1,
+          "source_type": "pdf_extracted",
+          "source_quote": "Cơ bắp không thể đẩy; chúng chỉ kéo xương để tạo ra chuyển động."
+        },
+        {
+          "id": "q_03",
+          "game_type": "detective_cloze",
+          "skill": "reading",
+          "prompt_en": "Côn trùng, nhện, cua và tôm có lớp vỏ cứng bên ngoài gọi là ____.",
+          "prompt_vi": "Hoàn thành câu về cấu tạo cơ thể động vật không xương sống:",
+          "options": ["Bộ xương ngoài", "Cột sống", "Khung xương sườn", "Xương đùi"],
+          "answer_index": 0,
+          "hint_vi": "Lớp vỏ cứng bao phủ bên ngoài cơ thể.",
+          "explanation_vi": "Bộ xương ngoài (exoskeleton) bảo vệ động vật không xương sống.",
+          "audio_text": null,
+          "difficulty": "medium",
+          "vocab_id": null,
+          "grammar_id": null,
+          "source_page": 1,
+          "source_type": "pdf_extracted",
+          "source_quote": "Bộ xương cứng ở bên ngoài, bao phủ cơ thể của các loại động vật không xương sống như côn trùng, nhện, cuốn chiếu, cua và tôm"
+        },
+        {
+          "id": "q_04",
+          "game_type": "boss_battle",
+          "skill": "reading",
+          "prompt_en": "Khi đo chiều dài xương cánh tay, chúng ta nên dùng dụng cụ và đơn vị nào?",
+          "prompt_vi": "Chọn dụng cụ đo chuẩn xác nhất:",
+          "options": ["Thước dây / thước mét (cm, dm)", "Cân đồng hồ (kg)", "Nhiệt kế (°C)", "Đồng hồ bấm giây"],
+          "answer_index": 0,
+          "hint_vi": "Đo chiều dài cần thước và đơn vị cm, dm.",
+          "explanation_vi": "Cần sử dụng đơn vị chuẩn (cm, dm) bằng thước dây hoặc thước mét.",
+          "audio_text": null,
+          "difficulty": "easy",
+          "vocab_id": null,
+          "grammar_id": null,
+          "source_page": 2,
+          "source_type": "pdf_extracted",
+          "source_quote": "Cần sử dụng đơn vị chuẩn (cm, dm,…) bằng thước dây, thước mét khi đo xương"
+        },
+        {
+          "id": "q_05",
+          "game_type": "balloon_pop",
+          "skill": "reading",
+          "prompt_en": "Loài vật nào sau đây là động vật CÓ xương sống?",
+          "prompt_vi": "Which animal is a vertebrate?",
+          "options": ["Ếch xanh", "Con bướm", "Con cua", "Con cuốn chiếu"],
+          "answer_index": 0,
+          "hint_vi": "Loài vật có bộ xương nằm bên trong cơ thể.",
+          "explanation_vi": "Ếch là động vật lưỡng cư có xương sống.",
+          "audio_text": null,
+          "difficulty": "easy",
+          "vocab_id": null,
+          "grammar_id": null,
+          "source_page": null,
+          "source_type": "generated",
+          "source_quote": null
+        }
+      ],
+      "metadata": {
+        "extraction": {
+          "engine": "manual_curation_v1",
+          "extracted_at": "2026-11-24T22:55:00+07:00",
+          "model": null,
+          "temperature": 0,
+          "page_count": 5
+        },
+        "qa": { "quote_match_rate": 1, "warning_count": 0, "warnings": [] }
+      }
+    },
+    {
+      "schema_version": "1.0.0",
+      "lesson_id": "grade3_sci_u2_energy",
+      "subject": "science",
+      "content_lang": "bilingual",
+      "grade_level": 3,
+      "cefr": "A1",
+      "unit": "Chương 2 · Năng lượng",
+      "title": "Năng lượng, Sự truyền & Biến đổi Năng lượng",
+      "subtitle_vi": "Các dạng năng lượng, dẫn nhiệt, biến đổi năng lượng và chuỗi thức ăn",
+      "source_pdf": "2.2.-Sự-truyền-năng-lượng.pdf",
+      "theme": "space_explorer",
+      "estimated_minutes": 15,
+      "learning_objectives": [
+        "Nhận biết các dạng năng lượng: quang năng, nhiệt năng, động năng, âm năng, điện năng.",
+        "Hiểu năng lượng không tự sinh ra hay bị triệt tiêu mà truyền từ vật này sang vật khác hoặc biến đổi dạng.",
+        "Phân biệt sinh vật sản xuất và sinh vật tiêu thụ trong chuỗi thức ăn."
+      ],
+      "vocabulary": [],
+      "grammar_patterns": [],
+      "reading_dialogues": [
+        {
+          "id": "read_01",
+          "title": "Năng lượng truyền đi và biến đổi như thế nào?",
+          "lines": [
+            {
+              "speaker": "Narrator",
+              "en": "Energy is anything that causes movement or action. Energy cannot be made or destroyed.",
+              "vi": "Năng lượng là bất cứ thứ gì tạo ra chuyển động hoặc hành động. Năng lượng không thể được tạo ra hay bị triệt tiêu."
+            },
+            {
+              "speaker": "Narrator",
+              "en": "In a hot cup of water, heat energy transfers from the hot water to a metal spoon much faster than to a plastic spoon.",
+              "vi": "Trong cốc nước nóng, nhiệt năng truyền từ nước nóng qua thìa kim loại nhanh hơn nhiều so với thìa nhựa."
+            },
+            {
+              "speaker": "Narrator",
+              "en": "In a lamp, electrical energy changes into light energy (which we use) and heat energy (which goes into the surroundings).",
+              "vi": "Trong bóng đèn, điện năng biến đổi thành quang năng (con người sử dụng) và nhiệt năng (truyền ra môi trường xung quanh)."
+            }
+          ],
+          "source_page": 1,
+          "source_type": "pdf_extracted",
+          "source_quote": "Năng lượng không thể bị triệt tiêu."
+        }
+      ],
+      "science_blocks": {
+        "concept_cards": [
+          {
+            "id": "con_01",
+            "term_vi": "Sự truyền nhiệt (Heat transfer)",
+            "term_en": "Heat transfer",
+            "definition_vi": "Nhiệt năng truyền từ vật nóng hơn sang vật lạnh hơn; các chất liệu khác nhau dẫn nhiệt khác nhau (kim loại dẫn nhiệt tốt hơn nhựa).",
+            "definition_en": "Heat energy moves from hotter objects to cooler ones; metals conduct heat faster than plastic.",
+            "example_vi": "Đặt thìa kim loại vào nước nóng, hạt cườm gắn sáp dầu rơi xuống nhanh hơn thìa nhựa.",
+            "example_en": "A bead stuck with wax falls off a metal spoon faster than a plastic spoon in hot water.",
+            "icon": "🔥",
+            "source_page": 1
+          },
+          {
+            "id": "con_02",
+            "term_vi": "Sự biến đổi năng lượng",
+            "term_en": "Energy transformation",
+            "definition_vi": "Năng lượng có thể chuyển từ dạng này sang dạng khác; một phần truyền ra môi trường dưới dạng âm thanh, ánh sáng hoặc nhiệt.",
+            "definition_en": "Energy can change from one form to another, with some transferring to the surroundings.",
+            "example_vi": "Pin mặt trời biến đổi quang năng thành điện năng; máy bay giấy rơi tạo ra âm năng.",
+            "example_en": "Solar panels turn light energy into electrical energy.",
+            "icon": "⚡",
+            "source_page": 1
+          },
+          {
+            "id": "con_03",
+            "term_vi": "Sinh vật sản xuất & Tiêu thụ",
+            "term_en": "Producer & Consumer",
+            "definition_vi": "Thực vật tự tạo thức ăn nhờ ánh sáng Mặt trời là sinh vật sản xuất; động vật ăn thực vật hoặc động vật khác là sinh vật tiêu thụ.",
+            "definition_en": "Plants make their own food using sunlight (producers); animals that eat plants or other animals are consumers.",
+            "example_vi": "Cỏ là sinh vật sản xuất; thỏ và cáo là sinh vật tiêu thụ.",
+            "example_en": "Grass is a producer; rabbits and foxes are consumers.",
+            "icon": "🌱",
+            "source_page": 1
+          }
+        ],
+        "sort_challenges": [
+          {
+            "id": "sort_01",
+            "title_vi": "Phân loại Các dạng Năng lượng",
+            "title_en": "Forms of Energy",
+            "prompt_vi": "Chạm vào từng hiện tượng và thả vào đúng dạng năng lượng chính:",
+            "prompt_en": "Sort each example into the correct form of energy.",
+            "buckets": [
+              { "id": "b_light", "label_vi": "Quang năng (Ánh sáng)", "label_en": "Light energy", "color": "#fbbf24" },
+              { "id": "b_heat", "label_vi": "Nhiệt năng (Nóng)", "label_en": "Heat energy", "color": "#f97316" },
+              { "id": "b_sound", "label_vi": "Âm năng (Âm thanh)", "label_en": "Sound energy", "color": "#06b6d4" }
+            ],
+            "items": [
+              { "id": "it1", "text_vi": "Ánh sáng đèn pin", "text_en": "Torch light", "bucket_id": "b_light", "icon": "🔦" },
+              { "id": "it2", "text_vi": "Bếp lửa đang đun nước", "text_en": "Campfire heating water", "bucket_id": "b_heat", "icon": "🔥" },
+              { "id": "it3", "text_vi": "Tiếng trống trường", "text_en": "School drum sound", "bucket_id": "b_sound", "icon": "🥁" },
+              { "id": "it4", "text_vi": "Tia nắng Mặt trời chiếu sáng", "text_en": "Sunlight shining", "bucket_id": "b_light", "icon": "☀️" },
+              { "id": "it5", "text_vi": "Hơi ấm từ cốc trà nóng", "text_en": "Warmth from hot tea", "bucket_id": "b_heat", "icon": "☕" },
+              { "id": "it6", "text_vi": "Tiếng đàn ghi-ta", "text_en": "Guitar music", "bucket_id": "b_sound", "icon": "🎸" }
+            ],
+            "hint_vi": "Nhìn thấy sáng → Quang năng; Cảm thấy nóng → Nhiệt năng; Nghe thấy tiếng → Âm năng."
+          }
+        ],
+        "sequence_challenges": [
+          {
+            "id": "seq_01",
+            "title_vi": "Chuỗi truyền Nhiệt năng từ Nước nóng",
+            "title_en": "Heat transfer chain",
+            "prompt_vi": "Xếp đúng chiều truyền nhiệt năng trong thí nghiệm cốc nước nóng:",
+            "prompt_en": "Order the path of heat energy transfer:",
+            "steps": [
+              { "order": 1, "text_vi": "Nước nóng (nguồn nhiệt ban đầu)", "text_en": "Hot water", "icon": "💧" },
+              { "order": 2, "text_vi": "Thìa kim loại & thành cốc", "text_en": "Metal spoon and cup", "icon": "🥄" },
+              { "order": 3, "text_vi": "Sáp dầu nóng chảy làm hạt cườm rơi", "text_en": "Wax melts and bead drops", "icon": "🫧" },
+              { "order": 4, "text_vi": "Môi trường không khí xung quanh", "text_en": "Surrounding air", "icon": "🌬️" }
+            ],
+            "explanation_vi": "Nhiệt năng truyền từ nước nóng → cốc/thìa → làm chảy sáp → tỏa ra môi trường xung quanh."
+          }
+        ]
+      },
+      "quiz_bank": [
+        {
+          "id": "q_01",
+          "game_type": "boss_battle",
+          "skill": "reading",
+          "prompt_en": "Phát biểu nào sau đây ĐÚNG về năng lượng?",
+          "prompt_vi": "Which statement about energy is true?",
+          "options": [
+            "Năng lượng không thể tự sinh ra hay bị triệt tiêu",
+            "Năng lượng sẽ biến mất hoàn toàn khi đèn tắt",
+            "Chỉ con người mới có năng lượng",
+            "Năng lượng không thể truyền sang vật khác"
+          ],
+          "answer_index": 0,
+          "hint_vi": "Xem lại kết luận ở cuối bài 2.3.",
+          "explanation_vi": "Năng lượng không bị triệt tiêu mà chỉ truyền đi hoặc biến đổi từ dạng này sang dạng khác.",
+          "audio_text": null,
+          "difficulty": "easy",
+          "vocab_id": null,
+          "grammar_id": null,
+          "source_page": 1,
+          "source_type": "pdf_extracted",
+          "source_quote": "Năng lượng không thể bị triệt tiêu."
+        },
+        {
+          "id": "q_02",
+          "game_type": "balloon_pop",
+          "skill": "reading",
+          "prompt_en": "Trong thí nghiệm Fair Test so sánh thìa nhựa và thìa kim loại, yếu tố nào cần GIỮ NGUYÊN?",
+          "prompt_vi": "What should be kept the same in the fair test?",
+          "options": ["Nhiệt độ nước sôi & lượng nước", "Chất liệu của thìa", "Màu sắc nhãn vở", "Tên người quan sát"],
+          "answer_index": 0,
+          "hint_vi": "Trong fair test, chỉ thay đổi 1 yếu tố (chất liệu thìa), còn lại giữ nguyên.",
+          "explanation_vi": "Phải giữ nguyên nhiệt độ nước sôi, cốc và lượng nước để phép thử công bằng.",
+          "audio_text": null,
+          "difficulty": "medium",
+          "vocab_id": null,
+          "grammar_id": null,
+          "source_page": 1,
+          "source_type": "pdf_extracted",
+          "source_quote": "nhiệt độ nước sôi"
+        },
+        {
+          "id": "q_03",
+          "game_type": "detective_cloze",
+          "skill": "reading",
+          "prompt_en": "Khi bật đèn bàn học, điện năng biến đổi thành ____ và nhiệt năng.",
+          "prompt_vi": "Chọn dạng năng lượng có ích của bóng đèn:",
+          "options": ["Quang năng", "Âm năng", "Động năng", "Gió năng"],
+          "answer_index": 0,
+          "hint_vi": "Đèn giúp chúng ta nhìn thấy sách vở nhờ ánh sáng.",
+          "explanation_vi": "Điện năng biến đổi thành quang năng (ánh sáng) và một phần nhiệt năng.",
+          "audio_text": null,
+          "difficulty": "easy",
+          "vocab_id": null,
+          "grammar_id": null,
+          "source_page": 1,
+          "source_type": "pdf_extracted",
+          "source_quote": "Điện năng"
+        },
+        {
+          "id": "q_04",
+          "game_type": "boss_battle",
+          "skill": "reading",
+          "prompt_en": "Khi chà xát hai bàn tay vào nhau, động năng chuyển đổi thành dạng năng lượng nào làm tay ấm lên?",
+          "prompt_vi": "Which energy makes your hands warm?",
+          "options": ["Nhiệt năng", "Quang năng", "Điện năng", "Gió năng"],
+          "answer_index": 0,
+          "hint_vi": "Tay ấm lên chứng tỏ có nhiệt lượng sinh ra.",
+          "explanation_vi": "Động năng của hai bàn tay chuyển hóa thành nhiệt năng.",
+          "audio_text": null,
+          "difficulty": "easy",
+          "vocab_id": null,
+          "grammar_id": null,
+          "source_page": 1,
+          "source_type": "pdf_extracted",
+          "source_quote": "Khi em chà xát hai bàn tay với nhau, động năng sẽ chuyển đổi thành nhiệt năng."
+        },
+        {
+          "id": "q_05",
+          "game_type": "balloon_pop",
+          "skill": "reading",
+          "prompt_en": "Khi ta búng mạnh hơn vào quả bóng, quả bóng sẽ chuyển động như thế nào?",
+          "prompt_vi": "What happens when we flick a ball harder?",
+          "options": ["Nhanh và xa hơn", "Đứng yên tại chỗ", "Chậm lại ngay", "Biến mất"],
+          "answer_index": 0,
+          "hint_vi": "Tiếp thêm nhiều năng lượng hơn thì chuyển động mạnh hơn.",
+          "explanation_vi": "Khi tiếp thêm năng lượng, quả bóng chuyển động nhanh và xa hơn.",
+          "audio_text": null,
+          "difficulty": "easy",
+          "vocab_id": null,
+          "grammar_id": null,
+          "source_page": 1,
+          "source_type": "pdf_extracted",
+          "source_quote": "quả bóng chuyển động nhanh và xa hơn."
+        }
+      ],
+      "metadata": {
+        "extraction": {
+          "engine": "manual_curation_v1",
+          "extracted_at": "2026-11-24T22:55:00+07:00",
+          "model": null,
+          "temperature": 0,
+          "page_count": 4
+        },
+        "qa": { "quote_match_rate": 1, "warning_count": 0, "warnings": [] }
+      }
+    },
+    {
+      "schema_version": "1.0.0",
+      "lesson_id": "grade3_sci_u3_matter_states",
+      "subject": "science",
+      "content_lang": "bilingual",
+      "grade_level": 3,
+      "cefr": "A1",
+      "unit": "Chương 3 · Vật liệu & Chất",
+      "title": "Chất rắn, Chất lỏng, Chất khí & Chuyển thể",
+      "subtitle_vi": "Mô hình hạt, chất rắn dạng bột và sự nóng chảy / đông đặc",
+      "source_pdf": "3.1_VẬT-LIỆU-CHẤT-VÀ-HẠT.pdf",
+      "theme": "space_explorer",
+      "estimated_minutes": 15,
+      "learning_objectives": [
+        "Phân biệt chất rắn, chất lỏng, chất khí dựa vào hình dạng và mô hình hạt.",
+        "Giải thích vì sao một số chất rắn dạng bột (cát, muối, đường) có thể rót như chất lỏng.",
+        "Hiểu quá trình nóng chảy (rắn → lỏng) và đông đặc (lỏng → rắn)."
+      ],
+      "vocabulary": [],
+      "grammar_patterns": [],
+      "reading_dialogues": [
+        {
+          "id": "read_01",
+          "title": "Hạt trong chất rắn, chất lỏng và chất rắn dạng bột",
+          "lines": [
+            {
+              "speaker": "Narrator",
+              "en": "In a solid, particles are packed closely together and only vibrate in place, giving solids a fixed shape.",
+              "vi": "Ở chất rắn, các hạt xếp chồng khít nhau và chỉ dao động tại chỗ nên chất rắn có hình dạng cố định."
+            },
+            {
+              "speaker": "Narrator",
+              "en": "In a liquid, particles can slide past one another, so a liquid changes shape to fit its container.",
+              "vi": "Ở chất lỏng, các hạt có thể trượt qua nhau nên chất lỏng mang hình dạng của vật chứa nó."
+            },
+            {
+              "speaker": "Narrator",
+              "en": "Powders like sand, salt, and sugar are solids, but there is air between their tiny grains so we can pour them like a liquid.",
+              "vi": "Các chất rắn dạng bột như cát, muối, đường vẫn là chất rắn, nhưng giữa các hạt bột rời có không khí nên ta có thể rót chúng như chất lỏng."
+            }
+          ],
+          "source_page": 1,
+          "source_type": "pdf_extracted",
+          "source_quote": "Một số chất rắn như cát, bột mì, muối và đường có những biểu hiện như chất lỏng."
+        }
+      ],
+      "science_blocks": {
+        "concept_cards": [
+          {
+            "id": "con_01",
+            "term_vi": "Chất rắn (Solid)",
+            "term_en": "Solid",
+            "definition_vi": "Cứng, có hình dạng nhất định. Các hạt xếp khít nhau và chỉ dao động tại vị trí cố định.",
+            "definition_en": "Has a fixed shape; particles are tightly packed and vibrate in place.",
+            "example_vi": "Viên đá lạnh, cái bàn gỗ, hạt muối.",
+            "example_en": "Ice cube, wooden desk, salt grain.",
+            "icon": "🧊",
+            "source_page": 1
+          },
+          {
+            "id": "con_02",
+            "term_vi": "Chất lỏng (Liquid)",
+            "term_en": "Liquid",
+            "definition_vi": "Không có hình dạng cố định, mang hình dạng vật chứa. Các hạt có thể trượt qua nhau.",
+            "definition_en": "Takes the shape of its container; particles can slide past one another.",
+            "example_vi": "Nước lọc, sữa tươi, dầu ăn.",
+            "example_en": "Water, milk, cooking oil.",
+            "icon": "💧",
+            "source_page": 1
+          },
+          {
+            "id": "con_03",
+            "term_vi": "Sự nóng chảy & Đông đặc",
+            "term_en": "Melting & Freezing",
+            "definition_vi": "Nóng chảy là quá trình Rắn → Lỏng (khi làm nóng); Đông đặc là quá trình Lỏng → Rắn (khi làm lạnh). Đây là quá trình vật lí.",
+            "definition_en": "Melting changes solid to liquid when heated; freezing changes liquid to solid when cooled.",
+            "example_vi": "Ở cùng nhiệt độ phòng: đá lạnh tan nhanh nhất (54s), rồi tới bơ (1p09s), sô-cô-la (1p55s).",
+            "example_en": "Ice melts faster than butter and chocolate at the same temperature.",
+            "icon": "🍫",
+            "source_page": 1
+          }
+        ],
+        "sort_challenges": [
+          {
+            "id": "sort_01",
+            "title_vi": "Phân loại Rắn · Lỏng · Khí",
+            "title_en": "Solid · Liquid · Gas",
+            "prompt_vi": "Xếp các chất sau vào đúng trạng thái của chúng:",
+            "prompt_en": "Sort each substance into Solid, Liquid, or Gas.",
+            "buckets": [
+              { "id": "b_solid", "label_vi": "Chất rắn (kể cả dạng bột)", "label_en": "Solid", "color": "#06b6d4" },
+              { "id": "b_liquid", "label_vi": "Chất lỏng", "label_en": "Liquid", "color": "#38bdf8" },
+              { "id": "b_gas", "label_vi": "Chất khí", "label_en": "Gas", "color": "#a78bfa" }
+            ],
+            "items": [
+              { "id": "it1", "text_vi": "Cát mịn", "text_en": "Fine sand", "bucket_id": "b_solid", "icon": "🏖️" },
+              { "id": "it2", "text_vi": "Nước lọc", "text_en": "Water", "bucket_id": "b_liquid", "icon": "💧" },
+              { "id": "it3", "text_vi": "Khí Oxy", "text_en": "Oxygen gas", "bucket_id": "b_gas", "icon": "🌬️" },
+              { "id": "it4", "text_vi": "Đường trắng", "text_en": "White sugar", "bucket_id": "b_solid", "icon": "🧂" },
+              { "id": "it5", "text_vi": "Nước cam ép", "text_en": "Orange juice", "bucket_id": "b_liquid", "icon": "🧃" },
+              { "id": "it6", "text_vi": "Hơi nước trong không khí", "text_en": "Water vapor", "bucket_id": "b_gas", "icon": "☁️" }
+            ],
+            "hint_vi": "Cẩn thận bẫy nhỏ: cát và đường rót được nhưng vẫn là CHẤT RẮN dạng bột nhé!"
+          }
+        ],
+        "sequence_challenges": [
+          {
+            "id": "seq_01",
+            "title_vi": "Xếp thứ tự Tốc độ Tan chảy từ Nhanh đến Chậm",
+            "title_en": "Order melting speed (fastest to slowest)",
+            "prompt_vi": "Dựa vào thí nghiệm Bài 3.3, xếp theo thứ tự từ chất tan NHANH NHẤT đến CHẬM NHẤT:",
+            "prompt_en": "Order from fastest melting to slowest melting:",
+            "steps": [
+              { "order": 1, "text_vi": "Đá lạnh (tan hết sau 54 giây)", "text_en": "Ice cube (54 seconds)", "icon": "🧊" },
+              { "order": 2, "text_vi": "Bơ (tan hết sau 1 phút 9 giây)", "text_en": "Butter (1 min 9 sec)", "icon": "🧈" },
+              { "order": 3, "text_vi": "Sô-cô-la (tan hết sau 1 phút 55 giây)", "text_en": "Chocolate (1 min 55 sec)", "icon": "🍫" }
+            ],
+            "explanation_vi": "Các chất rắn khác nhau có tốc độ tan chảy khác nhau ở cùng một nhiệt độ: Đá lạnh (54s) < Bơ (69s) < Sô-cô-la (115s)."
+          }
+        ]
+      },
+      "quiz_bank": [
+        {
+          "id": "q_01",
+          "game_type": "boss_battle",
+          "skill": "reading",
+          "prompt_en": "Vì sao muối và cát có thể rót được từ cốc này sang cốc khác như chất lỏng?",
+          "prompt_vi": "Why can sand and salt be poured like a liquid?",
+          "options": [
+            "Vì giữa các hạt bột rời có không khí giúp chúng trượt qua nhau",
+            "Vì muối và cát thực chất là chất lỏng",
+            "Vì chúng tự nóng chảy ở nhiệt độ phòng",
+            "Vì chúng không có hạt nào"
+          ],
+          "answer_index": 0,
+          "hint_vi": "Hãy nhớ cấu tạo của các hạt bột rời.",
+          "explanation_vi": "Giữa các hạt bột rời có không khí giúp hạt bột có không gian trượt qua nhau như hạt chất lỏng.",
+          "audio_text": null,
+          "difficulty": "medium",
+          "vocab_id": null,
+          "grammar_id": null,
+          "source_page": 1,
+          "source_type": "pdf_extracted",
+          "source_quote": "Giữa các hạt bột rời này có không khí, nghĩa là các hạt bột rời có không gian để chuyển động."
+        },
+        {
+          "id": "q_02",
+          "game_type": "balloon_pop",
+          "skill": "reading",
+          "prompt_en": "Sự nóng chảy và sự đông đặc là loại quá trình gì?",
+          "prompt_vi": "What kind of process are melting and freezing?",
+          "options": ["Quá trình vật lí (không tạo chất mới)", "Quá trình tạo ra chất hoàn toàn mới", "Quá trình sinh học", "Quá trình không thể đảo ngược"],
+          "answer_index": 0,
+          "hint_vi": "Chất chỉ thay đổi dạng (rắn ↔ lỏng) chứ không đổi thành chất khác.",
+          "explanation_vi": "Đây là quá trình vật lí vì chất chỉ đổi thể chứ không biến thành chất mới.",
+          "audio_text": null,
+          "difficulty": "easy",
+          "vocab_id": null,
+          "grammar_id": null,
+          "source_page": 1,
+          "source_type": "pdf_extracted",
+          "source_quote": "Sự thay đổi trạng thái (sự đông đặc, sự nóng chảy) là một quá trình vật lí"
+        },
+        {
+          "id": "q_03",
+          "game_type": "detective_cloze",
+          "skill": "reading",
+          "prompt_en": "Khi làm lạnh nước lỏng trong ngăn đá, nước chuyển thành đá rắn — đây là quá trình ____.",
+          "prompt_vi": "Điền tên quá trình chuyển từ lỏng sang rắn:",
+          "options": ["Sự đông đặc", "Sự nóng chảy", "Sự bay hơi", "Sự hòa tan"],
+          "answer_index": 0,
+          "hint_vi": "Quá trình ngược lại với nóng chảy.",
+          "explanation_vi": "Lỏng → Rắn khi làm lạnh gọi là sự đông đặc.",
+          "audio_text": null,
+          "difficulty": "easy",
+          "vocab_id": null,
+          "grammar_id": null,
+          "source_page": 1,
+          "source_type": "pdf_extracted",
+          "source_quote": "Sự đông đặc"
+        },
+        {
+          "id": "q_04",
+          "game_type": "boss_battle",
+          "skill": "reading",
+          "prompt_en": "Thủy tinh được tạo thành từ những nguyên liệu nào?",
+          "prompt_vi": "What is glass made from?",
+          "options": ["Cát, đá vôi, soda", "Nhựa và gỗ", "Nước và muối", "Kim loại đồng"],
+          "answer_index": 0,
+          "hint_vi": "Xem ví dụ ở Bài 3.1: Vật liệu, chất và hạt.",
+          "explanation_vi": "Thủy tinh được tạo từ cát, đá vôi và soda.",
+          "audio_text": null,
+          "difficulty": "medium",
+          "vocab_id": null,
+          "grammar_id": null,
+          "source_page": 1,
+          "source_type": "pdf_extracted",
+          "source_quote": "Thuỷ tinh được tạo từ cát, đá vôi, soda"
+        },
+        {
+          "id": "q_05",
+          "game_type": "balloon_pop",
+          "skill": "reading",
+          "prompt_en": "Nhiệt độ càng cao thì sự nóng chảy diễn ra như thế nào?",
+          "prompt_vi": "What happens when temperature is higher?",
+          "options": ["Càng nhanh", "Càng chậm", "Dừng hẳn lại", "Không thay đổi"],
+          "answer_index": 0,
+          "hint_vi": "Trời nắng nóng làm kem tan rất nhanh.",
+          "explanation_vi": "Nhiệt độ càng cao thì sự nóng chảy diễn ra càng nhanh.",
+          "audio_text": null,
+          "difficulty": "easy",
+          "vocab_id": null,
+          "grammar_id": null,
+          "source_page": 1,
+          "source_type": "pdf_extracted",
+          "source_quote": "Nhiệt độ càng cao thì sự nóng chảy diễn ra càng nhanh."
+        }
+      ],
+      "metadata": {
+        "extraction": {
+          "engine": "manual_curation_v1",
+          "extracted_at": "2026-11-24T22:55:00+07:00",
+          "model": null,
+          "temperature": 0,
+          "page_count": 1
+        },
+        "qa": { "quote_match_rate": 1, "warning_count": 0, "warnings": [] }
+      }
+    }
+  ]
+}

@@ -1,0 +1,176 @@
+/* Space Academy · Science Cartridge styles */
+
+.sci-concept-meta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  margin-bottom: 14px;
+}
+
+.sci-bilingual-line {
+  margin-top: 6px;
+  padding: 6px 10px;
+  border-radius: 10px;
+  background: rgba(6, 182, 212, 0.12);
+  color: var(--primary-deep);
+  font-size: 15px;
+  font-weight: 750;
+}
+
+.sci-sort-wrap {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.sci-sort-tray {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  padding: 14px;
+  border-radius: var(--radius-md);
+  background: var(--card);
+  border: 1px solid var(--line-card);
+  min-height: 76px;
+}
+
+.sci-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 48px;
+  padding: 8px 14px;
+  border-radius: 14px;
+  border: 2px solid #cbd5e1;
+  background: #ffffff;
+  color: var(--ink);
+  font-size: 17px;
+  font-weight: 800;
+  cursor: pointer;
+  touch-action: manipulation;
+  transition: transform 0.14s var(--ease-out), border-color 0.14s var(--ease-out), box-shadow 0.14s var(--ease-out);
+}
+
+.sci-chip.is-selected {
+  border-color: var(--primary);
+  background: #ecfeff;
+  box-shadow: 0 0 0 3px rgba(6, 182, 212, 0.35);
+  transform: translateY(-2px);
+}
+
+.sci-chip.is-wrong {
+  border-color: var(--danger);
+  background: var(--danger-soft);
+  animation: gentle-shake 0.32s ease-in-out;
+}
+
+.sci-buckets {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 14px;
+}
+
+.sci-bucket {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  min-height: 180px;
+  padding: 16px;
+  border-radius: var(--radius-lg);
+  background: var(--card);
+  border: 3px dashed var(--bucket-color, #22c55e);
+  color: var(--ink);
+  text-align: left;
+  cursor: pointer;
+  touch-action: manipulation;
+  transition: transform 0.14s var(--ease-out), background-color 0.14s var(--ease-out);
+}
+
+.sci-bucket:hover {
+  transform: translateY(-2px);
+}
+
+.sci-bucket__head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid var(--line-card);
+}
+
+.sci-bucket__title {
+  font-size: 19px;
+  font-weight: 900;
+  color: var(--ink);
+}
+
+.sci-bucket__sub {
+  font-size: 13px;
+  color: var(--primary-deep);
+  font-weight: 750;
+}
+
+.sci-bucket__items {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.sci-placed-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  border-radius: 12px;
+  background: var(--success-soft);
+  border: 1px solid #86efac;
+  color: var(--success-ink);
+  font-size: 15px;
+  font-weight: 800;
+  animation: pop 0.22s var(--ease-spring);
+}
+
+.sci-seq-slots {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.sci-seq-slot {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-height: 58px;
+  padding: 10px 14px;
+  border-radius: 16px;
+  border: 2px dashed #b9cde3;
+  background: #f8fbff;
+  color: var(--ink);
+  font-size: 17px;
+  font-weight: 800;
+  text-align: left;
+  cursor: pointer;
+  touch-action: manipulation;
+}
+
+.sci-seq-slot.is-filled {
+  border-style: solid;
+  border-color: #22c55e;
+  background: #f0fdf4;
+}
+
+.sci-seq-num {
+  display: grid;
+  place-items: center;
+  width: 34px;
+  height: 34px;
+  flex: 0 0 auto;
+  border-radius: 10px;
+  background: var(--ink);
+  color: var(--star);
+  font-size: 15px;
+  font-weight: 900;
+}

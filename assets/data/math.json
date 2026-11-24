@@ -1,0 +1,641 @@
+{
+  "schema_version": "1.0.0",
+  "subject": "math",
+  "lessons": [
+    {
+      "schema_version": "1.0.0",
+      "lesson_id": "grade3_math_u1_numbers_sequences",
+      "subject": "math",
+      "content_lang": "bilingual",
+      "grade_level": 3,
+      "cefr": "A1",
+      "unit": "Chương 1 · Số & Dãy số",
+      "title": "Dãy số, Số âm & Giá trị theo hàng",
+      "subtitle_vi": "Quy luật dãy số, đọc viết số âm thực tế và tìm số theo giá trị hàng",
+      "source_pdf": "Bài 1.1_Kiến thức cần nhớ.pdf",
+      "theme": "space_explorer",
+      "estimated_minutes": 15,
+      "learning_objectives": [
+        "Đếm xuôi/ngược và tìm quy luật dãy số tuyến tính, phi tuyến tính.",
+        "Nhận biết số âm trong thực tế (nhiệt độ, mực nước biển).",
+        "Xác định chữ số ở các hàng đơn vị, chục, trăm, nghìn, chục nghìn."
+      ],
+      "vocabulary": [],
+      "grammar_patterns": [],
+      "reading_dialogues": [
+        {
+          "id": "read_01",
+          "title": "Số âm và Dãy số trong thực tế",
+          "lines": [
+            {
+              "speaker": "Narrator",
+              "en": "Numbers smaller than zero are negative numbers, like -6 degrees Celsius for cold temperature.",
+              "vi": "Các số nhỏ hơn 0 là số âm, ví dụ -6°C biểu thị nhiệt độ rất lạnh."
+            }
+          ],
+          "source_page": 1,
+          "source_type": "pdf_extracted",
+          "source_quote": "Đọc và viết được các số nhỏ hơn 0, ví dụ – 6 là âm sáu"
+        }
+      ],
+      "math_blocks": {
+        "worked_examples": [
+          {
+            "id": "ex_01",
+            "title_vi": "Kiểm tra quy luật dãy số trừ 3",
+            "title_en": "Checking a subtract-3 sequence",
+            "problem_vi": "Liam tạo dãy số bắt đầu từ 397 với quy luật “trừ 3”. Nếu tiếp tục trừ 3 thì dãy có chạm đúng số 0 không?",
+            "problem_en": "Liam starts a sequence at 397 and subtracts 3 each time. Will he ever land on 0?",
+            "steps": [
+              {
+                "step_no": 1,
+                "label_vi": "Xét phép chia cho 3",
+                "label_en": "Check divisibility by 3",
+                "expression": "397 : 3 = 132 (dư 1)",
+                "explanation_vi": "Tổng các chữ số của 397 là 3 + 9 + 7 = 19, không chia hết cho 3 (dư 1)."
+              },
+              {
+                "step_no": 2,
+                "label_vi": "Tìm số gần 0 nhất",
+                "label_en": "Find the last positive term",
+                "expression": "397 - 3 x 132 = 1 ; 1 - 3 = -2",
+                "explanation_vi": "Dãy sẽ đi qua 4 → 1 → -2 nên KHÔNG chạm tới số 0."
+              }
+            ],
+            "final_answer": "Liam nói SAI (dãy đi qua 1 rồi nhảy xuống -2)."
+          }
+        ],
+        "math_problems": [
+          {
+            "id": "mp_01",
+            "problem_type": "numeric_input",
+            "prompt_vi": "Tìm số hạng tiếp theo của dãy số: 11, 10, 8, 5, 1, ?",
+            "prompt_en": "Find the next number in the sequence: 11, 10, 8, 5, 1, ?",
+            "answer_num": -4,
+            "unit": null,
+            "tolerance": 0.0001,
+            "steps_solution": [
+              "Khoảng cách giảm dần: 11 - 1 = 10; 10 - 2 = 8; 8 - 3 = 5; 5 - 4 = 1.",
+              "Bước tiếp theo trừ 5: 1 - 5 = -4."
+            ],
+            "hint_vi": "Nhìn số trừ tăng dần: -1, -2, -3, -4, rồi đến -5 (có thể ra số âm nhé!)."
+          },
+          {
+            "id": "mp_02",
+            "problem_type": "comparison",
+            "prompt_vi": "So sánh hai số âm sau (chọn <, = hoặc >):",
+            "prompt_en": "Compare the two negative numbers:",
+            "left_expr": "-6",
+            "right_expr": "-2",
+            "answer_cmp": "<",
+            "steps_solution": [
+              "Trên trục số, -6 nằm bên trái -2 (lạnh hơn -2°C).",
+              "Do đó -6 < -2."
+            ],
+            "hint_vi": "Số âm càng xa số 0 về bên trái thì càng bé."
+          },
+          {
+            "id": "mp_03",
+            "problem_type": "step_word_problem",
+            "prompt_vi": "Tìm một số có 5 chữ số biết: Chữ số hàng chục là 2; hàng đơn vị lớn hơn hàng chục 1 đơn vị; hàng trăm lớn hơn hàng đơn vị 2 đơn vị; hàng nghìn ít hơn hàng trăm 5 đơn vị; hàng chục nghìn gấp đôi hàng đơn vị.",
+            "prompt_en": "Find the 5-digit number from the place-value clues.",
+            "sub_steps": [
+              {
+                "prompt_vi": "Chữ số hàng đơn vị là bao nhiêu? (lớn hơn hàng chục 2 là 1 đơn vị)",
+                "answer_num": 3,
+                "unit": null,
+                "hint_vi": "2 + 1 = ?"
+              },
+              {
+                "prompt_vi": "Chữ số hàng trăm là bao nhiêu? (lớn hơn hàng đơn vị 2 đơn vị)",
+                "answer_num": 5,
+                "unit": null,
+                "hint_vi": "3 + 2 = ?"
+              },
+              {
+                "prompt_vi": "Viết cả số có 5 chữ số tìm được (hàng nghìn = hàng trăm - 5; hàng chục nghìn = 2 × hàng đơn vị):",
+                "answer_num": 60523,
+                "unit": null,
+                "hint_vi": "Chục nghìn = 6, Nghìn = 0, Trăm = 5, Chục = 2, Đơn vị = 3."
+              }
+            ],
+            "steps_solution": [
+              "Hàng chục = 2 → Hàng đơn vị = 2 + 1 = 3.",
+              "Hàng trăm = 3 + 2 = 5 → Hàng nghìn = 5 - 5 = 0.",
+              "Hàng chục nghìn = 3 × 2 = 6 → Số cần tìm là 60523."
+            ],
+            "hint_vi": "Tính lần lượt từng hàng rồi ghép lại từ trái sang phải."
+          }
+        ]
+      },
+      "quiz_bank": [
+        {
+          "id": "q_01",
+          "game_type": "boss_battle",
+          "skill": "grammar",
+          "prompt_en": "Trong các dãy số sau, dãy số nào KHÁC quy luật với 3 dãy còn lại?",
+          "prompt_vi": "Which sequence has a different rule?",
+          "options": ["3, 6, 12, 24", "13, 16, 19, 22", "0, 3, 6, 9", "9, 12, 15, 18"],
+          "answer_index": 0,
+          "hint_vi": "Kiểm tra xem dãy nào nhân 2 thay vì cộng 3.",
+          "explanation_vi": "Dãy 3, 6, 12, 24 có quy luật nhân 2 (phi tuyến), 3 dãy kia đều cộng 3.",
+          "audio_text": null,
+          "difficulty": "medium",
+          "vocab_id": null,
+          "grammar_id": null,
+          "source_page": 3,
+          "source_type": "pdf_extracted",
+          "source_quote": "D. 3, 6, 12, 24"
+        },
+        {
+          "id": "q_02",
+          "game_type": "balloon_pop",
+          "skill": "grammar",
+          "prompt_en": "Số chính phương là kết quả của phép nhân một số với chính nó. Số nào dưới đây là số chính phương?",
+          "prompt_vi": "Which number is a square number?",
+          "options": ["81 (9 × 9)", "24", "18", "35"],
+          "answer_index": 0,
+          "hint_vi": "9 × 9 = 81.",
+          "explanation_vi": "81 = 9 × 9 nên 81 là số chính phương.",
+          "audio_text": null,
+          "difficulty": "easy",
+          "vocab_id": null,
+          "grammar_id": null,
+          "source_page": 1,
+          "source_type": "pdf_extracted",
+          "source_quote": "Hiểu được số chính phương là kết quả của phép nhân một số với chính nó"
+        },
+        {
+          "id": "q_03",
+          "game_type": "detective_cloze",
+          "skill": "grammar",
+          "prompt_en": "Nhiệt độ ở đỉnh núi là -6°C, ở chân núi là 4°C. Nhiệt độ ở đỉnh núi ____ hơn chân núi.",
+          "prompt_vi": "Chọn từ đúng:",
+          "options": ["thấp hơn (lạnh hơn)", "cao hơn (nóng hơn)", "bằng nhau", "không so sánh được"],
+          "answer_index": 0,
+          "hint_vi": "-6 nhỏ hơn 4.",
+          "explanation_vi": "Số âm luôn nhỏ hơn số dương nên -6°C lạnh hơn 4°C.",
+          "audio_text": null,
+          "difficulty": "easy",
+          "vocab_id": null,
+          "grammar_id": null,
+          "source_page": 1,
+          "source_type": "generated",
+          "source_quote": null
+        },
+        {
+          "id": "q_04",
+          "game_type": "boss_battle",
+          "skill": "grammar",
+          "prompt_en": "Số nào có chữ số 7 nằm ở hàng nghìn?",
+          "prompt_vi": "Which number has digit 7 in the thousands place?",
+          "options": ["47 215", "74 215", "42 715", "42 175"],
+          "answer_index": 0,
+          "hint_vi": "Hàng nghìn là chữ số thứ 4 tính từ phải sang trái.",
+          "explanation_vi": "Trong 47 215, chữ số 7 ở vị trí hàng nghìn (giá trị 7 000).",
+          "audio_text": null,
+          "difficulty": "easy",
+          "vocab_id": null,
+          "grammar_id": null,
+          "source_page": 1,
+          "source_type": "generated",
+          "source_quote": null
+        },
+        {
+          "id": "q_05",
+          "game_type": "balloon_pop",
+          "skill": "grammar",
+          "prompt_en": "Đếm ngược cách đều 100 từ 520: 520, 420, 320, ____",
+          "prompt_vi": "Số tiếp theo là:",
+          "options": ["220", "210", "420", "120"],
+          "answer_index": 0,
+          "hint_vi": "320 - 100 = ?",
+          "explanation_vi": "320 - 100 = 220.",
+          "audio_text": null,
+          "difficulty": "easy",
+          "vocab_id": null,
+          "grammar_id": null,
+          "source_page": 1,
+          "source_type": "generated",
+          "source_quote": null
+        }
+      ],
+      "metadata": {
+        "extraction": { "engine": "manual_curation_v1", "extracted_at": "2026-11-24T22:55:00+07:00", "model": null, "temperature": 0, "page_count": 3 },
+        "qa": { "quote_match_rate": 1, "warning_count": 0, "warnings": [] }
+      }
+    },
+    {
+      "schema_version": "1.0.0",
+      "lesson_id": "grade3_math_u3_mult_factors",
+      "subject": "math",
+      "content_lang": "bilingual",
+      "grade_level": 3,
+      "cefr": "A1",
+      "unit": "Chương 3 · Nhân, Bội & Ước",
+      "title": "Bảng nhân, Bội số và Ước số",
+      "subtitle_vi": "Quan hệ phép nhân – phép chia và cách tìm ước số, bội số",
+      "source_pdf": "Bài 3.1_Kiến thức cần nhớ.pdf",
+      "theme": "space_explorer",
+      "estimated_minutes": 15,
+      "learning_objectives": [
+        "Vận dụng phép nhân và phép chia như hai phép toán ngược.",
+        "Xác định đúng bội số và ước số của một số tự nhiên."
+      ],
+      "vocabulary": [],
+      "grammar_patterns": [],
+      "reading_dialogues": [
+        {
+          "id": "read_01",
+          "title": "Mối quan hệ Bội và Ước",
+          "lines": [
+            {
+              "speaker": "Narrator",
+              "en": "Since 4 x 5 = 20, 4 and 5 are factors of 20, and 20 is a multiple of 4 and 5.",
+              "vi": "Vì 4 × 5 = 20 nên 4 và 5 là ước của 20; còn 20 là bội của 4 và 5."
+            }
+          ],
+          "source_page": 1,
+          "source_type": "pdf_extracted",
+          "source_quote": "4 và 5 là ước của 20"
+        }
+      ],
+      "math_blocks": {
+        "worked_examples": [
+          {
+            "id": "ex_01",
+            "title_vi": "Tìm bội số của 5 nằm giữa 7 350 và 7 380",
+            "title_en": "Multiples of 5 between 7,350 and 7,380",
+            "problem_vi": "Tìm các bội số của 5 có thể điền vào chỗ trống: 7 350 < ? < 7 380",
+            "problem_en": "Find multiples of 5 such that 7,350 < ? < 7,380",
+            "steps": [
+              {
+                "step_no": 1,
+                "label_vi": "Nhớ dấu hiệu bội của 5",
+                "label_en": "Multiples of 5 rule",
+                "expression": "Tận cùng là 0 hoặc 5",
+                "explanation_vi": "Mọi bội số của 5 đều có chữ số tận cùng là 0 hoặc 5."
+              },
+              {
+                "step_no": 2,
+                "label_vi": "Liệt kê các số trong khoảng",
+                "label_en": "List numbers in range",
+                "expression": "7355, 7360, 7365, 7370, 7375",
+                "explanation_vi": "Bắt đầu từ 7 350 cộng thêm 5 liên tiếp cho đến trước 7 380."
+              }
+            ],
+            "final_answer": "7 355; 7 360; 7 365; 7 370; 7 375"
+          }
+        ],
+        "math_problems": [
+          {
+            "id": "mp_01",
+            "problem_type": "numeric_input",
+            "prompt_vi": "Biết 4 × 5 = 20. Tìm kết quả của 20 : 4 = ?",
+            "prompt_en": "Given 4 x 5 = 20, find 20 / 4 = ?",
+            "answer_num": 5,
+            "unit": null,
+            "tolerance": 0.0001,
+            "steps_solution": ["Phép nhân và phép chia là hai phép toán ngược: 4 × 5 = 20 nên 20 : 4 = 5."],
+            "hint_vi": "4 nhân mấy bằng 20?"
+          },
+          {
+            "id": "mp_02",
+            "problem_type": "numeric_input",
+            "prompt_vi": "Tìm bội số nhỏ nhất của 5 lớn hơn 7 350:",
+            "prompt_en": "Find the smallest multiple of 5 greater than 7,350:",
+            "answer_num": 7355,
+            "unit": null,
+            "tolerance": 0.0001,
+            "steps_solution": ["7 350 + 5 = 7 355."],
+            "hint_vi": "Bội của 5 tận cùng là 0 hoặc 5."
+          }
+        ]
+      },
+      "quiz_bank": [
+        {
+          "id": "q_01",
+          "game_type": "boss_battle",
+          "skill": "grammar",
+          "prompt_en": "Các số là bội của 5 luôn có chữ số tận cùng là gì?",
+          "prompt_vi": "Multiples of 5 always end in:",
+          "options": ["0 và 5", "0 và 2", "1 và 5", "2 và 4"],
+          "answer_index": 0,
+          "hint_vi": "Đếm bảng nhân 5: 5, 10, 15, 20, 25...",
+          "explanation_vi": "Bội số của 5 luôn tận cùng bằng 0 hoặc 5.",
+          "audio_text": null,
+          "difficulty": "easy",
+          "vocab_id": null,
+          "grammar_id": null,
+          "source_page": 3,
+          "source_type": "pdf_extracted",
+          "source_quote": "Em nhận ra các số là bội của 5 luôn có tận cùng là chữ số"
+        },
+        {
+          "id": "q_02",
+          "game_type": "balloon_pop",
+          "skill": "grammar",
+          "prompt_en": "Số nào sau đây là ƯỚC của 20?",
+          "prompt_vi": "Which number is a factor of 20?",
+          "options": ["4", "3", "6", "40"],
+          "answer_index": 0,
+          "hint_vi": "Ước của 20 là số mà 20 chia hết cho nó.",
+          "explanation_vi": "20 chia hết cho 4 (20 : 4 = 5) nên 4 là ước của 20.",
+          "audio_text": null,
+          "difficulty": "easy",
+          "vocab_id": null,
+          "grammar_id": null,
+          "source_page": 1,
+          "source_type": "pdf_extracted",
+          "source_quote": "4 và 5 là ước của 20"
+        },
+        {
+          "id": "q_03",
+          "game_type": "detective_cloze",
+          "skill": "grammar",
+          "prompt_en": "Một số bất kỳ luôn có ước là ____ và chính nó.",
+          "prompt_vi": "Điền số đúng:",
+          "options": ["1", "0", "2", "10"],
+          "answer_index": 0,
+          "hint_vi": "Mọi số đều chia hết cho 1.",
+          "explanation_vi": "Một số bất kỳ luôn có ước là 1 và chính nó.",
+          "audio_text": null,
+          "difficulty": "easy",
+          "vocab_id": null,
+          "grammar_id": null,
+          "source_page": 1,
+          "source_type": "pdf_extracted",
+          "source_quote": "Một số bất kỳ luôn có ước là 1 và chính nó."
+        },
+        {
+          "id": "q_04",
+          "game_type": "boss_battle",
+          "skill": "grammar",
+          "prompt_en": "Một số khác 0 bất kỳ có bội nhỏ nhất là ____ và chính nó.",
+          "prompt_vi": "Chọn đáp án đúng:",
+          "options": ["0", "1", "10", "2"],
+          "answer_index": 0,
+          "hint_vi": "Số nào nhân với 0 cũng bằng 0.",
+          "explanation_vi": "Một số bất kỳ luôn có bội là 0 và chính nó.",
+          "audio_text": null,
+          "difficulty": "medium",
+          "vocab_id": null,
+          "grammar_id": null,
+          "source_page": 1,
+          "source_type": "pdf_extracted",
+          "source_quote": "Một số bất kỳ luôn có bội là 0 và chính nó."
+        },
+        {
+          "id": "q_05",
+          "game_type": "balloon_pop",
+          "skill": "grammar",
+          "prompt_en": "Kết quả của phép tính 7 × 8 là bao nhiêu?",
+          "prompt_vi": "Calculate 7 x 8:",
+          "options": ["56", "54", "48", "64"],
+          "answer_index": 0,
+          "hint_vi": "Bảng nhân 7: 7 × 8 = ?",
+          "explanation_vi": "7 × 8 = 56.",
+          "audio_text": null,
+          "difficulty": "easy",
+          "vocab_id": null,
+          "grammar_id": null,
+          "source_page": 1,
+          "source_type": "generated",
+          "source_quote": null
+        }
+      ],
+      "metadata": {
+        "extraction": { "engine": "manual_curation_v1", "extracted_at": "2026-11-24T22:55:00+07:00", "model": null, "temperature": 0, "page_count": 1 },
+        "qa": { "quote_match_rate": 1, "warning_count": 0, "warnings": [] }
+      }
+    },
+    {
+      "schema_version": "1.0.0",
+      "lesson_id": "grade3_math_u4_fractions",
+      "subject": "math",
+      "content_lang": "bilingual",
+      "grade_level": 3,
+      "cefr": "A1",
+      "unit": "Chương 4 · Phân số",
+      "title": "Hiểu về Phân số & Phân số của một số",
+      "subtitle_vi": "So sánh phân số cùng tử số, tính phân số của một số và ứng dụng thực tế",
+      "source_pdf": "Bài 4.1_Kiến thức cần nhớ.pdf",
+      "theme": "space_explorer",
+      "estimated_minutes": 18,
+      "learning_objectives": [
+        "Hiểu phân số biểu diễn phép chia tử số cho mẫu số.",
+        "So sánh các phân số có cùng tử số (mẫu số càng lớn thì phân số càng bé).",
+        "Tính được giá trị phân số của một số (ví dụ 3/4 của 20)."
+      ],
+      "vocabulary": [],
+      "grammar_patterns": [],
+      "reading_dialogues": [
+        {
+          "id": "read_01",
+          "title": "Quy tắc so sánh phân số cùng tử số",
+          "lines": [
+            {
+              "speaker": "Narrator",
+              "en": "When fractions have the same numerator, the fraction with the larger denominator is smaller.",
+              "vi": "Trong các phân số có cùng tử số, phân số nào có mẫu số lớn hơn thì phân số đó bé hơn."
+            }
+          ],
+          "source_page": 1,
+          "source_type": "pdf_extracted",
+          "source_quote": "Trong các phân số có cùng tử số, phân số nào có mẫu số lớn hơn thì phân số đó bé hơn."
+        }
+      ],
+      "math_blocks": {
+        "worked_examples": [
+          {
+            "id": "ex_01",
+            "title_vi": "Tìm 3/4 của 20",
+            "title_en": "Find 3/4 of 20",
+            "problem_vi": "Tính giá trị của 3/4 của 20.",
+            "problem_en": "Calculate 3/4 of 20.",
+            "steps": [
+              {
+                "step_no": 1,
+                "label_vi": "Tìm giá trị 1 phần (1/4 của 20)",
+                "label_en": "Find 1/4 of 20",
+                "expression": "20 : 4 = 5",
+                "explanation_vi": "Chia đều 20 thành 4 phần bằng nhau, mỗi phần là 5."
+              },
+              {
+                "step_no": 2,
+                "label_vi": "Nhân lên 3 phần",
+                "label_en": "Multiply by 3 parts",
+                "expression": "5 x 3 = 15",
+                "explanation_vi": "Lấy 3 phần như thế: 5 × 3 = 15."
+              }
+            ],
+            "final_answer": "3/4 của 20 bằng 15"
+          }
+        ],
+        "math_problems": [
+          {
+            "id": "mp_01",
+            "problem_type": "fraction_input",
+            "prompt_vi": "Tám người cùng ăn đều 1 chiếc bánh. Mỗi người nhận được mấy phần chiếc bánh?",
+            "prompt_en": "8 people share 1 cake equally. What fraction of the cake does each person get?",
+            "answer_num": 1,
+            "answer_den": 8,
+            "unit": "chiếc bánh",
+            "steps_solution": ["1 chiếc bánh chia đều cho 8 người: 1 : 8 = 1/8 chiếc bánh."],
+            "hint_vi": "Tử số là số bánh (1), mẫu số là số người (8)."
+          },
+          {
+            "id": "mp_02",
+            "problem_type": "numeric_input",
+            "prompt_vi": "Tính: 1/4 của 36 bằng bao nhiêu?",
+            "prompt_en": "Find 1/4 of 36:",
+            "answer_num": 9,
+            "unit": null,
+            "tolerance": 0.0001,
+            "steps_solution": ["36 : 4 = 9."],
+            "hint_vi": "Lấy 36 chia cho mẫu số 4."
+          },
+          {
+            "id": "mp_03",
+            "problem_type": "comparison",
+            "prompt_vi": "So sánh hai phân số cùng tử số sau:",
+            "prompt_en": "Compare the two fractions:",
+            "left_expr": "1/3",
+            "right_expr": "1/5",
+            "answer_cmp": ">",
+            "steps_solution": ["Cùng tử số là 1, mẫu số 3 < 5 nên 1/3 > 1/5."],
+            "hint_vi": "Chia bánh cho 3 người thì mỗi phần to hơn chia cho 5 người!"
+          },
+          {
+            "id": "mp_04",
+            "problem_type": "step_word_problem",
+            "prompt_vi": "Cuốn sách Mary đang đọc có tất cả 48 trang. Mary đã đọc 3/4 số trang đó. Hỏi Mary cần đọc bao nhiêu trang nữa để hết cuốn sách?",
+            "prompt_en": "Mary's book has 48 pages. She has read 3/4 of the pages. How many pages does she have left to read?",
+            "sub_steps": [
+              {
+                "prompt_vi": "Bước 1: 1/4 số trang của cuốn sách là bao nhiêu trang?",
+                "answer_num": 12,
+                "unit": "trang",
+                "hint_vi": "48 : 4 = ?"
+              },
+              {
+                "prompt_vi": "Bước 2: Mary đã đọc 3/4 cuốn sách, tức là bao nhiêu trang?",
+                "answer_num": 36,
+                "unit": "trang",
+                "hint_vi": "12 × 3 = ?"
+              },
+              {
+                "prompt_vi": "Bước 3: Mary cần đọc thêm bao nhiêu trang nữa để hết 48 trang?",
+                "answer_num": 12,
+                "unit": "trang",
+                "hint_vi": "48 - 36 = ?"
+              }
+            ],
+            "steps_solution": [
+              "1/4 số trang = 48 : 4 = 12 (trang).",
+              "Số trang đã đọc = 12 × 3 = 36 (trang).",
+              "Số trang cần đọc thêm = 48 - 36 = 12 (trang)."
+            ],
+            "hint_vi": "Tính số trang đã đọc trước, rồi lấy tổng số trang trừ đi."
+          }
+        ]
+      },
+      "quiz_bank": [
+        {
+          "id": "q_01",
+          "game_type": "boss_battle",
+          "skill": "grammar",
+          "prompt_en": "Phân số nào lớn hơn 1/7 và nhỏ hơn 1/3 trong các phân số sau?",
+          "prompt_vi": "Which fraction is greater than 1/7 and less than 1/3?",
+          "options": ["1/5", "1/10", "1/8", "1/2"],
+          "answer_index": 0,
+          "hint_vi": "Cùng tử số 1, mẫu số phải nằm giữa 3 và 7.",
+          "explanation_vi": "Vì 3 < 5 < 7 nên 1/7 < 1/5 < 1/3.",
+          "audio_text": null,
+          "difficulty": "medium",
+          "vocab_id": null,
+          "grammar_id": null,
+          "source_page": 1,
+          "source_type": "pdf_extracted",
+          "source_quote": "Khoanh tròn các phân số lớn hơn 1/7 và nhỏ hơn 1/3"
+        },
+        {
+          "id": "q_02",
+          "game_type": "balloon_pop",
+          "skill": "grammar",
+          "prompt_en": "Jane nói: “Mình nên nhận 1/3 của $30 hơn là 1/5 của $40 vì số tiền thứ nhất lớn hơn.” Jane đúng hay sai?",
+          "prompt_vi": "Is Jane right?",
+          "options": ["Đúng ($10 > $8)", "Sai ($10 < $8)", "Hai số tiền bằng nhau", "Không tính được"],
+          "answer_index": 0,
+          "hint_vi": "1/3 của 30 là 10; 1/5 của 40 là 8.",
+          "explanation_vi": "1/3 của $30 = $10; 1/5 của $40 = $8. Vì $10 > $8 nên Jane nói đúng.",
+          "audio_text": null,
+          "difficulty": "medium",
+          "vocab_id": null,
+          "grammar_id": null,
+          "source_page": 2,
+          "source_type": "pdf_extracted",
+          "source_quote": "1/3 của $30 hơn là 1/5 của $40"
+        },
+        {
+          "id": "q_03",
+          "game_type": "detective_cloze",
+          "skill": "grammar",
+          "prompt_en": "Trong các phân số cùng tử số, phân số nào có mẫu số lớn hơn thì phân số đó ____.",
+          "prompt_vi": "Hoàn thành quy tắc:",
+          "options": ["bé hơn", "lớn hơn", "bằng 1", "không đổi"],
+          "answer_index": 0,
+          "hint_vi": "Chia cho càng nhiều phần thì mỗi phần càng nhỏ.",
+          "explanation_vi": "Mẫu số lớn hơn → phân số bé hơn.",
+          "audio_text": null,
+          "difficulty": "easy",
+          "vocab_id": null,
+          "grammar_id": null,
+          "source_page": 1,
+          "source_type": "pdf_extracted",
+          "source_quote": "Trong các phân số có cùng tử số, phân số nào có mẫu số lớn hơn thì phân số đó bé hơn."
+        },
+        {
+          "id": "q_04",
+          "game_type": "boss_battle",
+          "skill": "grammar",
+          "prompt_en": "Phân số 4/6 bằng phân số tối giản nào sau đây?",
+          "prompt_vi": "4/6 is equivalent to:",
+          "options": ["2/3", "1/2", "3/4", "1/3"],
+          "answer_index": 0,
+          "hint_vi": "Chia cả tử số và mẫu số của 4/6 cho 2.",
+          "explanation_vi": "4 : 2 = 2, 6 : 2 = 3 → 4/6 = 2/3.",
+          "audio_text": null,
+          "difficulty": "easy",
+          "vocab_id": null,
+          "grammar_id": null,
+          "source_page": 2,
+          "source_type": "pdf_extracted",
+          "source_quote": "4/6"
+        },
+        {
+          "id": "q_05",
+          "game_type": "balloon_pop",
+          "skill": "grammar",
+          "prompt_en": "1/3 của 15 bằng 1/2 của số nào?",
+          "prompt_vi": "Find the missing number:",
+          "options": ["10", "5", "15", "20"],
+          "answer_index": 0,
+          "hint_vi": "1/3 của 15 là 5. Vậy 5 là 1/2 của số nào?",
+          "explanation_vi": "1/3 của 15 = 5; 5 × 2 = 10.",
+          "audio_text": null,
+          "difficulty": "medium",
+          "vocab_id": null,
+          "grammar_id": null,
+          "source_page": 1,
+          "source_type": "pdf_extracted",
+          "source_quote": "1/3 của 15 = 1/2 của"
+        }
+      ],
+      "metadata": {
+        "extraction": { "engine": "manual_curation_v1", "extracted_at": "2026-11-24T22:55:00+07:00", "model": null, "temperature": 0, "page_count": 2 },
+        "qa": { "quote_match_rate": 1, "warning_count": 0, "warnings": [] }
+      }
+    }
+  ]
+}

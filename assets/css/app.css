@@ -1863,6 +1863,129 @@ a {
   gap: 8px;
 }
 
+/* ---------------- multi-subject planet switcher & bilingual ---------------- */
+
+.planet-bar {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 12px;
+  margin-bottom: 18px;
+}
+
+.planet-card {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-height: 76px;
+  padding: 14px 16px;
+  border-radius: 20px;
+  border: 2px solid var(--line-dark);
+  background: rgba(17, 28, 51, 0.78);
+  color: var(--text-on-dark);
+  text-align: left;
+  transition: transform 0.16s var(--ease-out), border-color 0.16s var(--ease-out), background-color 0.16s var(--ease-out);
+  touch-action: manipulation;
+  cursor: pointer;
+}
+
+.planet-card:hover {
+  transform: translateY(-2px);
+}
+
+.planet-card__orb {
+  display: grid;
+  place-items: center;
+  width: 48px;
+  height: 48px;
+  flex: 0 0 auto;
+  border-radius: 15px;
+  background: rgba(6, 182, 212, 0.18);
+  color: #67e8f9;
+}
+
+.planet-card--science .planet-card__orb {
+  background: rgba(34, 197, 94, 0.18);
+  color: #86efac;
+}
+
+.planet-card--math .planet-card__orb {
+  background: rgba(251, 191, 36, 0.2);
+  color: #fde68a;
+}
+
+.planet-card.is-active {
+  background: linear-gradient(145deg, rgba(6, 182, 212, 0.24), rgba(17, 28, 51, 0.95));
+  border-color: var(--primary);
+  box-shadow: 0 14px 30px -16px rgba(6, 182, 212, 0.55);
+}
+
+.planet-card--science.is-active {
+  background: linear-gradient(145deg, rgba(34, 197, 94, 0.24), rgba(17, 28, 51, 0.95));
+  border-color: #22c55e;
+  box-shadow: 0 14px 30px -16px rgba(34, 197, 94, 0.5);
+}
+
+.planet-card--math.is-active {
+  background: linear-gradient(145deg, rgba(251, 191, 36, 0.24), rgba(17, 28, 51, 0.95));
+  border-color: #fbbf24;
+  box-shadow: 0 14px 30px -16px rgba(251, 191, 36, 0.5);
+}
+
+.planet-card__meta {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.planet-card__kicker {
+  font-size: 12px;
+  font-weight: 850;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+.planet-card__title {
+  font-size: 19px;
+  font-weight: 900;
+  line-height: 1.15;
+}
+
+.planet-card__count {
+  font-size: 13px;
+  color: #cbd5e1;
+  font-weight: 700;
+}
+
+.bilingual-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  min-height: 44px;
+  padding: 6px 14px;
+  border-radius: 999px;
+  border: 1.5px solid rgba(251, 191, 36, 0.55);
+  background: rgba(251, 191, 36, 0.14);
+  color: #fde68a;
+  font-size: 14px;
+  font-weight: 850;
+  cursor: pointer;
+  touch-action: manipulation;
+}
+
+.bilingual-toggle[aria-pressed="true"] {
+  background: #fbbf24;
+  color: #0f172a;
+  border-color: #fbbf24;
+}
+
+@media (max-width: 760px) {
+  .planet-bar {
+    grid-template-columns: 1fr;
+  }
+}
+
 @media (max-width: 960px) {
   .rc-layout {
     grid-template-columns: 1fr;

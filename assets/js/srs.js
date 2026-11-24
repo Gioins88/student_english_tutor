@@ -26,6 +26,7 @@
   function createRecord(input) {
     var now = input.now || Date.now();
     return {
+      subject: normaliseKey(input.subject || "english"),
       lessonId: normaliseKey(input.lessonId),
       itemId: normaliseKey(input.itemId),
       quizId: normaliseKey(input.quizId || input.itemId),
