@@ -149,6 +149,45 @@
     });
   }
 
+  function maskWord(word) {
+    var chars = Array.from(String(word || ""));
+    var letterIndices = [];
+    chars.forEach(function (ch, idx) {
+      if (/[a-z]/i.test(ch)) letterIndices.push(idx);
+    });
+    if (letterIndices.length <= 1) return String(word || "");
+    if (letterIndices.length === 2) {
+      chars[letterIndices[1]] = "_";
+      return chars.join("");
+    }
+    var hideTarget = Math.max(1, Math.round(letterIndices.length * 0.45));
+    var candidates = letterIndices.filter(function (idx, pos) {
+      if (pos === 0) return false;
+      if (idx > 0 && /\s/.test(chars[idx - 1])) return false;
+      return true;
+    });
+    if (!candidates.length) candidates = letterIndices.slice(1);
+    var maskedOrder = seededShuffle(candidates, hashString(String(word || "") + ":mask"));
+    var toHide = {};
+    maskedOrder.slice(0, Math.min(hideTarget, candidates.length)).forEach(function (idx) {
+      toHide[idx] = true;
+    });
+    return chars.map(function (ch, idx) {
+      return toHide[idx] ? "_" : ch;
+    }).join("");
+  }
+
+  function maskWordInSentence(sentence, word) {
+    var text = String(sentence || "");
+    var target = String(word || "").trim();
+    if (!text || !target) return text;
+    var escaped = target.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+    var re = /^[a-z0-9]/i.test(target) && /[a-z0-9]$/i.test(target)
+      ? new RegExp("\\b" + escaped + "\\b", "gi")
+      : new RegExp(escaped, "gi");
+    return text.replace(re, "____");
+  }
+
   function makeTiles(word) {
     var letters = splitWord(word).filter(function (part) {
       return part.type === "letter";
@@ -192,9 +231,13 @@
     var tileData = makeTiles(item.word);
     var placed = {};
     var solved = false;
+    var revealFull = false;
+    var hintText = "";
+    var hintSlot = -1;
+    var hintTileId = null;
     var modal = openModal({
       kicker: "Word Builder · chạm để ghép chữ",
-      title: item.word.length > 18 ? "Ghép chữ" : "Ghép chữ: " + item.word,
+      title: "Ghép chữ",
       subtitle: item.meaning_vi || "Chạm từng chữ cái để xếp thành từ đúng."
     });
 
@@ -208,7 +251,8 @@
         if (part.type === "fixed") return '<span class="wb-fixed">' + esc(part.ch) + "</span>";
         var tileId = placed[index];
         var tile = tileId ? tileData.tiles.filter(function (entry) { return entry.id === tileId; })[0] : null;
-        return '<button class="wb-slot' + (tile ? " is-filled" : "") + '" type="button" data-slot="' + index + '" aria-label="Ô chữ ' + (index + 1) + (tile ? ", đang có chữ " + esc(tile.ch) : ", còn trống") + '">' + (tile ? esc(tile.ch) : "") + "</button>";
+        var isHint = index === hintSlot;
+        return '<button class="wb-slot' + (tile ? " is-filled" : "") + (isHint ? " is-hint" : "") + '" type="button" data-slot="' + index + '" aria-label="Ô chữ ' + (index + 1) + (tile ? ", đang có chữ " + esc(tile.ch) : ", còn trống") + '">' + (tile ? esc(tile.ch) : "") + "</button>";
       }).join("");
 
       var used = {};
@@ -217,19 +261,37 @@
       });
       var tray = tileData.tiles.map(function (tile) {
         var isUsed = Boolean(used[tile.id]);
-        return '<button class="wb-tile' + (isUsed ? " is-used" : "") + '" type="button" data-tile="' + tile.id + '"' + (isUsed ? " disabled" : "") + ">" + esc(tile.ch) + "</button>";
+        var isHint = !isUsed && tile.id === hintTileId;
+        return '<button class="wb-tile' + (isUsed ? " is-used" : "") + (isHint ? " is-hint" : "") + '" type="button" data-tile="' + tile.id + '"' + (isUsed ? " disabled" : "") + ">" + esc(tile.ch) + "</button>";
       }).join("");
 
       var correct = placedCount() === letterTotal && solved;
+      var clueWord = (revealFull || correct) ? item.word : maskWord(item.word);
+      var exampleText = item.example_en
+        ? ((revealFull || correct) ? item.example_en : maskWordInSentence(item.example_en, item.word))
+        : "";
+      var statusText = correct
+        ? "Chính xác! Con ghép đúng rồi."
+        : hintText
+          ? hintText
+          : placedCount()
+            ? "Đã ghép " + placedCount() + "/" + letterTotal + " chữ."
+            : "Chạm một chữ cái bên dưới để bắt đầu.";
+
       modal.body.innerHTML =
         '<div class="wb-clue"><span class="chip chip--cyan">' + icon("book") + esc(item.pos ? "từ mới" : "từ vựng") + "</span>" +
         '<span class="chip">' + esc(item.ipa || "") + "</span>" +
         '<button class="btn btn--outline btn--sm" type="button" data-wb-speak>' + icon("speaker") + "Nghe từ</button></div>" +
         '<p class="wb-meaning">' + esc(item.meaning_vi) + "</p>" +
-        '<p class="wb-example">' + esc(item.example_en || "") + "</p>" +
+        '<div class="wb-masked">' +
+        '<span class="wb-masked__label">' + (revealFull || correct ? "Từ hoàn chỉnh:" : "Gợi ý mặt chữ:") + "</span>" +
+        '<strong class="wb-masked__text">' + esc(clueWord) + "</strong>" +
+        (!correct ? '<button class="btn btn--outline btn--sm" type="button" data-wb-reveal aria-pressed="' + revealFull + '">' + icon("info") + (revealFull ? "Ẩn lại" : "Hiện cả từ") + "</button>" : "") +
+        "</div>" +
+        (exampleText ? '<p class="wb-example">' + esc(exampleText) + "</p>" : "") +
         '<div class="wb-slots" role="group" aria-label="Các ô chữ cần ghép">' + slots + "</div>" +
         '<div class="wb-tray" role="group" aria-label="Các chữ cái">' + tray + "</div>" +
-        '<div class="wb-status" role="status" aria-live="polite">' + (correct ? "Chính xác! Con ghép đúng rồi." : placedCount() ? "Đã ghép " + placedCount() + "/" + letterTotal + " chữ." : "Chạm một chữ cái bên dưới để bắt đầu.") + "</div>" +
+        '<div class="wb-status' + (hintText && !correct ? " is-hint" : "") + '" role="status" aria-live="polite">' + esc(statusText) + "</div>" +
         '<div class="wb-actions"><button class="btn btn--outline" type="button" data-wb-reset>' + icon("refresh") + "Xáo lại</button>" +
         '<button class="btn btn--outline" type="button" data-wb-hint>' + icon("info") + "Gợi ý</button>" +
         '<button class="btn btn--primary" type="button" data-wb-close>Đóng</button></div>' +
@@ -238,24 +300,44 @@
       modal.body.querySelector("[data-wb-speak]").addEventListener("click", function () {
         speak(item.word, {});
       });
+      var revealBtn = modal.body.querySelector("[data-wb-reveal]");
+      if (revealBtn) {
+        revealBtn.addEventListener("click", function () {
+          revealFull = !revealFull;
+          render();
+        });
+      }
       modal.body.querySelector("[data-wb-reset]").addEventListener("click", function () {
         placed = {};
         solved = false;
+        hintText = "";
+        hintSlot = -1;
+        hintTileId = null;
         render();
       });
       modal.body.querySelector("[data-wb-hint]").addEventListener("click", function () {
         var next = letterSlots.filter(function (slotIndex) {
           return placed[slotIndex] === undefined;
         })[0];
-        var firstLetter = tileData.letters[0] || "";
-        notify("Gợi ý: từ này bắt đầu bằng chữ " + firstLetter.toUpperCase() + ".");
-        if (next !== undefined) {
-          var slot = modal.body.querySelector('[data-slot="' + next + '"]');
-          if (slot) {
-            slot.classList.add("is-hint");
-            window.setTimeout(function () { slot.classList.remove("is-hint"); }, 900);
-          }
+        if (next === undefined) {
+          hintText = "Con đã điền đủ ô rồi. Chạm vào ô sai để đổi chữ hoặc bấm Xáo lại nhé.";
+          hintSlot = -1;
+          hintTileId = null;
+          notify(hintText);
+          render();
+          return;
         }
+        var expectedChar = parts[next].ch;
+        var usedIds = Object.keys(placed).map(function (slot) { return placed[slot]; });
+        var matchTile = tileData.tiles.filter(function (entry) {
+          return usedIds.indexOf(entry.id) === -1 && entry.ch === expectedChar;
+        })[0] || null;
+        var orderPos = letterSlots.indexOf(next) + 1;
+        hintSlot = next;
+        hintTileId = matchTile ? matchTile.id : null;
+        hintText = "Gợi ý ô chữ số " + orderPos + ": chọn chữ “" + expectedChar.toUpperCase() + "”.";
+        notify(hintText);
+        render();
       });
       modal.body.querySelector("[data-wb-close]").addEventListener("click", modal.close);
       modal.body.querySelectorAll("[data-tile]").forEach(function (button) {
@@ -269,6 +351,9 @@
           });
           if (emptySlot === -1) return;
           placed[emptySlot] = tileId;
+          hintText = "";
+          hintSlot = -1;
+          hintTileId = null;
           var total = placedCount();
           if (total === letterTotal) {
             var attempt = letterSlots.map(function (slotIndex) {
@@ -282,7 +367,8 @@
               celebrate();
               if (api.onWordComplete) api.onWordComplete(lesson, item, "word_builder");
             } else {
-              notify("Chưa đúng rồi. Con chạm vào ô để lấy lại chữ và thử lại nhé.");
+              hintText = "Chưa đúng rồi. Con chạm vào ô muốn sửa để lấy lại chữ nhé.";
+              notify(hintText);
             }
           }
           render();
@@ -294,6 +380,9 @@
           if (placed[slot] === undefined) return;
           delete placed[slot];
           solved = false;
+          hintText = "";
+          hintSlot = -1;
+          hintTileId = null;
           render();
         });
       });
@@ -321,6 +410,9 @@
     }
     var placed = [];
     var solved = false;
+    var hintText = "";
+    var hintBlockId = null;
+    var hintSlotIndex = -1;
     var modal = openModal({
       kicker: "Sentence Lego · chạm để xếp câu",
       title: "Lắp câu",
@@ -331,20 +423,30 @@
       var slots = blocks.map(function (block, index) {
         var blockId = placed[index];
         var current = blockId ? blocks.filter(function (entry) { return entry.id === blockId; })[0] : null;
-        return '<button class="lego-slot' + (current ? " is-filled" : "") + '" type="button" data-slot="' + index + '" style="' + (current ? "background:" + esc(current.color) + ";color:" + textColorFor(current.color) : "") + '" aria-label="Ô ' + (index + 1) + (current ? ", " + esc(current.text) : ", còn trống") + '">' + (current ? esc(current.text) : "") + "</button>";
+        var isHint = index === hintSlotIndex;
+        return '<button class="lego-slot' + (current ? " is-filled" : "") + (isHint ? " is-hint" : "") + '" type="button" data-slot="' + index + '" style="' + (current ? "background:" + esc(current.color) + ";color:" + textColorFor(current.color) : "") + '" aria-label="Ô ' + (index + 1) + (current ? ", " + esc(current.text) : ", còn trống") + '">' + (current ? esc(current.text) : "") + "</button>";
       }).join("");
 
       var tray = shuffled.map(function (block) {
         var used = placed.indexOf(block.id) !== -1;
-        return '<button class="lego-block m2-lego-block' + (used ? " is-used" : "") + '" type="button" data-block="' + block.id + '"' + (used ? " disabled" : "") + ' style="background:' + esc(block.color) + ";color:" + textColorFor(block.color) + '" aria-label="Khối từ ' + esc(block.text) + '">' + esc(block.text) + "</button>";
+        var isHint = !used && block.id === hintBlockId;
+        return '<button class="lego-block m2-lego-block' + (used ? " is-used" : "") + (isHint ? " is-hint" : "") + '" type="button" data-block="' + block.id + '"' + (used ? " disabled" : "") + ' style="background:' + esc(block.color) + ";color:" + textColorFor(block.color) + '" aria-label="Khối từ ' + esc(block.text) + '">' + esc(block.text) + "</button>";
       }).join("");
+
+      var statusText = solved
+        ? "Chính xác! Câu đã đúng."
+        : hintText
+          ? hintText
+          : placed.length
+            ? "Đã xếp " + placed.length + "/" + blocks.length + " khối."
+            : "Chạm một khối từ để đặt vào ô đầu tiên.";
 
       modal.body.innerHTML =
         '<div class="lego-builder-zone"><div class="lego-label">Các khối từ (đã xáo trộn):</div>' +
         '<div class="lego-row" role="group" aria-label="Khối từ">' + tray + "</div></div>" +
         '<div class="lego-builder-zone"><div class="lego-label">Câu của con:</div>' +
         '<div class="lego-slots" role="group" aria-label="Các ô cần xếp">' + slots + "</div></div>" +
-        '<div class="wb-status" role="status" aria-live="polite">' + (solved ? "Chính xác! Câu đã đúng." : placed.length ? "Đã xếp " + placed.length + "/" + blocks.length + " khối." : "Chạm một khối từ để đặt vào ô đầu tiên.") + "</div>" +
+        '<div class="wb-status' + (hintText && !solved ? " is-hint" : "") + '" role="status" aria-live="polite">' + esc(statusText) + "</div>" +
         '<div class="wb-actions"><button class="btn btn--outline" type="button" data-lego-speak>' + icon("speaker") + "Nghe mẫu</button>" +
         '<button class="btn btn--outline" type="button" data-lego-reset>' + icon("refresh") + "Xáo lại</button>" +
         '<button class="btn btn--outline" type="button" data-lego-hint>' + icon("info") + "Gợi ý</button>" +
@@ -357,10 +459,32 @@
       modal.body.querySelector("[data-lego-reset]").addEventListener("click", function () {
         placed = [];
         solved = false;
+        hintText = "";
+        hintBlockId = null;
+        hintSlotIndex = -1;
         render();
       });
       modal.body.querySelector("[data-lego-hint]").addEventListener("click", function () {
-        notify("Gợi ý: khối đầu tiên là “" + blocks[0].text + "”.");
+        if (solved) return;
+        var wrongIndex = -1;
+        for (var i = 0; i < placed.length; i += 1) {
+          if (placed[i] !== blocks[i].id) {
+            wrongIndex = i;
+            break;
+          }
+        }
+        if (wrongIndex !== -1) {
+          hintSlotIndex = wrongIndex;
+          hintBlockId = blocks[wrongIndex].id;
+          hintText = "Gợi ý: ô số " + (wrongIndex + 1) + " chưa đúng (chạm để bỏ ra). Khối đúng là “" + blocks[wrongIndex].text + "”.";
+        } else {
+          var nextIdx = Math.min(placed.length, blocks.length - 1);
+          hintSlotIndex = nextIdx;
+          hintBlockId = blocks[nextIdx].id;
+          hintText = "Gợi ý ô số " + (nextIdx + 1) + ": chọn khối “" + blocks[nextIdx].text + "”.";
+        }
+        notify(hintText);
+        render();
       });
       modal.body.querySelector("[data-lego-close]").addEventListener("click", modal.close);
       modal.body.querySelectorAll("[data-block]").forEach(function (button) {
@@ -370,6 +494,9 @@
           if (placed.indexOf(blockId) !== -1) return;
           if (placed.length >= blocks.length) return;
           placed.push(blockId);
+          hintText = "";
+          hintBlockId = null;
+          hintSlotIndex = -1;
           if (placed.length === blocks.length) {
             var correct = placed.every(function (id, index) {
               return blocks[index].id === id;
@@ -380,7 +507,8 @@
               speak(blocks.map(function (block) { return block.text; }).join(" "), {});
               if (api.onLegoComplete) api.onLegoComplete(lesson, pattern);
             } else {
-              notify("Chưa đúng thứ tự rồi. Con chạm vào ô để lấy khối ra và thử lại nhé.");
+              hintText = "Chưa đúng thứ tự rồi. Con chạm vào ô sai để lấy khối ra hoặc bấm Gợi ý nhé.";
+              notify(hintText);
             }
           }
           render();
@@ -392,6 +520,9 @@
           if (index >= placed.length) return;
           placed.splice(index, 1);
           solved = false;
+          hintText = "";
+          hintBlockId = null;
+          hintSlotIndex = -1;
           render();
         });
       });
@@ -418,15 +549,28 @@
     button.insertAdjacentElement("afterend", result);
 
     button.addEventListener("click", function () {
-      if (button.getAttribute("aria-busy") === "true") return;
+      if (button.getAttribute("aria-busy") === "true") {
+        window.SETSpeech.stt.stop();
+        return;
+      }
       button.setAttribute("aria-busy", "true");
       button.classList.add("is-listening");
-      button.innerHTML = icon("mic") + "Đang nghe…";
-      result.hidden = true;
+      button.innerHTML = icon("stop") + "Dừng & Chấm";
+      result.hidden = false;
+      result.innerHTML = '<span class="voice-msg">Đang nghe… Con đọc hết câu rồi bấm “Dừng & Chấm” nhé.</span>';
       var heard = false;
+      var timeoutMs = window.SETSpeech.calcListenTimeout
+        ? window.SETSpeech.calcListenTimeout(options.target)
+        : 25000;
       window.SETSpeech.stt.listen({
         lang: "en-US",
-        timeout: 9000,
+        timeout: timeoutMs,
+        silenceMs: 4500,
+        onInterim: function (text) {
+          result.hidden = false;
+          result.innerHTML = '<span class="voice-msg">Đang nghe… (bấm “Dừng & Chấm” khi xong)</span>' +
+            '<span class="voice-heard">Nghe được: “' + esc(text) + "”</span>";
+        },
         onResult: function (transcripts) {
           heard = true;
           var score = window.SETSpeech.stt.score(options.target, transcripts);
@@ -456,18 +600,29 @@
           button.innerHTML = icon("mic") + "Đọc to";
           if (!heard) {
             result.hidden = false;
-            if (!result.innerHTML) result.innerHTML = '<span class="voice-msg">Chưa nghe được. Con thử lại gần micro hơn nhé.</span>';
+            result.innerHTML = '<span class="voice-msg">Chưa nghe được. Con thử lại gần micro hơn nhé.</span>';
           }
         }
       });
     });
   }
 
-  window.SET_M2 = {
-    setApi: setApi,
-    openWordBuilder: openWordBuilder,
-    openLego: openLego,
-    attachMic: attachMic,
-    close: closeModal
-  };
+  if (typeof window !== "undefined") {
+    window.SET_M2 = {
+      setApi: setApi,
+      openWordBuilder: openWordBuilder,
+      openLego: openLego,
+      attachMic: attachMic,
+      close: closeModal,
+      maskWord: maskWord,
+      maskWordInSentence: maskWordInSentence
+    };
+  }
+
+  if (typeof module === "object" && module.exports) {
+    module.exports = {
+      maskWord: maskWord,
+      maskWordInSentence: maskWordInSentence
+    };
+  }
 })();

@@ -16,7 +16,9 @@
     boss_battle: "Đấu Boss",
     memory_match: "Ghép cặp",
     detective_cloze: "Thám tử",
-    listen_tap: "Nghe & chạm"
+    listen_tap: "Nghe & chạm",
+    word_typing: "Tự nhập từ",
+    voice_challenge: "Đọc to"
   };
   var SKILL_LABEL = {
     vocabulary: "Từ vựng",
@@ -336,6 +338,8 @@
     sticker_memory: "Nhà thám hiểm kho báu",
     sticker_detective: "Thám tử từ vựng",
     sticker_listen: "Tai thính vàng",
+    sticker_typing: "Siêu sao Chính tả",
+    sticker_speak: "Phi hành gia Phát âm",
     sticker_lesson: "Ngôi sao bài học"
   };
 
@@ -580,7 +584,7 @@
 
   var cleanupTasks = [];
   var currentRoute = null;
-  var ui = { vocabIndex: 0, quizIndex: 0, quizCorrect: 0, quizXp: 0, quizAnswered: false, readToken: 0 };
+  var ui = { vocabIndex: 0, readIndex: 0, quizIndex: 0, quizCorrect: 0, quizXp: 0, quizAnswered: false, readToken: 0 };
 
   function onCleanup(fn) {
     cleanupTasks.push(fn);
@@ -767,6 +771,7 @@
       { key: "vocab", label: "Từ vựng", icon: "book", href: "#/lesson/" + encodeURIComponent(lesson.id) + "/vocab" },
       { key: "grammar", label: "Ngữ pháp", icon: "target", href: "#/lesson/" + encodeURIComponent(lesson.id) + "/grammar" },
       { key: "read", label: "Đọc & Nghe", icon: "ear", href: "#/lesson/" + encodeURIComponent(lesson.id) + "/read" },
+      { key: "comprehension", label: "Đọc hiểu", icon: "book", href: "#/lesson/" + encodeURIComponent(lesson.id) + "/comprehension" },
       { key: "games", label: "Games", icon: "spark", href: "#/lesson/" + encodeURIComponent(lesson.id) + "/games" },
       { key: "review", label: "Ôn tập", icon: "refresh", href: "#/lesson/" + encodeURIComponent(lesson.id) + "/review" }
     ];
@@ -791,11 +796,13 @@
     var remembered = countRemembered(lesson);
     var percent = pct(remembered, lesson.vocabulary.length);
     var dueCount = dueMistakes(lesson.id).length;
+    var readingQuizCount = lesson.quiz.filter(function (q) { return q && q.skill === "reading"; }).length;
     var modules = [
       { key: "vocab", icon: "book", title: "Flashcard 3D + Word Builder", desc: "Lật thẻ, nghe phát âm, ghép chữ và luyện đọc to.", meta: lesson.vocabulary.length + " thẻ" },
       { key: "grammar", icon: "target", title: "Sentence Lego", desc: "Xếp khối từ theo màu để lắp mẫu câu đúng.", meta: lesson.grammar.length + " mẫu câu" },
-      { key: "read", icon: "ear", title: "Đọc & Nghe", desc: "Chạm từng từ để nghe, đọc đuổi và luyện micro.", meta: lesson.readings.length + " đoạn hội thoại" },
-      { key: "games", icon: "spark", title: "5 Mini-games", desc: "Bóng bay, Boss, Kho báu, Thám tử và Nghe & chạm.", meta: "5 trò chơi" },
+      { key: "read", icon: "ear", title: "Đọc & Nghe", desc: "Chạm từng từ để nghe, nghe chậm từng câu và luyện micro.", meta: lesson.readings.length + " đoạn hội thoại" },
+      { key: "comprehension", icon: "book", title: "Đọc hiểu (Reading)", desc: "Đọc cả đoạn văn và trả lời danh sách câu hỏi trắc nghiệm.", meta: (readingQuizCount || Math.min(5, lesson.quiz.length)) + " câu hỏi" },
+      { key: "games", icon: "spark", title: "7 Mini-games", desc: "Bóng bay, Boss, Kho báu, Thám tử, Nghe, Gõ từ và Đọc to.", meta: "7 trò chơi" },
       { key: "quiz", icon: "bolt", title: "Luyện nhanh", desc: "Thử nhanh một lượt câu hỏi trắc nghiệm.", meta: lesson.quiz.length + " câu hỏi" },
       { key: "review", icon: "refresh", title: "Kho báu cần chinh phục", desc: "Ôn lại đúng lúc con sắp quên theo Spaced Repetition.", meta: dueCount + " mục cần ôn" }
     ];
@@ -1043,12 +1050,20 @@
       setView(lessonTabs(lesson, "games") + '<div class="card empty-state">' + icon("spark", "icon--lg") + '<h2 class="empty-state__title">Mini-games chưa tải</h2><p>Hãy kiểm tra kết nối hoặc tải lại trang.</p></div>');
       return;
     }
-    var order = ["balloon", "boss", "memory", "detective", "listen"];
+    var order = ["balloon", "boss", "memory", "detective", "listen", "typing", "speak"];
     var cards = order.map(function (key) {
       var info = meta[key];
       if (!info) return "";
       var plays = progress.games["game:" + lesson.id + ":" + key];
-      var countText = key === "memory" ? Math.min(6, lesson.vocabulary.length) + " cặp thẻ" : key === "listen" ? "5 câu nghe" : "6 câu";
+      var countText = key === "memory"
+        ? Math.min(6, lesson.vocabulary.length) + " cặp thẻ"
+        : key === "listen"
+          ? "5 câu nghe"
+          : key === "typing"
+            ? Math.min(6, lesson.vocabulary.length) + " từ"
+            : key === "speak"
+              ? "5 câu đọc"
+              : "6 câu";
       return '<button class="module-card" type="button" data-game="' + key + '">' +
         '<span class="module-card__icon">' + icon(info.icon, "icon--lg") + "</span>" +
         '<span class="module-card__title">' + esc(info.title) + "</span>" +
@@ -1059,7 +1074,7 @@
 
     setView(
       lessonTabs(lesson, "games") +
-      moduleHeader("Phân hệ 5", "Mini-games", "Năm trò chơi kiểm tra từ vựng, ngữ pháp, đọc hiểu và nghe. Mọi thao tác đều bằng chạm.") +
+      moduleHeader("Phân hệ 5", "Mini-games", "Bảy trò chơi kiểm tra từ vựng, ngữ pháp, tự nhập từ, đọc to, đọc hiểu và nghe.") +
       '<div class="module-grid">' + cards + "</div>" +
       '<div class="hint-card">' + icon("info") + "<div><strong>Mẹo nhỏ:</strong> mỗi mini-game thắng lần đầu sẽ mở một Sticker mới trong Kho báu. Trả lời sai sẽ được đưa vào Kho báu cần chinh phục để ôn lại đúng lúc.</div></div>" +
       '<div class="cta-row" style="margin-top:18px"><a class="btn btn--outline" href="#/lesson/' + encodeURIComponent(lesson.id) + '/review">' + icon("refresh") + "Ôn tập kho báu</a></div>"
@@ -1075,7 +1090,7 @@
         });
       });
     });
-    announce("Năm mini-game của bài " + lesson.title + ".");
+    announce("Bảy mini-game của bài " + lesson.title + ".");
   }
 
   /* ---------------- spaced repetition review ---------------- */
@@ -1192,16 +1207,21 @@
 
   function renderRead(lesson) {
     setTitle("Đọc & Nghe · " + lesson.title);
-    var dialogue = lesson.readings[0];
-    if (!dialogue) {
+    if (!lesson.readings.length) {
       setView(lessonTabs(lesson, "read") + '<div class="card empty-state">' + icon("ear", "icon--lg") + '<h2 class="empty-state__title">Chưa có bài đọc</h2><p>Bài học này chưa có đoạn hội thoại.</p></div>');
       return;
     }
-    var token = ++ui.readToken;
+    ui.readIndex = clamp(ui.readIndex || 0, 0, lesson.readings.length - 1);
+    var dialogue = lesson.readings[ui.readIndex];
+    var switcherHtml = lesson.readings.length > 1
+      ? '<div class="read-switcher">' + lesson.readings.map(function (entry, idx) {
+        return '<button class="btn ' + (idx === ui.readIndex ? "btn--primary" : "btn--outline") + ' btn--sm" type="button" data-read-switch="' + idx + '">' + esc(entry.title || "Đoạn " + (idx + 1)) + "</button>";
+      }).join("") + "</div>"
+      : "";
     var turns = dialogue.lines.map(function (line, index) {
       var words = String(line.en || "").split(/(\s+)/);
       var offset = 0;
-      var wordButtons = words.map(function (chunk, chunkIndex) {
+      var wordButtons = words.map(function (chunk) {
         if (/^\s+$/.test(chunk)) {
           offset += chunk.length;
           return chunk.replace(/ /g, "&nbsp;");
@@ -1216,7 +1236,10 @@
         '<span class="read-turn__avatar" aria-hidden="true">' + esc(initial) + "</span>" +
         '<div class="read-turn__body">' +
         '<div class="read-turn__top"><span class="read-turn__speaker">' + esc(line.speaker || "Narrator") + "</span>" +
-        '<button class="btn btn--ghost btn--icon btn--sm read-turn__play" type="button" data-play-turn="' + index + '" aria-label="Nghe ' + esc(line.speaker || "") + '">' + icon("play") + "</button></div>" +
+        '<div class="read-turn__actions">' +
+        '<button class="btn btn--outline btn--sm" type="button" data-play-turn="' + index + '" aria-label="Nghe câu ' + (index + 1) + '">' + icon("speaker") + "Nghe</button>" +
+        '<button class="btn btn--outline btn--sm" type="button" data-play-turn-slow="' + index + '" aria-label="Nghe chậm câu ' + (index + 1) + '">' + icon("gauge") + "Nghe chậm</button>" +
+        "</div></div>" +
         '<div class="read-line">' + wordButtons + "</div>" +
         (line.vi ? '<p class="read-trans">' + esc(line.vi) + "</p>" : "") +
         '<div class="read-turn__voice"><button class="btn btn--outline btn--sm mic-btn" type="button" data-mic-turn="' + index + '" aria-label="Đọc to câu của ' + esc(line.speaker || "") + '">' + icon("mic") + "Đọc to</button></div>" +
@@ -1226,13 +1249,14 @@
 
     setView(
       lessonTabs(lesson, "read") +
-      moduleHeader("Phân hệ 4", dialogue.title || "Read-Along", "Chạm vào từng từ để nghe và xem nghĩa. Bật “Nghe cả đoạn” để đọc đuổi, hoặc bấm “Đọc to” để luyện micro.") +
+      moduleHeader("Phân hệ 4", dialogue.title || "Read-Along", "Chạm vào từng từ để nghe và xem nghĩa. Dùng “Nghe” hoặc “Nghe chậm” cho từng câu, hoặc bấm “Đọc to” để luyện micro.") +
+      switcherHtml +
       '<div class="read-tools"><button class="btn btn--primary" id="play-all" type="button">' + icon("play") + "Nghe cả đoạn</button>" +
       '<button class="btn btn--outline" id="stop-read" type="button" disabled>' + icon("stop") + "Dừng</button>" +
-      '<button class="btn btn--outline btn--sm slow-toggle" id="slow-toggle" type="button" aria-pressed="false">' + icon("gauge") + "Đọc chậm</button>" +
+      '<button class="btn btn--outline btn--sm slow-toggle" id="slow-toggle" type="button" aria-pressed="' + (TTS.getRate() === 0.75) + '">' + icon("gauge") + (TTS.getRate() === 0.75 ? "Đang chậm" : "Đọc chậm") + "</button>" +
       '<span class="read-status" id="read-status" role="status">Sẵn sàng nghe.</span></div>' +
       '<section class="card read-card">' + turns + "</section>" +
-      '<div class="cta-row" style="margin-top:22px"><a class="btn btn--primary" href="#/lesson/' + encodeURIComponent(lesson.id) + '/quiz">Chơi thử thách ' + icon("spark") + "</a></div>"
+      '<div class="cta-row" style="margin-top:22px"><a class="btn btn--primary" href="#/lesson/' + encodeURIComponent(lesson.id) + '/comprehension">Sang Đọc hiểu ' + icon("arrow-right") + "</a></div>"
     );
 
     var status = $("#read-status");
@@ -1264,17 +1288,25 @@
       });
     }
 
-    function speakTurn(index) {
+    function speakTurn(index, rateOverride) {
       var line = dialogue.lines[index];
       if (!line) return;
+      ui.readToken += 1;
+      stopBtn.disabled = true;
+      playAllBtn.disabled = false;
       clearHighlight();
       var turn = $('.read-turn[data-turn="' + index + '"]', view);
       if (turn) turn.classList.add("is-speaking");
+      status.textContent = rateOverride && rateOverride < 1 ? "Đang đọc chậm câu " + (index + 1) + "…" : "Đang đọc câu " + (index + 1) + "…";
       TTS.speak(line.en, {
+        rate: rateOverride || TTS.getRate(),
         onBoundary: function (event) {
           highlightWord(index, event.charIndex || 0);
         },
-        onEnd: clearHighlight,
+        onEnd: function () {
+          clearHighlight();
+          status.textContent = "Sẵn sàng nghe.";
+        },
         onError: clearHighlight
       });
     }
@@ -1337,17 +1369,30 @@
       next();
     }
 
+    $$("[data-read-switch]", view).forEach(function (button) {
+      button.addEventListener("click", function () {
+        ui.readToken += 1;
+        TTS.stop();
+        ui.readIndex = parseInt(button.getAttribute("data-read-switch"), 10) || 0;
+        renderRead(lesson);
+      });
+    });
     playAllBtn.addEventListener("click", playAll);
     stopBtn.addEventListener("click", stopRead);
     $("#slow-toggle").addEventListener("click", function (event) {
       var slow = TTS.getRate() !== 0.75;
       TTS.setRate(slow ? 0.75 : 1);
       event.currentTarget.setAttribute("aria-pressed", String(slow));
-      event.currentTarget.innerHTML = icon("gauge") + (slow ? "Đọc chậm" : "Đọc thường");
+      event.currentTarget.innerHTML = icon("gauge") + (slow ? "Đang chậm" : "Đọc chậm");
     });
     $$("[data-play-turn]", view).forEach(function (button) {
       button.addEventListener("click", function () {
-        speakTurn(parseInt(button.getAttribute("data-play-turn"), 10) || 0);
+        speakTurn(parseInt(button.getAttribute("data-play-turn"), 10) || 0, 1);
+      });
+    });
+    $$("[data-play-turn-slow]", view).forEach(function (button) {
+      button.addEventListener("click", function () {
+        speakTurn(parseInt(button.getAttribute("data-play-turn-slow"), 10) || 0, 0.7);
       });
     });
     $$("[data-mic-turn]", view).forEach(function (button) {
@@ -1384,6 +1429,250 @@
       clearHighlight();
     });
     announce("Đoạn hội thoại " + dialogue.lines.length + " câu. Chạm từng từ để nghe.");
+  }
+
+  /* ---------------- reading comprehension ---------------- */
+
+  function renderComprehension(lesson) {
+    setTitle("Đọc hiểu · " + lesson.title);
+    if (!lesson.readings.length) {
+      setView(lessonTabs(lesson, "comprehension") + '<div class="card empty-state">' + icon("book", "icon--lg") + '<h2 class="empty-state__title">Chưa có đoạn văn đọc hiểu</h2><p>Bài học này chưa có bài đọc.</p></div>');
+      return;
+    }
+    ui.readIndex = clamp(ui.readIndex || 0, 0, lesson.readings.length - 1);
+    var dialogue = lesson.readings[ui.readIndex];
+    var rq = lesson.quiz.filter(function (q) { return q && q.skill === "reading"; });
+    var isFallback = !rq.length;
+    var questions = isFallback ? lesson.quiz.slice(0, 5) : rq;
+    var showVi = false;
+    var solvedCount = 0;
+
+    var switcherHtml = lesson.readings.length > 1
+      ? '<div class="read-switcher">' + lesson.readings.map(function (entry, idx) {
+        return '<button class="btn ' + (idx === ui.readIndex ? "btn--primary" : "btn--outline") + ' btn--sm" type="button" data-rc-switch="' + idx + '">' + esc(entry.title || "Đoạn " + (idx + 1)) + "</button>";
+      }).join("") + "</div>"
+      : "";
+
+    var passageLines = dialogue.lines.map(function (line, index) {
+      var words = String(line.en || "").split(/(\s+)/);
+      var offset = 0;
+      var wordButtons = words.map(function (chunk) {
+        if (/^\s+$/.test(chunk)) {
+          offset += chunk.length;
+          return chunk.replace(/ /g, "&nbsp;");
+        }
+        var start = offset;
+        offset += chunk.length;
+        return '<button class="word-btn" type="button" data-rc-word="' + esc(chunk) + '" data-start="' + start + '" data-turn="' + index + '">' + esc(chunk) + "</button>";
+      }).join("");
+      var showSpeaker = line.speaker && line.speaker.toLowerCase() !== "narrator";
+      return '<div class="rc-passage-line" data-rc-turn="' + index + '">' +
+        (showSpeaker ? '<span class="rc-passage-speaker">' + esc(line.speaker) + "</span>" : "") +
+        '<div class="read-line">' + wordButtons + "</div>" +
+        (line.vi ? '<p class="read-trans rc-line-vi" hidden>' + esc(line.vi) + "</p>" : "") +
+        "</div>";
+    }).join("");
+
+    var questionsHtml = questions.map(function (item, qIndex) {
+      var opts = (item.options || []).map(function (opt, optIndex) {
+        return '<button class="answer" type="button" data-rc-q="' + qIndex + '" data-rc-opt="' + optIndex + '">' +
+          '<span class="answer__key">' + "ABCD".charAt(optIndex) + "</span>" +
+          '<span class="answer__text">' + esc(opt) + "</span>" +
+          '<span class="answer__mark" aria-hidden="true"></span></button>';
+      }).join("");
+      return '<article class="card rc-q-card" data-rc-card="' + qIndex + '">' +
+        '<div class="rc-q-card__head"><span class="rc-q-card__num">Câu ' + (qIndex + 1) + " / " + questions.length + "</span>" +
+        '<span class="chip">' + esc(item.difficulty || "easy") + "</span></div>" +
+        '<h3 class="rc-q-prompt">' + esc(item.prompt_en || "") + "</h3>" +
+        (item.prompt_vi ? '<p class="muted" style="color:var(--muted-on-card);font-size:15px">' + esc(item.prompt_vi) + "</p>" : "") +
+        '<div class="rc-q-options" role="group" aria-label="Đáp án câu ' + (qIndex + 1) + '">' + opts + "</div>" +
+        '<div class="feedback" data-rc-fb="' + qIndex + '" role="status" aria-live="polite" hidden></div>' +
+        "</article>";
+    }).join("");
+
+    setView(
+      lessonTabs(lesson, "comprehension") +
+      moduleHeader("Đọc hiểu", "Reading Comprehension", "Đọc kỹ cả đoạn văn bên trái rồi trả lời toàn bộ danh sách câu hỏi bên dưới. Chạm vào từ bất kỳ để nghe và xem nghĩa.") +
+      switcherHtml +
+      '<div class="rc-layout">' +
+      '<section class="card rc-passage" aria-label="Đoạn văn đọc hiểu">' +
+      '<div class="rc-passage__head"><h2 class="rc-passage__title">' + esc(dialogue.title || "Bài đọc") + "</h2>" +
+      '<div class="rc-passage__tools">' +
+      '<button class="btn btn--primary btn--sm" type="button" id="rc-play-all">' + icon("play") + "Nghe cả đoạn</button>" +
+      '<button class="btn btn--outline btn--sm" type="button" id="rc-play-slow">' + icon("gauge") + "Nghe chậm</button>" +
+      '<button class="btn btn--outline btn--sm" type="button" id="rc-stop" disabled>' + icon("stop") + "Dừng</button>" +
+      '<button class="btn btn--outline btn--sm" type="button" id="rc-toggle-vi" aria-pressed="false">' + icon("book") + "Hiện dịch</button>" +
+      "</div></div>" +
+      '<div class="rc-passage__body">' + passageLines + "</div>" +
+      "</section>" +
+      '<section class="rc-questions" aria-label="Danh sách câu hỏi đọc hiểu">' +
+      '<div class="card rc-summary">' +
+      '<div><strong id="rc-score-text">Đã đúng 0 / ' + questions.length + " câu</strong>" +
+      (isFallback ? '<p style="font-size:14px;color:var(--muted-on-card)">Bài này chưa có câu hỏi đọc hiểu riêng — hiển thị câu hỏi ôn tập của bài.</p>' : "") +
+      "</div>" +
+      '<button class="btn btn--outline btn--sm" type="button" id="rc-reset">' + icon("refresh") + "Làm lại</button>" +
+      "</div>" +
+      (questionsHtml || '<div class="card empty-state"><p>Bài học này chưa có câu hỏi trắc nghiệm.</p></div>') +
+      "</section>" +
+      "</div>" +
+      '<div class="cta-row" style="margin-top:22px"><a class="btn btn--primary" href="#/lesson/' + encodeURIComponent(lesson.id) + '/games">Chơi 7 Mini-games ' + icon("spark") + "</a></div>"
+    );
+
+    var playBtn = $("#rc-play-all");
+    var slowBtn = $("#rc-play-slow");
+    var stopBtn = $("#rc-stop");
+    var toggleViBtn = $("#rc-toggle-vi");
+
+    function clearRcHighlight() {
+      $$("[data-rc-word].is-speaking", view).forEach(function (node) { node.classList.remove("is-speaking"); });
+    }
+
+    function playPassage(rate) {
+      if (!TTS.supported) {
+        toast("Thiết bị này chưa hỗ trợ đọc tiếng Anh.");
+        return;
+      }
+      var myToken = ++ui.readToken;
+      var idx = 0;
+      playBtn.disabled = true;
+      slowBtn.disabled = true;
+      stopBtn.disabled = false;
+
+      function nextLine() {
+        if (myToken !== ui.readToken) return;
+        if (idx >= dialogue.lines.length) {
+          clearRcHighlight();
+          playBtn.disabled = false;
+          slowBtn.disabled = false;
+          stopBtn.disabled = true;
+          return;
+        }
+        var line = dialogue.lines[idx];
+        var btns = $$('[data-rc-word][data-turn="' + idx + '"]', view);
+        TTS.speak(line.en, {
+          rate: rate,
+          onBoundary: function (event) {
+            if (myToken !== ui.readToken) return;
+            var active = null;
+            btns.forEach(function (b) {
+              if (parseInt(b.getAttribute("data-start"), 10) <= (event.charIndex || 0)) active = b;
+            });
+            btns.forEach(function (b) { b.classList.toggle("is-speaking", b === active); });
+          },
+          onEnd: function () {
+            if (myToken !== ui.readToken) return;
+            idx += 1;
+            window.setTimeout(nextLine, 220);
+          },
+          onError: function () {
+            if (myToken !== ui.readToken) return;
+            idx += 1;
+            window.setTimeout(nextLine, 220);
+          }
+        });
+      }
+      nextLine();
+    }
+
+    playBtn.addEventListener("click", function () { playPassage(1); });
+    slowBtn.addEventListener("click", function () { playPassage(0.72); });
+    stopBtn.addEventListener("click", function () {
+      ui.readToken += 1;
+      TTS.stop();
+      clearRcHighlight();
+      playBtn.disabled = false;
+      slowBtn.disabled = false;
+      stopBtn.disabled = true;
+    });
+
+    toggleViBtn.addEventListener("click", function () {
+      showVi = !showVi;
+      toggleViBtn.setAttribute("aria-pressed", String(showVi));
+      toggleViBtn.innerHTML = icon("book") + (showVi ? "Ẩn dịch" : "Hiện dịch");
+      $$(".rc-line-vi", view).forEach(function (node) { node.hidden = !showVi; });
+    });
+
+    $$("[data-rc-switch]", view).forEach(function (button) {
+      button.addEventListener("click", function () {
+        ui.readToken += 1;
+        TTS.stop();
+        ui.readIndex = parseInt(button.getAttribute("data-rc-switch"), 10) || 0;
+        renderComprehension(lesson);
+      });
+    });
+
+    $$("[data-rc-word]", view).forEach(function (button) {
+      button.addEventListener("click", function () {
+        var word = button.getAttribute("data-rc-word") || "";
+        var turnIdx = parseInt(button.getAttribute("data-turn"), 10) || 0;
+        var line = dialogue.lines[turnIdx] || {};
+        TTS.speak(word, {});
+        var match = findMeaning(lesson, word);
+        showWordTip(button, {
+          word: word,
+          meaning: match ? match.meaning_vi : "Chạm để nghe phát âm",
+          sub: showVi ? (line.vi || "") : ""
+        });
+        window.clearTimeout(button.__tipTimer);
+        button.__tipTimer = window.setTimeout(hideWordTip, 2600);
+      });
+    });
+
+    var solvedMap = {};
+    $$("[data-rc-q]", view).forEach(function (button) {
+      button.addEventListener("click", function () {
+        if (button.disabled) return;
+        var qIndex = parseInt(button.getAttribute("data-rc-q"), 10);
+        var optIndex = parseInt(button.getAttribute("data-rc-opt"), 10);
+        var item = questions[qIndex];
+        if (!item || solvedMap[qIndex]) return;
+        var card = $('[data-rc-card="' + qIndex + '"]', view);
+        var fb = $('[data-rc-fb="' + qIndex + '"]', view);
+        if (optIndex === item.answer_index) {
+          solvedMap[qIndex] = true;
+          solvedCount += 1;
+          button.classList.add("is-correct");
+          button.querySelector(".answer__mark").innerHTML = icon("check");
+          $$('[data-rc-q="' + qIndex + '"]', card).forEach(function (n) { n.disabled = true; });
+          reviewItem(lesson, item, true);
+          var firstTime = !progress.answered[lesson.id + ":" + item.id];
+          if (firstTime) {
+            progress.answered[lesson.id + ":" + item.id] = true;
+            award(10, 1);
+          }
+          fb.hidden = false;
+          fb.className = "feedback feedback--ok";
+          fb.innerHTML = icon("check") + '<div><span class="feedback__title">Chính xác!' + (firstTime ? " +10 XP" : "") + '</span><span class="feedback__text">' + esc(item.explanation_vi || item.hint_vi || "Con đọc hiểu rất tốt!") + "</span></div>";
+          var scoreEl = $("#rc-score-text");
+          if (scoreEl) scoreEl.textContent = "Đã đúng " + solvedCount + " / " + questions.length + " câu";
+          if (solvedCount === questions.length) {
+            burstConfetti();
+            toast("Tuyệt vời! Con đã hoàn thành toàn bộ bài đọc hiểu.");
+          }
+        } else {
+          button.classList.add("is-wrong");
+          button.disabled = true;
+          button.querySelector(".answer__mark").innerHTML = icon("x");
+          recordMistake(lesson, item);
+          fb.hidden = false;
+          fb.className = "feedback feedback--hint";
+          fb.innerHTML = icon("spark") + '<div><span class="feedback__title">Chưa đúng rồi</span><span class="feedback__text">' + esc(item.hint_vi || "Con đọc lại đoạn văn để tìm chi tiết gợi ý nhé.") + "</span></div>";
+        }
+      });
+    });
+
+    $("#rc-reset").addEventListener("click", function () {
+      ui.readToken += 1;
+      TTS.stop();
+      renderComprehension(lesson);
+    });
+
+    onCleanup(function () {
+      ui.readToken += 1;
+      TTS.stop();
+      clearRcHighlight();
+    });
+    announce("Đọc hiểu: " + (dialogue.title || "đoạn văn") + " với " + questions.length + " câu hỏi.");
   }
 
   /* ---------------- quiz ---------------- */
@@ -1833,8 +2122,13 @@
         ui.vocabIndex = 0;
         renderVocab(lesson);
       } else if (moduleName === "grammar") renderGrammar(lesson);
-      else if (moduleName === "read") renderRead(lesson);
-      else if (moduleName === "quiz") renderQuiz(lesson);
+      else if (moduleName === "read") {
+        ui.readIndex = 0;
+        renderRead(lesson);
+      } else if (moduleName === "comprehension") {
+        ui.readIndex = 0;
+        renderComprehension(lesson);
+      } else if (moduleName === "quiz") renderQuiz(lesson);
       else if (moduleName === "games") renderGamesHub(lesson);
       else if (moduleName === "review") renderReview(lesson);
       else if (moduleName === "hub") renderLessonHub(lesson);

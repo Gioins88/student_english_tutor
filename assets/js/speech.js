@@ -64,6 +64,11 @@
     return "Không sao! Con nghe lại rồi thử đọc to hơn nhé.";
   }
 
+  function calcListenTimeout(target) {
+    var words = normalizeText(target).split(/\s+/).filter(Boolean).length;
+    return clamp(words * 3000 + 12000, 20000, 45000);
+  }
+
   var TTS = (function () {
     var supported = Boolean(root && "speechSynthesis" in root && "SpeechSynthesisUtterance" in root);
     var voices = [];
@@ -156,16 +161,13 @@
   var STT = (function () {
     var Recognition = root ? root.SpeechRecognition || root.webkitSpeechRecognition || null : null;
     var supported = Boolean(Recognition);
-    var active = null;
+    var activeController = null;
 
     function stop() {
-      if (!active) return;
-      try {
-        active.stop();
-      } catch (err) {
-        /* noop */
-      }
-      active = null;
+      if (!activeController) return;
+      var controller = activeController;
+      activeController = null;
+      controller.stop();
     }
 
     function listen(options) {
@@ -175,58 +177,180 @@
         return null;
       }
       stop();
-      var recognition;
-      try {
-        recognition = new Recognition();
-      } catch (err) {
-        if (typeof options.onError === "function") options.onError("start-failed");
-        return null;
-      }
-      active = recognition;
-      recognition.lang = options.lang || "en-US";
-      recognition.continuous = false;
-      recognition.interimResults = false;
-      recognition.maxAlternatives = 3;
 
+      var timeoutMs = options.timeout || 25000;
+      var silenceMs = options.silenceMs || 4500;
+      var continuous = options.continuous !== false;
+      var startedAt = Date.now();
+      var persistedFinals = [];
+      var persistedAlts = [];
+      var currentFinals = [];
+      var currentAlts = [];
+      var latestInterim = "";
+      var hasSpoken = false;
+      var stoppedManually = false;
+      var timedOut = false;
+      var silenceTimedOut = false;
+      var fatalError = null;
       var finished = false;
-      var timer = setTimeout(function () {
-        try {
-          recognition.stop();
-        } catch (err) {
-          /* noop */
-        }
-      }, options.timeout || 9000);
+      var restartCount = 0;
+      var recognition = null;
+      var silenceTimer = null;
 
-      recognition.onresult = function (event) {
-        var results = event.results && event.results[0];
-        var transcripts = [];
-        if (results) {
-          for (var i = 0; i < results.length; i += 1) {
-            if (results[i] && results[i].transcript) transcripts.push(results[i].transcript);
-          }
-        }
-        if (typeof options.onResult === "function") options.onResult(transcripts);
-      };
-      recognition.onerror = function (event) {
-        if (typeof options.onError === "function") options.onError(event.error || "error");
-      };
-      recognition.onend = function () {
+      function buildCombinedText() {
+        var chunks = persistedFinals.concat(currentFinals).filter(Boolean);
+        if (latestInterim) chunks.push(latestInterim);
+        return chunks.join(" ").replace(/\s+/g, " ").trim();
+      }
+
+      function buildCandidates() {
+        var prefix = persistedFinals.filter(Boolean).join(" ").trim();
+        var merged = buildCombinedText();
+        var list = [];
+        if (merged) list.push(merged);
+        var tailAlts = currentAlts.length ? currentAlts : persistedAlts;
+        tailAlts.forEach(function (alt) {
+          var full = prefix && currentFinals.length <= 1 ? (prefix + " " + alt).trim() : alt;
+          if (full && list.indexOf(full) === -1) list.push(full);
+        });
+        return list;
+      }
+
+      function finalize() {
         if (finished) return;
         finished = true;
-        clearTimeout(timer);
-        if (active === recognition) active = null;
+        clearTimeout(maxTimer);
+        clearTimeout(silenceTimer);
+        if (activeController && activeController.id === controller.id) activeController = null;
+        var candidates = buildCandidates();
+        if (fatalError && !candidates.length) {
+          if (typeof options.onError === "function") options.onError(fatalError);
+        } else if (candidates.length) {
+          if (typeof options.onResult === "function") options.onResult(candidates);
+        }
         if (typeof options.onEnd === "function") options.onEnd();
-      };
-
-      try {
-        recognition.start();
-      } catch (err) {
-        clearTimeout(timer);
-        active = null;
-        if (typeof options.onError === "function") options.onError("start-failed");
-        return null;
       }
-      return recognition;
+
+      function requestStop(reason) {
+        if (reason === "manual") stoppedManually = true;
+        else if (reason === "timeout") timedOut = true;
+        else if (reason === "silence") silenceTimedOut = true;
+        clearTimeout(silenceTimer);
+        if (recognition) {
+          try {
+            recognition.stop();
+            return;
+          } catch (err) {
+            /* fallback to finalize */
+          }
+        }
+        finalize();
+      }
+
+      var maxTimer = setTimeout(function () {
+        requestStop("timeout");
+      }, timeoutMs);
+
+      var controller = {
+        id: Math.random(),
+        stop: function () {
+          requestStop("manual");
+        }
+      };
+      activeController = controller;
+
+      function startSession() {
+        try {
+          recognition = new Recognition();
+        } catch (err) {
+          fatalError = "start-failed";
+          finalize();
+          return null;
+        }
+        recognition.lang = options.lang || "en-US";
+        recognition.continuous = continuous;
+        recognition.interimResults = true;
+        recognition.maxAlternatives = 3;
+
+        recognition.onresult = function (event) {
+          currentFinals = [];
+          currentAlts = [];
+          var interimParts = [];
+          for (var i = 0; i < event.results.length; i += 1) {
+            var res = event.results[i];
+            if (!res || !res[0]) continue;
+            if (res.isFinal) {
+              currentFinals.push(res[0].transcript);
+              if (i === event.results.length - 1) {
+                for (var a = 0; a < res.length; a += 1) {
+                  if (res[a] && res[a].transcript) currentAlts.push(res[a].transcript);
+                }
+              }
+            } else {
+              interimParts.push(res[0].transcript);
+            }
+          }
+          latestInterim = interimParts.join(" ").trim();
+          var combined = buildCombinedText();
+          if (combined) {
+            hasSpoken = true;
+            if (typeof options.onInterim === "function") options.onInterim(combined);
+            clearTimeout(silenceTimer);
+            silenceTimer = setTimeout(function () {
+              requestStop("silence");
+            }, silenceMs);
+          }
+        };
+
+        recognition.onerror = function (event) {
+          var code = event.error || "error";
+          if (code === "no-speech" && !stoppedManually && !timedOut && Date.now() - startedAt < timeoutMs - 2000) {
+            return;
+          }
+          if (code === "aborted" && (stoppedManually || timedOut || silenceTimedOut)) {
+            return;
+          }
+          fatalError = code;
+        };
+
+        recognition.onend = function () {
+          if (finished) return;
+          if (!stoppedManually && !timedOut && !silenceTimedOut && !fatalError && continuous) {
+            var elapsed = Date.now() - startedAt;
+            if (elapsed < timeoutMs - 1500 && restartCount < 5) {
+              if (currentFinals.length) {
+                persistedFinals = persistedFinals.concat(currentFinals);
+                persistedAlts = currentAlts.slice();
+                currentFinals = [];
+                currentAlts = [];
+              }
+              if (latestInterim) {
+                persistedFinals.push(latestInterim);
+                latestInterim = "";
+              }
+              restartCount += 1;
+              try {
+                startSession();
+                return;
+              } catch (err) {
+                /* fall through to finalize */
+              }
+            }
+          }
+          finalize();
+        };
+
+        try {
+          recognition.start();
+        } catch (err) {
+          fatalError = "start-failed";
+          finalize();
+          return null;
+        }
+        return recognition;
+      }
+
+      return startSession();
     }
 
     function score(target, transcripts) {
@@ -257,17 +381,24 @@
 
   if (root) {
     root.SETSpeech = {
-    tts: TTS,
-    stt: STT,
-    similarity: similarity,
-    starsFor: starsFor,
-    coachMessage: coachMessage,
-    normalize: normalizeText,
-      clamp: clamp
+      tts: TTS,
+      stt: STT,
+      similarity: similarity,
+      starsFor: starsFor,
+      coachMessage: coachMessage,
+      normalize: normalizeText,
+      clamp: clamp,
+      calcListenTimeout: calcListenTimeout
     };
   }
 
   if (typeof module === "object" && module.exports) {
-    module.exports = { similarity: similarity, starsFor: starsFor, normalize: normalizeText, levenshtein: levenshtein };
+    module.exports = {
+      similarity: similarity,
+      starsFor: starsFor,
+      normalize: normalizeText,
+      levenshtein: levenshtein,
+      calcListenTimeout: calcListenTimeout
+    };
   }
 })();

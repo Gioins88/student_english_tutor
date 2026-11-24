@@ -4,6 +4,7 @@ const test = require("node:test");
 const assert = require("node:assert/strict");
 const srs = require("../assets/js/srs.js");
 const speech = require("../assets/js/speech.js");
+const m2 = require("../assets/js/m2.js");
 
 const DAY = srs.DAY_MS;
 const T0 = Date.UTC(2026, 10, 15, 0, 0, 0);
@@ -75,4 +76,22 @@ test("speech similarity is 1 for identical and falls for different text", () => 
   assert.equal(speech.starsFor(0.7), 2);
   assert.equal(speech.starsFor(0.5), 1);
   assert.equal(speech.starsFor(0.1), 0);
+});
+
+test("maskWord hides partial letters while keeping first letter and word length", () => {
+  const masked = m2.maskWord("headmistress");
+  assert.equal(masked.length, "headmistress".length);
+  assert.equal(masked[0], "h");
+  assert.ok(masked.includes("_"), "masked word should contain underscores");
+  assert.notEqual(masked, "headmistress");
+  const phrase = m2.maskWord("ice cream");
+  assert.equal(phrase.length, "ice cream".length);
+  assert.equal(phrase[3], " ");
+  assert.ok(phrase.includes("_"));
+});
+
+test("calcListenTimeout gives >= 20s and scales with sentence length up to 45s", () => {
+  assert.equal(speech.calcListenTimeout("apple"), 20000);
+  assert.equal(speech.calcListenTimeout("I like playing football on Sunday"), 30000);
+  assert.equal(speech.calcListenTimeout("one two three four five six seven eight nine ten eleven twelve"), 45000);
 });

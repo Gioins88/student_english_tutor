@@ -44,6 +44,22 @@
       subtitle: "Nghe thật kỹ rồi chạm đáp án đúng",
       sticker: "sticker_listen",
       icon: "ear"
+    },
+    typing: {
+      type: "typing",
+      gameType: "word_typing",
+      title: "Spell Rocket",
+      subtitle: "Tự nhập từ vựng tiếng Anh để phóng tên lửa",
+      sticker: "sticker_typing",
+      icon: "target"
+    },
+    speak: {
+      type: "speak",
+      gameType: "voice_challenge",
+      title: "Voice Commander",
+      subtitle: "Đọc to từ và câu tiếng Anh để nạp năng lượng",
+      sticker: "sticker_speak",
+      icon: "mic"
     }
   };
 
@@ -52,7 +68,9 @@
     boss_battle: "boss",
     memory_match: "memory",
     detective_cloze: "detective",
-    listen_tap: "listen"
+    listen_tap: "listen",
+    word_typing: "typing",
+    voice_challenge: "speak"
   };
 
   var api = {};
@@ -754,14 +772,30 @@
     slot.appendChild(button);
     slot.appendChild(result);
     button.addEventListener("click", function () {
+      if (button.getAttribute("aria-busy") === "true") {
+        window.SETSpeech.stt.stop();
+        return;
+      }
       button.setAttribute("aria-busy", "true");
       button.classList.add("is-listening");
-      button.innerHTML = icon("mic") + "Đang nghe…";
-      result.hidden = true;
+      button.innerHTML = icon("stop") + "Dừng & Chấm";
+      result.hidden = false;
+      result.innerHTML = '<span class="voice-msg">Đang nghe… Con đọc xong rồi bấm “Dừng & Chấm” nhé.</span>';
+      var heard = false;
+      var timeoutMs = window.SETSpeech.calcListenTimeout
+        ? window.SETSpeech.calcListenTimeout(target)
+        : 25000;
       window.SETSpeech.stt.listen({
         lang: "en-US",
-        timeout: 9000,
+        timeout: timeoutMs,
+        silenceMs: 4500,
+        onInterim: function (text) {
+          result.hidden = false;
+          result.innerHTML = '<span class="voice-msg">Đang nghe… (bấm “Dừng & Chấm” khi xong)</span>' +
+            '<span class="voice-heard">Nghe được: “' + esc(text) + "”</span>";
+        },
         onResult: function (transcripts) {
+          heard = true;
           var score = window.SETSpeech.stt.score(target, transcripts);
           result.hidden = false;
           result.innerHTML = '<span class="voice-stars" aria-label="' + score.stars + ' trên 3 sao">' +
@@ -769,17 +803,320 @@
             '<span class="voice-msg">' + esc(score.message) + "</span>" +
             '<span class="voice-heard">Máy nghe: “' + esc(score.transcript) + "”</span>";
         },
-        onError: function () {
+        onError: function (error) {
           result.hidden = false;
-          result.innerHTML = '<span class="voice-msg">Chưa nghe được. Con thử lại gần micro hơn nhé.</span>';
+          result.innerHTML = '<span class="voice-msg">' + (error === "not-allowed" ? "Con cần bật quyền micro cho trang này nhé." : "Chưa nghe được. Con thử lại gần micro hơn nhé.") + "</span>";
         },
         onEnd: function () {
           button.removeAttribute("aria-busy");
           button.classList.remove("is-listening");
           button.innerHTML = icon("mic") + "Đọc to";
+          if (!heard) {
+            result.hidden = false;
+            result.innerHTML = '<span class="voice-msg">Chưa nghe được. Con thử lại gần micro hơn nhé.</span>';
+          }
         }
       });
     });
+  }
+
+  /* ---------------- 6. Spell Rocket (Word Typing) ---------------- */
+
+  function normalizeAnswer(text) {
+    return String(text || "").trim().toLowerCase().replace(/\s+/g, " ");
+  }
+
+  function startTyping() {
+    var vocab = Array.isArray(lesson && lesson.vocabulary) ? lesson.vocabulary : [];
+    var pool = shuffle(vocab).slice(0, 6);
+    if (!pool.length) {
+      modal.body.innerHTML = '<div class="gx-empty">' + icon("book", "icon--lg") + '<h3>Chưa có từ vựng</h3><p>Bài học này chưa có từ vựng để luyện gõ.</p><button class="btn btn--primary" data-gx-done>Đóng</button></div>';
+      $("[data-gx-done]", modal.body).addEventListener("click", close);
+      return;
+    }
+    game = { type: "typing", pool: pool, round: 0, correct: 0, combo: 0, bestCombo: 0, xp: 0, hintLevel: 0 };
+    renderTypingRound();
+  }
+
+  function renderTypingRound() {
+    if (game.round >= game.pool.length) {
+      renderFinish({
+        correct: game.correct,
+        total: game.pool.length,
+        xp: game.xp + 10,
+        message: "Tên lửa chính tả đã cất cánh! Con nhập đúng " + game.correct + "/" + game.pool.length + " từ."
+      });
+      return;
+    }
+    var item = game.pool[game.round];
+    var masked = window.SET_M2 && window.SET_M2.maskWord ? window.SET_M2.maskWord(item.word) : item.word.charAt(0) + "...";
+    var exampleMasked = item.example_en
+      ? (window.SET_M2 && window.SET_M2.maskWordInSentence ? window.SET_M2.maskWordInSentence(item.example_en, item.word) : item.example_en)
+      : "";
+    var solved = false;
+
+    modal.body.innerHTML =
+      questionHeader(game.round, game.pool.length, '<span class="gx-combo">' + icon("bolt") + "Combo " + game.combo + "</span>" + '<span class="gx-combo">' + icon("star") + " " + game.xp + " XP</span>") +
+      '<div class="gx-prompt-card">' +
+      '<div class="gx-prompt-label">Nghe và tự nhập từ tiếng Anh</div>' +
+      '<p class="gx-prompt">' + (item.icon ? esc(item.icon) + " " : "") + esc(item.meaning_vi || "") + "</p>" +
+      (item.ipa ? '<span class="chip">' + esc(item.ipa) + "</span>" : "") +
+      (exampleMasked ? '<p class="gx-prompt-vi">' + esc(exampleMasked) + "</p>" : "") +
+      '<div class="gx-type-audio"><button class="btn btn--outline btn--sm" type="button" data-gx-speak>' + icon("speaker") + "Nghe từ</button>" +
+      '<button class="btn btn--outline btn--sm" type="button" data-gx-speak-slow>' + icon("gauge") + "Nghe chậm</button></div></div>" +
+      '<form class="gx-type-form" data-gx-type-form>' +
+      '<input class="gx-type-input" type="text" data-gx-input autocomplete="off" autocorrect="off" autocapitalize="none" spellcheck="false" placeholder="Gõ từ tiếng Anh vào đây…">' +
+      '<button class="btn btn--primary" type="submit" data-gx-submit>Kiểm tra</button></form>' +
+      '<div class="gx-type-tools"><button class="btn btn--outline btn--sm" type="button" data-gx-hint>' + icon("info") + "Gợi ý chữ</button>" +
+      '<button class="btn btn--ghost btn--sm" type="button" data-gx-skip>Xem đáp án & Qua câu</button></div>' +
+      '<div class="gx-type-hint" data-gx-hint-box hidden></div>' +
+      '<div class="gx-feedback gx-feedback--info" role="status" aria-live="polite">' + icon("info") + "<div><strong>Tự gõ từ mới</strong><span>Nhập đúng chính tả từ tiếng Anh rồi bấm Kiểm tra.</span></div></div>";
+
+    var input = $("[data-gx-input]", modal.body);
+    var hintBox = $("[data-gx-hint-box]", modal.body);
+    var form = $("[data-gx-type-form]", modal.body);
+
+    $("[data-gx-speak]", modal.body).addEventListener("click", function () {
+      speak(item.word, { rate: 1 });
+    });
+    $("[data-gx-speak-slow]", modal.body).addEventListener("click", function () {
+      speak(item.word, { rate: 0.72 });
+    });
+    speak(item.word, { rate: 1 });
+    later(function () {
+      if (input) input.focus({ preventScroll: true });
+    }, 60);
+
+    $("[data-gx-hint]", modal.body).addEventListener("click", function () {
+      if (solved) return;
+      game.hintLevel += 1;
+      hintBox.hidden = false;
+      if (game.hintLevel === 1) {
+        hintBox.innerHTML = "Gợi ý mặt chữ: <strong>" + esc(masked) + "</strong> (" + item.word.length + " ký tự)";
+      } else {
+        hintBox.innerHTML = "Chữ đầu: <strong>" + esc(item.word.slice(0, Math.min(game.hintLevel, item.word.length))) + "…</strong> · Mặt chữ: <strong>" + esc(masked) + "</strong>";
+      }
+    });
+
+    $("[data-gx-skip]", modal.body).addEventListener("click", function () {
+      if (solved) return;
+      solved = true;
+      game.combo = 0;
+      recordMistake({ id: item.id, skill: "vocabulary", game_type: "word_typing" });
+      if (input) input.disabled = true;
+      $("[data-gx-submit]", modal.body).disabled = true;
+      setFeedback("hint", "Đáp án đúng là “" + item.word + "”", "Không sao! Con nghe lại từ này rồi mình sang từ tiếp theo nhé.");
+      speak(item.word, { rate: 0.85 });
+      later(function () {
+        game.round += 1;
+        game.hintLevel = 0;
+        renderTypingRound();
+      }, 1500);
+    });
+
+    form.addEventListener("submit", function (event) {
+      event.preventDefault();
+      if (solved) return;
+      var attempt = normalizeAnswer(input.value);
+      var target = normalizeAnswer(item.word);
+      if (!attempt) {
+        setFeedback("hint", "Con chưa nhập từ", "Hãy gõ chữ cái tiếng Anh vào ô trống hoặc bấm Gợi ý chữ nhé.");
+        input.focus();
+        return;
+      }
+      if (attempt === target) {
+        solved = true;
+        game.correct += 1;
+        game.combo += 1;
+        game.bestCombo = Math.max(game.bestCombo, game.combo);
+        game.xp += 8;
+        input.classList.add("is-correct");
+        input.disabled = true;
+        $("[data-gx-submit]", modal.body).disabled = true;
+        setFeedback("ok", "Chính xác! +8 XP", "Từ “" + item.word + "” — " + (item.example_en || "Con nhớ mặt chữ rất tốt!"));
+        speak(item.word, { rate: 1 });
+        later(function () {
+          game.round += 1;
+          game.hintLevel = 0;
+          renderTypingRound();
+        }, 1100);
+      } else {
+        game.combo = 0;
+        input.classList.remove("is-wrong");
+        void input.offsetWidth;
+        input.classList.add("is-wrong");
+        recordMistake({ id: item.id, skill: "vocabulary", game_type: "word_typing" });
+        setFeedback("hint", "Gần đúng rồi!", "Từ này có " + item.word.length + " ký tự, bắt đầu bằng “" + item.word.charAt(0).toUpperCase() + "”. Con sửa lại hoặc bấm Gợi ý chữ nhé.");
+      }
+    });
+  }
+
+  /* ---------------- 7. Voice Commander (Speaking Game) ---------------- */
+
+  function buildSpeakPool() {
+    var items = [];
+    var readings = Array.isArray(lesson && lesson.readings) ? lesson.readings : [];
+    readings.forEach(function (dlg, dIdx) {
+      (dlg.lines || []).forEach(function (line, lIdx) {
+        if (line && line.en && line.en.split(/\s+/).length <= 16) {
+          items.push({
+            id: "spk_r_" + dIdx + "_" + lIdx,
+            target: line.en,
+            meaning_vi: line.vi || (dlg.title || "Câu hội thoại"),
+            kind: "Câu đọc",
+            skill: "reading"
+          });
+        }
+      });
+    });
+    var vocab = Array.isArray(lesson && lesson.vocabulary) ? lesson.vocabulary : [];
+    vocab.forEach(function (entry) {
+      if (!entry || !entry.word) return;
+      items.push({
+        id: entry.id,
+        target: entry.example_en && entry.example_en.split(/\s+/).length <= 10 ? entry.example_en : entry.word,
+        meaning_vi: entry.example_vi || entry.meaning_vi || "",
+        kind: "Từ & Mẫu câu",
+        skill: "vocabulary"
+      });
+    });
+    return shuffle(items).slice(0, 5);
+  }
+
+  function startSpeak() {
+    var pool = buildSpeakPool();
+    if (!pool.length) {
+      modal.body.innerHTML = '<div class="gx-empty">' + icon("mic", "icon--lg") + '<h3>Chưa có nội dung luyện nói</h3><p>Bài học này chưa có câu hoặc từ vựng.</p><button class="btn btn--primary" data-gx-done>Đóng</button></div>';
+      $("[data-gx-done]", modal.body).addEventListener("click", close);
+      return;
+    }
+    game = { type: "speak", pool: pool, round: 0, correct: 0, xp: 0, roundPassed: false };
+    renderSpeakRound();
+  }
+
+  function renderSpeakRound() {
+    if (game.round >= game.pool.length) {
+      renderFinish({
+        correct: game.correct,
+        total: game.pool.length,
+        xp: game.xp + 10,
+        message: "Chỉ huy phát âm xuất sắc! Con đã hoàn thành " + game.correct + "/" + game.pool.length + " thử thách đọc to."
+      });
+      return;
+    }
+    var item = game.pool[game.round];
+    var sttSupported = Boolean(window.SETSpeech && window.SETSpeech.stt.supported);
+    game.roundPassed = false;
+
+    modal.body.innerHTML =
+      questionHeader(game.round, game.pool.length, '<span class="gx-combo">' + icon("star") + " " + game.xp + " XP</span>") +
+      '<div class="gx-speak-card">' +
+      '<span class="chip chip--cyan">' + esc(item.kind) + "</span>" +
+      '<p class="gx-prompt">' + esc(item.target) + "</p>" +
+      (item.meaning_vi ? '<p class="gx-prompt-vi">' + esc(item.meaning_vi) + "</p>" : "") +
+      '<div class="gx-type-audio">' +
+      '<button class="btn btn--outline btn--sm" type="button" data-gx-speak>' + icon("speaker") + "Nghe mẫu</button>" +
+      '<button class="btn btn--outline btn--sm" type="button" data-gx-speak-slow>' + icon("gauge") + "Nghe chậm</button></div>" +
+      (sttSupported
+        ? '<button class="btn btn--primary gx-mic-big" type="button" data-gx-mic>' + icon("mic") + "Bấm để đọc to</button>"
+        : '<div class="gx-type-hint">Thiết bị/trình duyệt này chưa hỗ trợ Micro nhận diện giọng nói. Con nghe mẫu, tự đọc to 2 lần rồi bấm nút Qua câu nhé!</div>') +
+      '<div class="gx-speak-live" data-gx-live hidden></div></div>' +
+      '<div class="gx-feedback gx-feedback--info" role="status" aria-live="polite">' + icon("mic") + "<div><strong>Sẵn sàng ghi âm</strong><span>Bấm nút Micro, đọc rõ cả câu rồi bấm “Dừng & Chấm” khi đọc xong.</span></div></div>" +
+      '<div class="gx-type-tools"><button class="btn btn--primary" type="button" data-gx-next-speak' + (sttSupported ? " hidden" : "") + ">Câu tiếp theo " + icon("arrow-right") + "</button>" +
+      (sttSupported ? '<button class="btn btn--ghost btn--sm" type="button" data-gx-skip-speak>Bỏ qua câu này</button>' : "") + "</div>";
+
+    $("[data-gx-speak]", modal.body).addEventListener("click", function () {
+      speak(item.target, { rate: 1 });
+    });
+    $("[data-gx-speak-slow]", modal.body).addEventListener("click", function () {
+      speak(item.target, { rate: 0.7 });
+    });
+
+    var nextBtn = $("[data-gx-next-speak]", modal.body);
+    nextBtn.addEventListener("click", function () {
+      if (!sttSupported && !game.roundPassed) {
+        game.roundPassed = true;
+        game.correct += 1;
+        game.xp += 6;
+      }
+      game.round += 1;
+      renderSpeakRound();
+    });
+
+    var skipBtn = $("[data-gx-skip-speak]", modal.body);
+    if (skipBtn) {
+      skipBtn.addEventListener("click", function () {
+        if (window.SETSpeech && window.SETSpeech.stt) window.SETSpeech.stt.stop();
+        game.round += 1;
+        renderSpeakRound();
+      });
+    }
+
+    var micBtn = $("[data-gx-mic]", modal.body);
+    var liveBox = $("[data-gx-live]", modal.body);
+    if (micBtn && sttSupported) {
+      micBtn.addEventListener("click", function () {
+        if (micBtn.getAttribute("aria-busy") === "true") {
+          window.SETSpeech.stt.stop();
+          return;
+        }
+        micBtn.setAttribute("aria-busy", "true");
+        micBtn.classList.add("is-listening");
+        micBtn.innerHTML = icon("stop") + "Dừng & Chấm";
+        liveBox.hidden = false;
+        liveBox.innerHTML = '<span class="voice-msg">Đang nghe… Con đọc hết câu rồi bấm “Dừng & Chấm” nhé.</span>';
+        var heard = false;
+        var timeoutMs = window.SETSpeech.calcListenTimeout
+          ? window.SETSpeech.calcListenTimeout(item.target)
+          : 25000;
+        window.SETSpeech.stt.listen({
+          lang: "en-US",
+          timeout: timeoutMs,
+          silenceMs: 4500,
+          onInterim: function (text) {
+            liveBox.hidden = false;
+            liveBox.innerHTML = '<span class="voice-msg">Đang nghe… (bấm “Dừng & Chấm” khi đọc xong)</span>' +
+              '<span class="voice-heard">Nghe được: “' + esc(text) + "”</span>";
+          },
+          onResult: function (transcripts) {
+            heard = true;
+            var res = window.SETSpeech.stt.score(item.target, transcripts);
+            liveBox.hidden = false;
+            liveBox.innerHTML = '<span class="voice-stars">' +
+              new Array(res.stars + 1).join("★") + new Array(4 - res.stars).join("☆") + "</span>" +
+              '<span class="voice-msg">' + esc(res.message) + "</span>" +
+              '<span class="voice-heard">Máy nghe: “' + esc(res.transcript) + "”</span>";
+            if (res.stars >= 1) {
+              if (!game.roundPassed) {
+                game.roundPassed = true;
+                game.correct += 1;
+                game.xp += Math.max(4, res.stars * 4);
+              }
+              setFeedback("ok", "Đạt " + res.stars + " sao!", res.stars >= 2 ? "Con phát âm rất rõ! Bấm Câu tiếp theo hoặc đọc lại để đạt 3 sao." : "Tốt lắm! Con có thể đọc lại rõ hơn hoặc sang câu tiếp theo.");
+            } else {
+              recordMistake({ id: item.id, skill: item.skill, game_type: "voice_challenge" });
+              setFeedback("hint", "Thử lại lần nữa nhé", "Con bấm Nghe chậm rồi đọc lại rõ từng chữ nhé.");
+            }
+            nextBtn.hidden = false;
+          },
+          onError: function (error) {
+            liveBox.hidden = false;
+            liveBox.innerHTML = '<span class="voice-msg">' + (error === "not-allowed" ? "Con cần cấp quyền Micro cho trình duyệt nhé." : "Chưa nghe rõ. Con thử lại gần micro hơn nhé.") + "</span>";
+            nextBtn.hidden = false;
+          },
+          onEnd: function () {
+            micBtn.removeAttribute("aria-busy");
+            micBtn.classList.remove("is-listening");
+            micBtn.innerHTML = icon("mic") + "Đọc lại";
+            if (!heard) {
+              liveBox.hidden = false;
+              liveBox.innerHTML = '<span class="voice-msg">Chưa nghe được. Con bấm lại nút Micro và đọc to hơn nhé.</span>';
+              nextBtn.hidden = false;
+            }
+          }
+        });
+      });
+    }
   }
 
   /* ---------------- public API ---------------- */
@@ -802,6 +1139,8 @@
     else if (key === "memory") startMemory();
     else if (key === "detective") startDetective();
     else if (key === "listen") startListen();
+    else if (key === "typing") startTyping();
+    else if (key === "speak") startSpeak();
   }
 
   window.SET_GAMES = {

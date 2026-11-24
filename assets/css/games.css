@@ -816,6 +816,106 @@ body.gx-open {
   color: var(--muted-on-card);
 }
 
+/* ---------------- 6 & 7: Spell Rocket + Voice Commander ---------------- */
+
+.gx-type-audio {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 4px;
+}
+
+.gx-type-form {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.gx-type-input {
+  flex: 1 1 240px;
+  min-height: 56px;
+  padding: 10px 16px;
+  border-radius: 16px;
+  border: 2px solid #b9cde3;
+  background: #ffffff;
+  color: var(--ink);
+  font-size: 22px;
+  font-weight: 850;
+  letter-spacing: 0.02em;
+}
+
+.gx-type-input:focus-visible {
+  outline: 3px solid rgba(6, 182, 212, 0.35);
+  border-color: var(--primary);
+}
+
+.gx-type-input.is-correct {
+  border-color: var(--success);
+  background: var(--success-soft);
+  color: var(--success-ink);
+}
+
+.gx-type-input.is-wrong {
+  border-color: var(--danger);
+  background: var(--danger-soft);
+  animation: gentle-shake 0.32s ease-in-out;
+}
+
+.gx-type-tools {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.gx-type-hint {
+  padding: 10px 14px;
+  border-radius: 12px;
+  background: #fffbeb;
+  border: 1px solid #fde68a;
+  color: #92400e;
+  font-size: 16px;
+  font-weight: 700;
+}
+
+.gx-speak-card {
+  padding: 18px;
+  border-radius: var(--radius-md);
+  background: var(--card);
+  color: var(--ink);
+  border: 1px solid rgba(255, 255, 255, 0.65);
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 10px;
+}
+
+.gx-mic-big {
+  min-height: 56px;
+  padding: 12px 22px;
+  font-size: 18px;
+  font-weight: 850;
+}
+
+.gx-mic-big.is-listening {
+  background: #fff7ed;
+  color: #9a3412;
+  border: 2px solid #fb923c;
+  animation: pulse 1s ease-in-out infinite;
+}
+
+.gx-speak-live {
+  width: 100%;
+  padding: 12px 14px;
+  border-radius: 14px;
+  background: #ffffff;
+  border: 1px solid var(--line-card);
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
 /* ---------------- responsive / motion / print ---------------- */
 
 @media (max-width: 760px) {
