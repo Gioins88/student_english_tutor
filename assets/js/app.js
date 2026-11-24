@@ -1305,19 +1305,23 @@
       : lesson.subject === "math"
         ? ["boss", "balloon", "detective"]
         : ["balloon", "boss", "memory", "detective", "listen", "typing", "speak"];
+    var isExtraSubj = lesson.subject === "science" || lesson.subject === "math";
+    var sciCardsCount = lesson.scienceBlocks && Array.isArray(lesson.scienceBlocks.concept_cards)
+      ? lesson.scienceBlocks.concept_cards.length
+      : 0;
     var cards = order.map(function (key) {
       var info = meta[key];
       if (!info) return "";
       var plays = progress.games["game:" + lesson.id + ":" + key];
       var countText = key === "memory"
-        ? Math.min(6, lesson.vocabulary.length) + " cặp thẻ"
+        ? Math.min(6, sciCardsCount || lesson.vocabulary.length) + " cặp thẻ"
         : key === "listen"
           ? "5 câu nghe"
           : key === "typing"
             ? Math.min(6, lesson.vocabulary.length) + " từ"
             : key === "speak"
               ? "5 câu đọc"
-              : "6 câu";
+              : (isExtraSubj ? Math.min(10, (lesson.quiz || []).length) : 6) + " câu";
       return '<button class="module-card" type="button" data-game="' + key + '">' +
         '<span class="module-card__icon">' + icon(info.icon, "icon--lg") + "</span>" +
         '<span class="module-card__title">' + esc(info.title) + "</span>" +
@@ -1326,9 +1330,14 @@
         "</button>";
     }).join("");
 
+    var hubDesc = lesson.subject === "science"
+      ? "Bốn trò chơi ôn tập khái niệm, ghép thẻ và kiến thức Khoa học."
+      : lesson.subject === "math"
+        ? "Ba trò chơi phản xạ, chiến đấu Boss và giải nhanh Toán học."
+        : "Bảy trò chơi kiểm tra từ vựng, ngữ pháp, tự nhập từ, đọc to, đọc hiểu và nghe.";
     setView(
       lessonTabs(lesson, "games") +
-      moduleHeader("Phân hệ 5", "Mini-games", "Bảy trò chơi kiểm tra từ vựng, ngữ pháp, tự nhập từ, đọc to, đọc hiểu và nghe.") +
+      moduleHeader("Phân hệ 5", "Mini-games", hubDesc) +
       '<div class="module-grid">' + cards + "</div>" +
       '<div class="hint-card">' + icon("info") + "<div><strong>Mẹo nhỏ:</strong> mỗi mini-game thắng lần đầu sẽ mở một Sticker mới trong Kho báu. Trả lời sai sẽ được đưa vào Kho báu cần chinh phục để ôn lại đúng lúc.</div></div>" +
       '<div class="cta-row" style="margin-top:18px"><a class="btn btn--outline" href="#/lesson/' + encodeURIComponent(lesson.id) + '/review">' + icon("refresh") + "Ôn tập kho báu</a></div>"

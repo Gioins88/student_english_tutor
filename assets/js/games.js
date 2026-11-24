@@ -172,9 +172,22 @@
     var filtered = source.filter(function (item) {
       return item && item.game_type === type;
     });
-    var pool = filtered.length ? filtered : source.filter(function (item) {
-      return item && Array.isArray(item.options) && item.options.length >= 2;
-    });
+    var pool = filtered.slice();
+    if (lesson && lesson.subject !== "english" && pool.length < count) {
+      var seen = {};
+      pool.forEach(function (entry) { if (entry && entry.id) seen[entry.id] = true; });
+      shuffle(source).forEach(function (item) {
+        if (pool.length < count && item && Array.isArray(item.options) && item.options.length >= 2 && (!item.id || !seen[item.id])) {
+          pool.push(item);
+          if (item.id) seen[item.id] = true;
+        }
+      });
+    }
+    if (!pool.length) {
+      pool = source.filter(function (item) {
+        return item && Array.isArray(item.options) && item.options.length >= 2;
+      });
+    }
     if (!pool.length) {
       var quiz = lesson && Array.isArray(lesson.quiz) ? lesson.quiz : [];
       pool = quiz.filter(function (item) {
@@ -321,8 +334,13 @@
 
   /* ---------------- 1. Balloon Pop ---------------- */
 
+  function gameQuestionCap(defaultCap) {
+    var total = lesson && Array.isArray(lesson.quiz) ? lesson.quiz.length : 0;
+    return lesson && lesson.subject !== "english" && total >= 8 ? Math.min(10, total) : defaultCap;
+  }
+
   function startBalloon() {
-    var pool = pickItems("balloon_pop", 6);
+    var pool = pickItems("balloon_pop", gameQuestionCap(6));
     game = { type: "balloon", round: 0, correct: 0, combo: 0, bestCombo: 0, xp: 0, locked: false };
     renderBalloonRound(pool);
   }
@@ -417,7 +435,7 @@
   /* ---------------- 2. Boss Battle ---------------- */
 
   function startBoss() {
-    var pool = pickItems("boss_battle", 6);
+    var pool = pickItems("boss_battle", gameQuestionCap(6));
     game = { type: "boss", pool: pool, round: 0, correct: 0, combo: 0, hp: 100, shields: 3, xp: 0, damage: Math.ceil(100 / Math.max(1, pool.length)) };
     renderBossRound();
   }
@@ -526,7 +544,21 @@
   /* ---------------- 3. Memory Match ---------------- */
 
   function startMemory() {
-    var words = (lesson.vocabulary || []).slice(0, 6);
+    var raw = Array.isArray(lesson.vocabulary) && lesson.vocabulary.length ? lesson.vocabulary : [];
+    var isConceptMode = false;
+    if (!raw.length && lesson.scienceBlocks && Array.isArray(lesson.scienceBlocks.concept_cards)) {
+      isConceptMode = true;
+      raw = lesson.scienceBlocks.concept_cards.map(function (c) {
+        return {
+          id: c.id,
+          word: c.term_vi,
+          meaning_vi: c.term_en || c.definition_vi,
+          icon: c.icon || null,
+          speak_text: c.term_en || ""
+        };
+      });
+    }
+    var words = (isConceptMode ? shuffle(raw) : raw).slice(0, 6);
     if (!words.length) {
       modal.body.innerHTML = '<div class="gx-empty">' + icon("book", "icon--lg") + '<h3>Chưa có từ vựng</h3><p>Bài học này chưa có thẻ để chơi.</p><button class="btn btn--primary" data-gx-done>Đóng</button></div>';
       $("[data-gx-done]", modal.body).addEventListener("click", close);
@@ -534,10 +566,11 @@
     }
     var cards = [];
     words.forEach(function (word) {
-      cards.push({ pair: word.id, label: word.word, kind: "word", icon: word.icon, speak: word.word });
-      cards.push({ pair: word.id, label: word.meaning_vi || word.example_en || word.word, kind: "meaning", icon: null, speak: word.word });
+      var speakText = isConceptMode ? (word.speak_text || "") : word.word;
+      cards.push({ pair: word.id, label: word.word, kind: "word", icon: word.icon, speak: speakText });
+      cards.push({ pair: word.id, label: word.meaning_vi || word.example_en || word.word, kind: "meaning", icon: null, speak: speakText });
     });
-    game = { type: "memory", cards: shuffle(cards), flipped: [], matched: {}, moves: 0, lock: false, total: words.length };
+    game = { type: "memory", cards: shuffle(cards), flipped: [], matched: {}, moves: 0, lock: false, total: words.length, isConceptMode: isConceptMode };
     renderMemory();
   }
 
@@ -555,7 +588,7 @@
     modal.body.innerHTML =
       questionHeader(pairCount, game.total, '<span class="gx-combo">' + icon("refresh") + "Lượt lật: " + game.moves + "</span>") +
       '<div class="gx-prompt-card"><div class="gx-prompt-label">Lật hai thẻ giống nhau</div>' +
-      '<p class="gx-prompt">Tìm cặp từ tiếng Anh và nghĩa tiếng Việt.</p></div>' +
+      '<p class="gx-prompt">' + (game.isConceptMode ? "Ghép khái niệm Khoa học (Tiếng Việt ↔ Tiếng Anh)." : "Tìm cặp từ tiếng Anh và nghĩa tiếng Việt.") + "</p></div>" +
       '<div class="gx-memory-grid">' + cards + "</div>" +
       '<div class="gx-feedback gx-feedback--info" role="status" aria-live="polite">' + icon("info") + "<div><strong>Kho báu đang chờ</strong><span>Tìm đủ " + game.total + " cặp để mở rương.</span></div></div>";
 
@@ -613,7 +646,7 @@
   /* ---------------- 4. Detective Cloze ---------------- */
 
   function startDetective() {
-    var pool = pickItems("detective_cloze", 5);
+    var pool = pickItems("detective_cloze", gameQuestionCap(5));
     game = { type: "detective", pool: pool, round: 0, correct: 0, xp: 0, wrong: {} };
     renderDetectiveRound();
   }
