@@ -131,6 +131,34 @@
           "source_page": 1,
           "source_type": "pdf_extracted",
           "source_quote": "7. moving quickly on foot"
+        },
+        {
+          "id": "voc_09",
+          "word": "badminton",
+          "ipa": null,
+          "pos": "noun",
+          "meaning_vi": "cầu lông",
+          "example_en": "We play badminton in the school yard.",
+          "example_vi": "Chúng mình chơi cầu lông ở sân trường.",
+          "mnemonic_vi": null,
+          "icon": null,
+          "source_page": 1,
+          "source_type": "ai_generated_practice",
+          "source_quote": null
+        },
+        {
+          "id": "voc_10",
+          "word": "swimming",
+          "ipa": null,
+          "pos": "noun",
+          "meaning_vi": "bơi lội",
+          "example_en": "Swimming helps us stay healthy and strong.",
+          "example_vi": "Bơi lội giúp chúng ta khỏe mạnh.",
+          "mnemonic_vi": null,
+          "icon": null,
+          "source_page": 1,
+          "source_type": "ai_generated_practice",
+          "source_quote": null
         }
       ],
       "grammar_patterns": [
@@ -712,6 +740,48 @@
           "source_page": 1,
           "source_type": "pdf_extracted",
           "source_quote": "This is a person who teaches you Vietnamese and Math."
+        },
+        {
+          "id": "voc_08",
+          "word": "canteen",
+          "ipa": null,
+          "pos": "noun",
+          "meaning_vi": "căng-tin / nhà ăn",
+          "example_en": "The school cook works in the canteen.",
+          "example_vi": "Cô đầu bếp làm việc ở nhà ăn.",
+          "mnemonic_vi": null,
+          "icon": null,
+          "source_page": 1,
+          "source_type": "ai_generated_practice",
+          "source_quote": null
+        },
+        {
+          "id": "voc_09",
+          "word": "principal",
+          "ipa": null,
+          "pos": "noun",
+          "meaning_vi": "hiệu trưởng",
+          "example_en": "The principal greets students at the gate.",
+          "example_vi": "Thầy/Cô hiệu trưởng chào học sinh ở cổng.",
+          "mnemonic_vi": null,
+          "icon": null,
+          "source_page": 1,
+          "source_type": "ai_generated_practice",
+          "source_quote": null
+        },
+        {
+          "id": "voc_10",
+          "word": "school bus driver",
+          "ipa": null,
+          "pos": "phrase",
+          "meaning_vi": "tài xế xe buýt trường",
+          "example_en": "The school bus driver arrives early every morning.",
+          "example_vi": "Bác tài xế xe buýt đến sớm mỗi sáng.",
+          "mnemonic_vi": null,
+          "icon": null,
+          "source_page": 1,
+          "source_type": "ai_generated_practice",
+          "source_quote": null
         }
       ],
       "grammar_patterns": [
@@ -1391,6 +1461,48 @@
           "source_page": 1,
           "source_type": "pdf_extracted",
           "source_quote": "Students can run, jump and play games in the p _ _ _ _ _ _ _ _ _ (u g r d o l y a n)."
+        },
+        {
+          "id": "voc_08",
+          "word": "library",
+          "ipa": null,
+          "pos": "noun",
+          "meaning_vi": "thư viện",
+          "example_en": "We borrow storybooks from the school library.",
+          "example_vi": "Chúng em mượn sách truyện ở thư viện trường.",
+          "mnemonic_vi": null,
+          "icon": null,
+          "source_page": 1,
+          "source_type": "ai_generated_practice",
+          "source_quote": null
+        },
+        {
+          "id": "voc_09",
+          "word": "gym",
+          "ipa": null,
+          "pos": "noun",
+          "meaning_vi": "phòng thể chất",
+          "example_en": "Students play basketball in the gym.",
+          "example_vi": "Học sinh chơi bóng rổ trong phòng thể chất.",
+          "mnemonic_vi": null,
+          "icon": null,
+          "source_page": 1,
+          "source_type": "ai_generated_practice",
+          "source_quote": null
+        },
+        {
+          "id": "voc_10",
+          "word": "uniform",
+          "ipa": null,
+          "pos": "noun",
+          "meaning_vi": "đồng phục",
+          "example_en": "All students wear a neat blue uniform.",
+          "example_vi": "Tất cả học sinh mặc đồng phục màu xanh gọn gàng.",
+          "mnemonic_vi": null,
+          "icon": null,
+          "source_page": 1,
+          "source_type": "ai_generated_practice",
+          "source_quote": null
         }
       ],
       "grammar_patterns": [
@@ -2166,6 +2278,62 @@
           "source_page": 1,
           "source_type": "pdf_extracted",
           "source_quote": "the planet which is famous for its thousands of bright rings made of dust and ice around it S ……………………….."
+        },
+        {
+          "id": "voc_07",
+          "word": "Mercury",
+          "ipa": null,
+          "pos": "noun",
+          "meaning_vi": "sao Thủy",
+          "example_en": "Mercury is the closest planet to the Sun.",
+          "example_vi": "Sao Thủy là hành tinh gần Mặt Trời nhất.",
+          "mnemonic_vi": null,
+          "icon": null,
+          "source_page": 1,
+          "source_type": "ai_generated_practice",
+          "source_quote": null
+        },
+        {
+          "id": "voc_08",
+          "word": "Mars",
+          "ipa": null,
+          "pos": "noun",
+          "meaning_vi": "sao Hỏa",
+          "example_en": "Mars is famous as the Red Planet.",
+          "example_vi": "Sao Hỏa nổi tiếng là Hành tinh Đỏ.",
+          "mnemonic_vi": null,
+          "icon": null,
+          "source_page": 1,
+          "source_type": "ai_generated_practice",
+          "source_quote": null
+        },
+        {
+          "id": "voc_09",
+          "word": "Neptune",
+          "ipa": null,
+          "pos": "noun",
+          "meaning_vi": "sao Hải Vương",
+          "example_en": "Neptune is a cold, windy blue planet.",
+          "example_vi": "Sao Hải Vương là hành tinh xanh lạnh và nhiều gió.",
+          "mnemonic_vi": null,
+          "icon": null,
+          "source_page": 1,
+          "source_type": "ai_generated_practice",
+          "source_quote": null
+        },
+        {
+          "id": "voc_10",
+          "word": "planet",
+          "ipa": null,
+          "pos": "noun",
+          "meaning_vi": "hành tinh",
+          "example_en": "Eight planets orbit around the Sun.",
+          "example_vi": "Tám hành tinh quay quanh Mặt Trời.",
+          "mnemonic_vi": null,
+          "icon": null,
+          "source_page": 1,
+          "source_type": "ai_generated_practice",
+          "source_quote": null
         }
       ],
       "grammar_patterns": [
@@ -2900,6 +3068,62 @@
           "source_page": 1,
           "source_type": "pdf_extracted",
           "source_quote": "a vehicle that flies into space and comes back to Earth"
+        },
+        {
+          "id": "voc_07",
+          "word": "astronaut",
+          "ipa": null,
+          "pos": "noun",
+          "meaning_vi": "phi hành gia",
+          "example_en": "The astronaut floats inside the space station.",
+          "example_vi": "Phi hành gia lơ lửng trong trạm vũ trụ.",
+          "mnemonic_vi": null,
+          "icon": null,
+          "source_page": 1,
+          "source_type": "ai_generated_practice",
+          "source_quote": null
+        },
+        {
+          "id": "voc_08",
+          "word": "rocket",
+          "ipa": null,
+          "pos": "noun",
+          "meaning_vi": "tên lửa",
+          "example_en": "A rocket launches satellites into space.",
+          "example_vi": "Tên lửa phóng vệ tinh vào không gian.",
+          "mnemonic_vi": null,
+          "icon": null,
+          "source_page": 1,
+          "source_type": "ai_generated_practice",
+          "source_quote": null
+        },
+        {
+          "id": "voc_09",
+          "word": "spacesuit",
+          "ipa": null,
+          "pos": "noun",
+          "meaning_vi": "bộ đồ vũ trụ",
+          "example_en": "Astronauts wear a spacesuit on the Moon.",
+          "example_vi": "Phi hành gia mặc đồ vũ trụ khi đi trên Mặt Trăng.",
+          "mnemonic_vi": null,
+          "icon": null,
+          "source_page": 1,
+          "source_type": "ai_generated_practice",
+          "source_quote": null
+        },
+        {
+          "id": "voc_10",
+          "word": "crater",
+          "ipa": null,
+          "pos": "noun",
+          "meaning_vi": "hố va chạm (trên hành tinh)",
+          "example_en": "We can see big craters on the Moon through a telescope.",
+          "example_vi": "Ta thấy các hố lớn trên Mặt Trăng qua kính thiên văn.",
+          "mnemonic_vi": null,
+          "icon": null,
+          "source_page": 1,
+          "source_type": "ai_generated_practice",
+          "source_quote": null
         }
       ],
       "grammar_patterns": [
@@ -3574,6 +3798,62 @@
           "source_page": 1,
           "source_type": "pdf_extracted",
           "source_quote": "A colorful r _ _ _ _ _ _ is appearing right after the rain. (a i b o n w)"
+        },
+        {
+          "id": "voc_07",
+          "word": "sunrise",
+          "ipa": null,
+          "pos": "noun",
+          "meaning_vi": "bình minh",
+          "example_en": "We woke up early to watch the golden sunrise.",
+          "example_vi": "Chúng tôi dậy sớm ngắm bình minh vàng rực.",
+          "mnemonic_vi": null,
+          "icon": null,
+          "source_page": 1,
+          "source_type": "ai_generated_practice",
+          "source_quote": null
+        },
+        {
+          "id": "voc_08",
+          "word": "thunder",
+          "ipa": null,
+          "pos": "noun",
+          "meaning_vi": "sấm",
+          "example_en": "Loud thunder often follows bright lightning.",
+          "example_vi": "Tiếng sấm to thường theo sau tia chớp sáng.",
+          "mnemonic_vi": null,
+          "icon": null,
+          "source_page": 1,
+          "source_type": "ai_generated_practice",
+          "source_quote": null
+        },
+        {
+          "id": "voc_09",
+          "word": "comet",
+          "ipa": null,
+          "pos": "noun",
+          "meaning_vi": "sao chổi",
+          "example_en": "A bright comet has a glowing tail of ice and dust.",
+          "example_vi": "Sao chổi sáng có chiếc đuôi bằng băng và bụi.",
+          "mnemonic_vi": null,
+          "icon": null,
+          "source_page": 1,
+          "source_type": "ai_generated_practice",
+          "source_quote": null
+        },
+        {
+          "id": "voc_10",
+          "word": "aurora",
+          "ipa": null,
+          "pos": "noun",
+          "meaning_vi": "cực quang",
+          "example_en": "The aurora dances across the night sky in polar regions.",
+          "example_vi": "Cực quang nhảy múa trên bầu trời đêm vùng cực.",
+          "mnemonic_vi": null,
+          "icon": null,
+          "source_page": 1,
+          "source_type": "ai_generated_practice",
+          "source_quote": null
         }
       ],
       "grammar_patterns": [
@@ -4248,6 +4528,34 @@
           "source_page": 2,
           "source_type": "pdf_extracted",
           "source_quote": "When the lesson begins, she sometimes shares a riddle, a short and interesting question that makes students think carefully and try to find an answer."
+        },
+        {
+          "id": "voc_09",
+          "word": "telescope",
+          "ipa": null,
+          "pos": "noun",
+          "meaning_vi": "kính thiên văn",
+          "example_en": "Use a telescope to look at distant planets.",
+          "example_vi": "Dùng kính thiên văn để ngắm các hành tinh xa.",
+          "mnemonic_vi": null,
+          "icon": null,
+          "source_page": 1,
+          "source_type": "ai_generated_practice",
+          "source_quote": null
+        },
+        {
+          "id": "voc_10",
+          "word": "orbit",
+          "ipa": null,
+          "pos": "verb",
+          "meaning_vi": "quay quanh quỹ đạo",
+          "example_en": "The Moon orbits around the Earth.",
+          "example_vi": "Mặt Trăng quay quanh Trái Đất.",
+          "mnemonic_vi": null,
+          "icon": null,
+          "source_page": 1,
+          "source_type": "ai_generated_practice",
+          "source_quote": null
         }
       ],
       "grammar_patterns": [
@@ -5107,6 +5415,20 @@
           "source_page": 1,
           "source_type": "pdf_extracted",
           "source_quote": "solar panels/ save energy"
+        },
+        {
+          "id": "voc_10",
+          "word": "eco-house",
+          "ipa": null,
+          "pos": "noun",
+          "meaning_vi": "ngôi nhà sinh thái",
+          "example_en": "An eco-house uses solar panels to save electricity.",
+          "example_vi": "Ngôi nhà sinh thái dùng pin mặt trời để tiết kiệm điện.",
+          "mnemonic_vi": null,
+          "icon": null,
+          "source_page": 1,
+          "source_type": "ai_generated_practice",
+          "source_quote": null
         }
       ],
       "grammar_patterns": [
@@ -6504,6 +6826,20 @@
           "source_page": 2,
           "source_type": "pdf_extracted",
           "source_quote": "bus"
+        },
+        {
+          "id": "voc_10",
+          "word": "valley",
+          "ipa": null,
+          "pos": "noun",
+          "meaning_vi": "thung lũng",
+          "example_en": "A quiet green valley lies between the tall mountains.",
+          "example_vi": "Một thung lũng xanh yên bình nằm giữa những ngọn núi cao.",
+          "mnemonic_vi": null,
+          "icon": null,
+          "source_page": 1,
+          "source_type": "ai_generated_practice",
+          "source_quote": null
         }
       ],
       "grammar_patterns": [
@@ -13637,6 +13973,20 @@
           "source_page": 2,
           "source_type": "pdf_extracted",
           "source_quote": "of to have fun learning English!"
+        },
+        {
+          "id": "voc_10",
+          "word": "explore",
+          "ipa": null,
+          "pos": "verb",
+          "meaning_vi": "khám phá",
+          "example_en": "We read books to explore new ideas.",
+          "example_vi": "Chúng em đọc sách để khám phá những ý tưởng mới.",
+          "mnemonic_vi": null,
+          "icon": null,
+          "source_page": 1,
+          "source_type": "ai_generated_practice",
+          "source_quote": null
         }
       ],
       "grammar_patterns": [

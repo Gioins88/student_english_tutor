@@ -3,9 +3,20 @@
 (function () {
   "use strict";
 
+  var lastLessonId = null;
   var conceptIndex = 0;
   var sortIndex = 0;
   var seqIndex = 0;
+
+  function syncLesson(lesson) {
+    var id = lesson && lesson.id ? lesson.id : null;
+    if (id !== lastLessonId) {
+      lastLessonId = id;
+      conceptIndex = 0;
+      sortIndex = 0;
+      seqIndex = 0;
+    }
+  }
 
   function hashStr(s) {
     var h = 2166136261;
@@ -111,6 +122,7 @@
     });
     root.querySelector("#sci-known").addEventListener("click", function () {
       api.award(5, 1);
+      if (api.markProgress) api.markProgress("science-concepts", card.id, cards.length);
       api.toast("Tuyệt vời! +5 XP và +1 Sao.");
       if (conceptIndex < cards.length - 1) {
         conceptIndex += 1;
@@ -216,6 +228,7 @@
               statusText = "Hoàn thành xuất sắc! +10 XP và +1 Sao.";
               api.award(10, 1);
               api.unlockSticker("sticker_sci_sorter");
+              if (api.markProgress) api.markProgress("science-sort", ch.id, challenges.length);
               api.confetti();
             } else {
               statusText = "Chính xác! Còn " + left + " thẻ nữa.";
@@ -317,6 +330,7 @@
               statusText = "Chính xác tuyệt đối! +10 XP và +1 Sao.";
               api.award(10, 1);
               api.unlockSticker("sticker_sci_seq");
+              if (api.markProgress) api.markProgress("science-seq", ch.id, seqs.length);
               api.confetti();
             } else {
               statusText = "Thứ tự chưa đúng hết. Chạm vào bước muốn bỏ ra để xếp lại nhé!";
@@ -355,6 +369,7 @@
   }
 
   function render(moduleName, lesson, api) {
+    syncLesson(lesson);
     if (moduleName === "science-concepts") renderConcepts(lesson, api);
     else if (moduleName === "science-sort") renderSort(lesson, api);
     else if (moduleName === "science-seq") renderSequence(lesson, api);

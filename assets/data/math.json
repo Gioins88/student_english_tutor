@@ -338,6 +338,388 @@
               "80 000 + 5 000 + 800 + 20 + 0 = 85 820."
             ],
             "hint_vi": "Ghép từng chữ số vào bảng hàng."
+          },
+          {
+            "id": "mp_13",
+            "problem_type": "numeric_input",
+            "prompt_vi": "Số chính phương thứ 6 trong dãy 1, 4, 9, 16, 25, ? là bao nhiêu?",
+            "prompt_en": "Find the 6th square number after 1, 4, 9, 16, 25:",
+            "answer_num": 36,
+            "unit": null,
+            "tolerance": 0.0001,
+            "steps_solution": [
+              "6 × 6 = 36."
+            ],
+            "hint_vi": "Nhân 6 với chính nó."
+          },
+          {
+            "id": "mp_14",
+            "problem_type": "numeric_input",
+            "prompt_vi": "Hoàn thiện phép tính: 40 600 : 100 = ?",
+            "prompt_en": "Calculate: 40,600 ÷ 100 = ?",
+            "answer_num": 406,
+            "unit": null,
+            "tolerance": 0.0001,
+            "steps_solution": [
+              "Chia 100 bỏ hai chữ số 0 tận cùng: 40 600 : 100 = 406."
+            ],
+            "hint_vi": "Dịch các chữ số sang phải 2 hàng."
+          },
+          {
+            "id": "mp_15",
+            "problem_type": "step_word_problem",
+            "prompt_vi": "Nhiệt độ ban ngày là 14°C. Ban đêm nhiệt độ giảm xuống 19°C.",
+            "prompt_en": "Daytime temperature is 14°C. At night it drops by 19°C.",
+            "sub_steps": [
+              {
+                "prompt_vi": "Cần giảm bao nhiêu độ để từ 14°C xuống tới 0°C?",
+                "answer_num": 14,
+                "unit": "°C",
+                "hint_vi": "14 - 14 = 0."
+              },
+              {
+                "prompt_vi": "Nhiệt độ ban đêm sau khi giảm đủ 19°C là bao nhiêu °C?",
+                "answer_num": -5,
+                "unit": "°C",
+                "hint_vi": "Giảm thêm 19 - 14 = 5°C dưới 0°C."
+              }
+            ],
+            "steps_solution": [
+              "14 - 19 = -5°C."
+            ],
+            "hint_vi": "Xuống 0°C mất 14°, còn lại 5° nữa xuống dưới 0."
+          },
+          {
+            "id": "mp_16",
+            "problem_type": "step_word_problem",
+            "prompt_vi": "Một dãy số bắt đầu từ 3 015 với quy luật “cộng 12” mỗi bước.",
+            "prompt_en": "A sequence starts at 3,015 and adds 12 each time.",
+            "sub_steps": [
+              {
+                "prompt_vi": "Số hạng thứ 2 của dãy là bao nhiêu?",
+                "answer_num": 3027,
+                "unit": null,
+                "hint_vi": "3015 + 12 = ?"
+              },
+              {
+                "prompt_vi": "Số hạng thứ 5 của dãy là bao nhiêu?",
+                "answer_num": 3063,
+                "unit": null,
+                "hint_vi": "3015 + 4 × 12 = 3015 + 48 = ?"
+              }
+            ],
+            "steps_solution": [
+              "3015, 3027, 3039, 3051, 3063."
+            ],
+            "hint_vi": "Cộng thêm 12 bốn lần từ số đầu tiên."
+          },
+          {
+            "id": "mp_17",
+            "problem_type": "step_word_problem",
+            "prompt_vi": "Tàu ngầm đang ở độ sâu -120 m (dưới mực nước biển). Sau đó tàu nổi lên 45 m.",
+            "prompt_en": "A submarine at -120 m rises 45 m.",
+            "sub_steps": [
+              {
+                "prompt_vi": "Sau khi nổi lên 45 m, vị trí mới của tàu là bao nhiêu mét?",
+                "answer_num": -75,
+                "unit": "m",
+                "hint_vi": "-120 + 45 = -(120 - 45)."
+              },
+              {
+                "prompt_vi": "Tàu cần nổi thêm bao nhiêu mét nữa để chạm mặt biển (0 m)?",
+                "answer_num": 75,
+                "unit": "m",
+                "hint_vi": "Từ -75 lên 0 là bao nhiêu?"
+              }
+            ],
+            "steps_solution": [
+              "-120 + 45 = -75 m; cần thêm 75 m để tới 0 m."
+            ],
+            "hint_vi": "Nổi lên tức là cộng thêm (tiến gần về 0)."
+          },
+          {
+            "id": "mp_18",
+            "problem_type": "step_word_problem",
+            "prompt_vi": "Cô giáo viết hai số 625 và 725 lên bảng theo quy luật cộng 100.",
+            "prompt_en": "Sequence: 625, 725, 825, ...",
+            "sub_steps": [
+              {
+                "prompt_vi": "Số hạng thứ 5 của dãy là bao nhiêu?",
+                "answer_num": 1025,
+                "unit": null,
+                "hint_vi": "625, 725, 825, 925, ?"
+              },
+              {
+                "prompt_vi": "Nhân số hạng thứ 5 đó với 10 được kết quả là:",
+                "answer_num": 10250,
+                "unit": null,
+                "hint_vi": "1025 × 10 = ?"
+              }
+            ],
+            "steps_solution": [
+              "Hạng 5 là 1025; nhân 10 được 10 250."
+            ],
+            "hint_vi": "Đếm thêm 100 bốn lần rồi thêm một số 0."
+          },
+          {
+            "id": "mp_19",
+            "problem_type": "step_word_problem",
+            "prompt_vi": "Có 532 + 374 không bằng giá trị của số 900. Hãy kiểm tra một dãy khác: 2 015 trừ 5 mỗi bước.",
+            "prompt_en": "Sequence starts at 2,015 and subtracts 5.",
+            "sub_steps": [
+              {
+                "prompt_vi": "Số hạng thứ 3 của dãy 2 015 trừ 5 mỗi bước là:",
+                "answer_num": 2005,
+                "unit": null,
+                "hint_vi": "2015, 2010, ?"
+              },
+              {
+                "prompt_vi": "Số hạng thứ 5 của dãy là:",
+                "answer_num": 1995,
+                "unit": null,
+                "hint_vi": "2005 - 5 - 5 = ?"
+              }
+            ],
+            "steps_solution": [
+              "2015, 2010, 2005, 2000, 1995."
+            ],
+            "hint_vi": "Mỗi bước trừ đi 5."
+          },
+          {
+            "id": "mp_20",
+            "problem_type": "step_word_problem",
+            "prompt_vi": "Lohan đếm ngược cách đều 100 bắt đầu từ 745.",
+            "prompt_en": "Lohan counts back in 100s from 745.",
+            "sub_steps": [
+              {
+                "prompt_vi": "Số thứ tư Lohan đếm được sau 745 là số nào (745 → 645 → ...)?",
+                "answer_num": 345,
+                "unit": null,
+                "hint_vi": "645 (1), 545 (2), 445 (3), ? (4)"
+              },
+              {
+                "prompt_vi": "Nếu đếm ngược thêm 4 lần 100 nữa từ 345 thì chạm tới số âm nào?",
+                "answer_num": -55,
+                "unit": null,
+                "hint_vi": "345 → 245 → 145 → 45 → ?"
+              }
+            ],
+            "steps_solution": [
+              "Sau 4 lần: 345; thêm 4 lần nữa: 45 - 100 = -55."
+            ],
+            "hint_vi": "Chú ý khi vượt qua mốc 0 (45 - 100 = -55)."
+          }
+        ],
+        "theory_puzzles": [
+          {
+            "id": "tp_01",
+            "puzzle_type": "true_false_myth",
+            "title_vi": "Phá giải hiểu nhầm về số âm",
+            "title_en": "Negative number myth",
+            "prompt_vi": "Đúng hay Sai: -6 lớn hơn -2 vì 6 lớn hơn 2?",
+            "prompt_en": "True or False: -6 is greater than -2 because 6 > 2?",
+            "options": [
+              "Sai, -6 nằm bên trái -2 nên -6 < -2",
+              "Đúng, vì bỏ dấu trừ thì 6 > 2",
+              "Hai số bằng nhau",
+              "Chỉ đúng khi đo nhiệt độ"
+            ],
+            "answer_index": 0,
+            "hints": [
+              "Nhiệt độ -6°C lạnh hơn hay ấm hơn -2°C?",
+              "Số càng xa 0 về phía âm thì giá trị càng bé."
+            ],
+            "explanation_vi": "-6°C lạnh hơn -2°C nên -6 < -2.",
+            "explanation_en": "-6 is further left of 0, so -6 < -2."
+          },
+          {
+            "id": "tp_02",
+            "puzzle_type": "rule_cloze",
+            "title_vi": "Bí mật phép nhân với 100",
+            "title_en": "Multiplying by 100 rule",
+            "prompt_vi": "Khi nhân một số tự nhiên với 100, tất cả các chữ số dịch chuyển sang ____ mấy hàng?",
+            "prompt_en": "When multiplying a whole number by 100, digits shift ____.",
+            "options": [
+              "sang trái 2 hàng",
+              "sang phải 2 hàng",
+              "sang trái 1 hàng",
+              "không đổi vị trí"
+            ],
+            "answer_index": 0,
+            "hints": [
+              "Thử với 50 × 100 = 5 000.",
+              "Chữ số 5 từ hàng chục nhảy lên hàng nghìn (2 bước sang trái)."
+            ],
+            "explanation_vi": "Nhân 10 dịch trái 1 hàng; nhân 100 dịch trái 2 hàng.",
+            "explanation_en": "Multiplying by 100 shifts every digit 2 places left."
+          },
+          {
+            "id": "tp_03",
+            "puzzle_type": "quick_match",
+            "title_vi": "Nhận diện Số chính phương",
+            "title_en": "Spot the square number",
+            "prompt_vi": "Vì sao 25 được gọi là số chính phương (square number)?",
+            "prompt_en": "Why is 25 called a square number?",
+            "options": [
+              "Vì 25 = 5 × 5 (một số nhân chính nó)",
+              "Vì 25 = 20 + 5",
+              "Vì 25 là số lẻ",
+              "Vì 25 chia hết cho 5"
+            ],
+            "answer_index": 0,
+            "hints": [
+              "Thử xếp 25 chấm tròn thành 5 hàng × 5 cột.",
+              "Số chính phương tạo thành hình vuông."
+            ],
+            "explanation_vi": "Số chính phương là kết quả của phép nhân một số với chính nó (5 × 5 = 25).",
+            "explanation_en": "25 = 5 × 5 forms a 5×5 square grid."
+          },
+          {
+            "id": "tp_04",
+            "puzzle_type": "true_false_myth",
+            "title_vi": "Dãy tuyến tính vs Phi tuyến tính",
+            "title_en": "Linear vs Non-linear",
+            "prompt_vi": "Phát biểu nào đúng về dãy số 1, 4, 9, 16, 25?",
+            "prompt_en": "Which is true about 1, 4, 9, 16, 25?",
+            "options": [
+              "Là dãy phi tuyến tính vì hiệu (+3, +5, +7, +9) thay đổi",
+              "Là dãy tuyến tính vì luôn tăng",
+              "Có quy luật cộng 3 mỗi bước",
+              "Không có quy luật nào"
+            ],
+            "answer_index": 0,
+            "hints": [
+              "Tính hiệu hai số liên tiếp: 4-1=3, 9-4=5.",
+              "Khoảng cách giữa các số hạng có bằng nhau không?"
+            ],
+            "explanation_vi": "Khoảng cách thay đổi (+3, +5, +7, +9) nên là dãy phi tuyến tính.",
+            "explanation_en": "Changing steps (+3, +5, +7, +9) make it non-linear."
+          },
+          {
+            "id": "tp_05",
+            "puzzle_type": "rule_cloze",
+            "title_vi": "Chia nhẩm cho 100",
+            "title_en": "Dividing by 100 rule",
+            "prompt_vi": "Khi chia 5 000 cho 100, tất cả các chữ số dịch chuyển sang ____ 2 hàng.",
+            "prompt_en": "Dividing 5,000 by 100 shifts digits 2 places ____.",
+            "options": [
+              "phải (kết quả 50)",
+              "trái (kết quả 500 000)",
+              "phải 1 hàng (kết quả 500)",
+              "giữ nguyên"
+            ],
+            "answer_index": 0,
+            "hints": [
+              "5 000 : 100 = 50.",
+              "Số nhỏ đi 100 lần nên chữ số dịch về bên phải."
+            ],
+            "explanation_vi": "Chia cho 100 dịch phải 2 hàng → 5 000 : 100 = 50.",
+            "explanation_en": "Digits shift 2 places right: 5,000 ÷ 100 = 50."
+          },
+          {
+            "id": "tp_06",
+            "puzzle_type": "quick_match",
+            "title_vi": "Chênh lệch nhiệt độ qua mốc 0°C",
+            "title_en": "Temperature gap across 0°C",
+            "prompt_vi": "Để tìm chênh lệch giữa -5°C và +7°C, phép tính nhanh đúng nhất là gì?",
+            "prompt_en": "How do we find the difference between -5°C and +7°C?",
+            "options": [
+              "Lấy khoảng cách đến 0 cộng lại: 5 + 7 = 12°C",
+              "Lấy 7 - 5 = 2°C",
+              "Lấy 5 - 7 = -2°C",
+              "Nhân 5 × 7 = 35°C"
+            ],
+            "answer_index": 0,
+            "hints": [
+              "Vẽ trục số từ -5 đến 0 rồi từ 0 đến 7.",
+              "Từ -5 lên 0 mất 5 bước, lên 7 thêm 7 bước."
+            ],
+            "explanation_vi": "Khoảng cách trên trục số từ -5 đến 7 là 5 + 7 = 12°C.",
+            "explanation_en": "Distance from -5 to 7 is 5 + 7 = 12 degrees."
+          },
+          {
+            "id": "tp_07",
+            "puzzle_type": "true_false_myth",
+            "title_vi": "Nhóm lại khi tách số",
+            "title_en": "Regrouping numbers",
+            "prompt_vi": "Cách viết nào dưới đây VẪN BẰNG 573 421 (chỉ là nhóm lại khác đi)?",
+            "prompt_en": "Which regrouping still equals 573,421?",
+            "options": [
+              "500 000 + 70 000 + 3 000 + 300 + 100 + 20 + 1",
+              "500 000 + 70 000 + 3 000 + 300 + 20 + 1",
+              "50 000 + 70 000 + 3 000 + 400 + 20 + 1",
+              "500 000 + 7 000 + 300 + 400 + 21"
+            ],
+            "answer_index": 0,
+            "hints": [
+              "Kiểm tra 300 + 100 có bằng 400 không.",
+              "Đổi cách viết nhưng tổng giá trị phải giữ nguyên."
+            ],
+            "explanation_vi": "300 + 100 = 400 nên tổng vẫn đúng bằng 573 421.",
+            "explanation_en": "300 + 100 = 400 keeps the exact total 573,421."
+          },
+          {
+            "id": "tp_08",
+            "puzzle_type": "rule_cloze",
+            "title_vi": "Quy luật dãy tiến lên số dương",
+            "title_en": "Counting up through zero",
+            "prompt_vi": "Đếm xuôi cộng 4 bắt đầu từ -6: -6, -2, ____, 6.",
+            "prompt_en": "Count on in 4s from -6: -6, -2, ____, 6.",
+            "options": [
+              "2",
+              "0",
+              "-4",
+              "4"
+            ],
+            "answer_index": 0,
+            "hints": [
+              "Từ -2 tiến thêm 2 bước tới 0, thêm 2 bước nữa là mấy?",
+              "-2 + 4 = ?"
+            ],
+            "explanation_vi": "-2 + 4 = 2; tiếp theo 2 + 4 = 6.",
+            "explanation_en": "-2 + 4 = 2."
+          },
+          {
+            "id": "tp_09",
+            "puzzle_type": "quick_match",
+            "title_vi": "Đọc số có 6 chữ số chứa số 0",
+            "title_en": "Reading 6-digit numbers with zeros",
+            "prompt_vi": "Số 'Tám trăm ba mươi tư nghìn chín trăm linh năm' viết đúng là:",
+            "prompt_en": "Write 'eight hundred thirty-four thousand, nine hundred and five':",
+            "options": [
+              "834 905",
+              "834 950",
+              "803 495",
+              "834 095"
+            ],
+            "answer_index": 0,
+            "hints": [
+              "Lớp nghìn là 834; lớp đơn vị có 9 trăm, 0 chục, 5 đơn vị.",
+              "Chữ 'linh năm' tức là hàng chục bằng 0."
+            ],
+            "explanation_vi": "834 905.",
+            "explanation_en": "834,905 has 0 in the tens place."
+          },
+          {
+            "id": "tp_10",
+            "puzzle_type": "true_false_myth",
+            "title_vi": "Dãy số có chứa 0 hay không",
+            "title_en": "Does a sequence hit zero?",
+            "prompt_vi": "Đếm lùi 5 bắt đầu từ 65 (65, 60, 55...). Dãy này có bao giờ rơi vào số 1 không?",
+            "prompt_en": "Counting back in 5s from 65: will it ever reach 1?",
+            "options": [
+              "Không, vì mọi số đều tận cùng 0 hoặc 5",
+              "Có, ở bước thứ 13",
+              "Có, sau số 5 sẽ đến 1",
+              "Chỉ rơi vào 1 nếu đếm thêm nữa"
+            ],
+            "answer_index": 0,
+            "hints": [
+              "65 chia hết cho 5, trừ 5 nhiều lần tận cùng vẫn là 0 hoặc 5.",
+              "Từ 5 trừ 5 sẽ về đúng 0 rồi xuống -5."
+            ],
+            "explanation_vi": "Dãy đi qua 10 → 5 → 0 → -5, không bao giờ chạm số 1.",
+            "explanation_en": "It goes 5 → 0 → -5, never hitting 1."
           }
         ]
       },
@@ -1032,6 +1414,391 @@
               "532 + 374 = 906; 906 - 154 = 752 quả."
             ],
             "hint_vi": "Cộng sáng và chiều rồi trừ số táo đã bán."
+          },
+          {
+            "id": "mp_13",
+            "problem_type": "numeric_input",
+            "prompt_vi": "Tính: 158 + 296 = ?",
+            "prompt_en": "Calculate: 158 + 296",
+            "answer_num": 454,
+            "unit": null,
+            "tolerance": 0.0001,
+            "steps_solution": [
+              "158 + 300 - 4 = 454."
+            ],
+            "hint_vi": "Làm tròn 296 lên 300 rồi trừ 4."
+          },
+          {
+            "id": "mp_14",
+            "problem_type": "numeric_input",
+            "prompt_vi": "Tính: 672 - 389 = ?",
+            "prompt_en": "Calculate: 672 - 389",
+            "answer_num": 283,
+            "unit": null,
+            "tolerance": 0.0001,
+            "steps_solution": [
+              "672 - 389 = 672 - 400 + 11 = 283."
+            ],
+            "hint_vi": "Trừ 400 rồi cộng lại 11."
+          },
+          {
+            "id": "mp_15",
+            "problem_type": "step_word_problem",
+            "prompt_vi": "Một cửa hàng ngày thứ nhất bán 143 cuốn sách, ngày thứ hai bán 754 cuốn sách.",
+            "prompt_en": "143 books sold Day 1 and 754 Day 2.",
+            "sub_steps": [
+              {
+                "prompt_vi": "Nếu làm tròn mỗi số đến hàng trăm rồi cộng, tổng ước lượng là bao nhiêu?",
+                "answer_num": 900,
+                "unit": "cuốn",
+                "hint_vi": "143 → 100; 754 → 800."
+              },
+              {
+                "prompt_vi": "Tổng số sách bán chính xác cả 2 ngày là bao nhiêu cuốn?",
+                "answer_num": 897,
+                "unit": "cuốn",
+                "hint_vi": "143 + 754 = ?"
+              }
+            ],
+            "steps_solution": [
+              "Ước lượng 900; chính xác 897 cuốn."
+            ],
+            "hint_vi": "Cộng từng hàng từ phải sang trái."
+          },
+          {
+            "id": "mp_16",
+            "problem_type": "step_word_problem",
+            "prompt_vi": "Kho có 875 kg gạo, đã xuất đi 647 kg gạo.",
+            "prompt_en": "Warehouse has 875 kg rice, ships 647 kg.",
+            "sub_steps": [
+              {
+                "prompt_vi": "Ước lượng làm tròn hàng trăm (900 - 600) được khoảng bao nhiêu kg?",
+                "answer_num": 300,
+                "unit": "kg",
+                "hint_vi": "900 - 600 = ?"
+              },
+              {
+                "prompt_vi": "Số gạo còn lại chính xác là bao nhiêu kg?",
+                "answer_num": 228,
+                "unit": "kg",
+                "hint_vi": "875 - 647 = ?"
+              }
+            ],
+            "steps_solution": [
+              "875 - 647 = 228 kg."
+            ],
+            "hint_vi": "Tách 875 = 800 + 60 + 15 để trừ."
+          },
+          {
+            "id": "mp_17",
+            "problem_type": "step_word_problem",
+            "prompt_vi": "Một tam giác số có tổng mỗi cạnh là 70. Cạnh 1 có góc A = 10, góc B = 15. Cạnh 2 có góc B = 15, góc C = 35.",
+            "prompt_en": "Triangle sides each sum to 70: A=10, B=15, C=35 at corners.",
+            "sub_steps": [
+              {
+                "prompt_vi": "Số ở giữa cạnh AB (10 + ? + 15 = 70) là bao nhiêu?",
+                "answer_num": 45,
+                "unit": null,
+                "hint_vi": "70 - (10 + 15) = ?"
+              },
+              {
+                "prompt_vi": "Số ở giữa cạnh BC (15 + ? + 35 = 70) là bao nhiêu?",
+                "answer_num": 20,
+                "unit": null,
+                "hint_vi": "70 - (15 + 35) = ?"
+              },
+              {
+                "prompt_vi": "Số ở giữa cạnh AC (10 + ? + 35 = 70) là bao nhiêu?",
+                "answer_num": 25,
+                "unit": null,
+                "hint_vi": "70 - 45 = ?"
+              }
+            ],
+            "steps_solution": [
+              "Các số giữa là 45, 20, 25."
+            ],
+            "hint_vi": "Lấy 70 trừ tổng 2 góc trên cùng cạnh."
+          },
+          {
+            "id": "mp_18",
+            "problem_type": "step_word_problem",
+            "prompt_vi": "Khám phá dãy ký hiệu: △ + △ = 18 và △ + □ = 25.",
+            "prompt_en": "Given △ + △ = 18 and △ + □ = 25.",
+            "sub_steps": [
+              {
+                "prompt_vi": "Giá trị của △ là bao nhiêu?",
+                "answer_num": 9,
+                "unit": null,
+                "hint_vi": "18 : 2 = ?"
+              },
+              {
+                "prompt_vi": "Giá trị của □ là bao nhiêu?",
+                "answer_num": 16,
+                "unit": null,
+                "hint_vi": "25 - 9 = ?"
+              }
+            ],
+            "steps_solution": [
+              "△ = 9; □ = 16."
+            ],
+            "hint_vi": "Tìm △ trước từ tổng 18."
+          },
+          {
+            "id": "mp_19",
+            "problem_type": "step_word_problem",
+            "prompt_vi": "Thư viện trường A có 468 quyển truyện, ít hơn nhưng đã cho mượn 279 quyển.",
+            "prompt_en": "Library has 468 books and lends 279.",
+            "sub_steps": [
+              {
+                "prompt_vi": "Nếu ước lượng 500 - 300 thì còn khoảng bao nhiêu quyển?",
+                "answer_num": 200,
+                "unit": "quyển",
+                "hint_vi": "500 - 300 = ?"
+              },
+              {
+                "prompt_vi": "Số sách còn lại chính xác là bao nhiêu quyển?",
+                "answer_num": 189,
+                "unit": "quyển",
+                "hint_vi": "468 - 279 = ?"
+              }
+            ],
+            "steps_solution": [
+              "468 - 279 = 189 quyển."
+            ],
+            "hint_vi": "Không quên trừ nhớ ở hàng chục."
+          },
+          {
+            "id": "mp_20",
+            "problem_type": "step_word_problem",
+            "prompt_vi": "Dùng 6 thẻ số 0, 2, 3, 4, 5, 6 lập hai số có 3 chữ số khác nhau (hàng trăm khác 0) để có TỔNG NHỎ NHẤT (204 + 356).",
+            "prompt_en": "Use 0,2,3,4,5,6 once to form two 3-digit numbers with SMALLEST sum (204 + 356).",
+            "sub_steps": [
+              {
+                "prompt_vi": "Đặt 2 và 3 ở hàng trăm, 0 và 4 ở hàng chục, 5 và 6 ở hàng đơn vị: 205 + 346 bằng bao nhiêu?",
+                "answer_num": 551,
+                "unit": null,
+                "hint_vi": "205 + 346 = ?"
+              },
+              {
+                "prompt_vi": "Nếu cộng thêm hiệu 475 - 328 = 147 vào 551 thì được bao nhiêu?",
+                "answer_num": 698,
+                "unit": null,
+                "hint_vi": "551 + 147 = ?"
+              }
+            ],
+            "steps_solution": [
+              "Tổng nhỏ nhất = 205 + 346 = 551; 551 + 147 = 698."
+            ],
+            "hint_vi": "Chữ số 0 đặt ở hàng chục số nhỏ nhất."
+          }
+        ],
+        "theory_puzzles": [
+          {
+            "id": "tp_01",
+            "puzzle_type": "rule_cloze",
+            "title_vi": "Bí kíp Chẵn + Chẵn & Lẻ + Lẻ",
+            "title_en": "Even + Even & Odd + Odd",
+            "prompt_vi": "Tổng của hai số LẺ bất kỳ luôn là số gì?",
+            "prompt_en": "The sum of any two ODD numbers is always:",
+            "options": [
+              "Số chẵn",
+              "Số lẻ",
+              "Số nguyên âm",
+              "Số có hàng đơn vị là 5"
+            ],
+            "answer_index": 0,
+            "hints": [
+              "Thử cộng 1 + 3 hoặc 5 + 7.",
+              "Hai phần dư 1 ghép lại thành một đôi hoàn chỉnh."
+            ],
+            "explanation_vi": "Số lẻ + Số lẻ = Số chẵn (ví dụ 3 + 5 = 8).",
+            "explanation_en": "Odd + Odd = Even (e.g. 3 + 5 = 8)."
+          },
+          {
+            "id": "tp_02",
+            "puzzle_type": "true_false_myth",
+            "title_vi": "Phá giải hiểu lầm về Tổng 3 số lẻ",
+            "title_en": "Sum of 3 odd numbers myth",
+            "prompt_vi": "Sam nói: “Tớ cộng 3 số lẻ với nhau được 48.” Sam đúng hay sai?",
+            "prompt_en": "Sam says 3 odd numbers add up to 48. True or false?",
+            "options": [
+              "Sai, tổng 3 số lẻ luôn là số lẻ (mà 48 là số chẵn)",
+              "Đúng, ví dụ 15 + 15 + 18",
+              "Đúng, vì 3 × 16 = 48",
+              "Tùy cách chọn số"
+            ],
+            "answer_index": 0,
+            "hints": [
+              "Lẻ + Lẻ = Chẵn; rồi Chẵn + Lẻ = ?",
+              "48 là số chẵn hay số lẻ?"
+            ],
+            "explanation_vi": "Lẻ + Lẻ + Lẻ = Chẵn + Lẻ = Lẻ, không bao giờ bằng 48.",
+            "explanation_en": "Three odd numbers always sum to an odd number, never 48."
+          },
+          {
+            "id": "tp_03",
+            "puzzle_type": "quick_match",
+            "title_vi": "Ý nghĩa của Kí hiệu ẩn",
+            "title_en": "Meaning of unknown symbol",
+            "prompt_vi": "Trong một phép tính như △ + △ + ○ = 16, quy ước chuẩn là gì?",
+            "prompt_en": "In △ + △ + ○ = 16, what is the standard rule?",
+            "options": [
+              "Các hình giống nhau biểu diễn CÙNG một số",
+              "Mỗi hình muốn điền số nào cũng được",
+              "Hình tam giác luôn bằng 3",
+              "Hình tròn luôn bằng 0"
+            ],
+            "answer_index": 0,
+            "hints": [
+              "Đọc lưu ý ở Bài 2.1: Các hình giống nhau thì điền số giống nhau."
+            ],
+            "explanation_vi": "Kí hiệu giống nhau đại diện cho cùng một giá trị chưa biết.",
+            "explanation_en": "Identical symbols stand for the exact same number."
+          },
+          {
+            "id": "tp_04",
+            "puzzle_type": "rule_cloze",
+            "title_vi": "Ước lượng cộng trừ nhanh",
+            "title_en": "Estimating sums & differences",
+            "prompt_vi": "Để ước lượng nhanh phép tính 256 + 189 (làm tròn đến hàng trăm), ta tính:",
+            "prompt_en": "Best hundreds estimate for 256 + 189:",
+            "options": [
+              "300 + 200 = 500",
+              "200 + 100 = 300",
+              "250 + 180 = 430",
+              "300 + 100 = 400"
+            ],
+            "answer_index": 0,
+            "hints": [
+              "256 có hàng chục là 5 (làm tròn lên 300).",
+              "189 có hàng chục là 8 (làm tròn lên 200)."
+            ],
+            "explanation_vi": "256 → 300 và 189 → 200, tổng ước lượng là 500.",
+            "explanation_en": "256 rounds to 300; 189 rounds to 200 → 500."
+          },
+          {
+            "id": "tp_05",
+            "puzzle_type": "true_false_myth",
+            "title_vi": "Lỗi thường gặp khi Tách để Trừ",
+            "title_en": "Regrouping subtraction pitfall",
+            "prompt_vi": "Để tính 542 - 154 bằng cách tách số, cách tách nào của 542 là ĐÚNG?",
+            "prompt_en": "Which regrouping of 542 works for subtracting 154?",
+            "options": [
+              "400 + 130 + 12",
+              "400 + 140 + 12",
+              "500 + 30 + 12",
+              "400 + 130 + 2"
+            ],
+            "answer_index": 0,
+            "hints": [
+              "Thử cộng lại từng phương án xem tổng có đúng bằng 542 không!",
+              "Hàng đơn vị 2 < 4 nên mượn 10; hàng chục 30 < 50 nên mượn 100."
+            ],
+            "explanation_vi": "400 + 130 + 12 = 542 (tất cả từng hàng đều đủ lớn để trừ 100 + 50 + 4).",
+            "explanation_en": "400 + 130 + 12 = 542 allows clean column subtraction."
+          },
+          {
+            "id": "tp_06",
+            "puzzle_type": "quick_match",
+            "title_vi": "Tìm số trừ ẩn",
+            "title_en": "Finding missing subtrahend",
+            "prompt_vi": "Biết 97 - ★ = 76. Phép tính đúng để tìm ★ là gì?",
+            "prompt_en": "Given 97 - ★ = 76, how do you find ★?",
+            "options": [
+              "97 - 76 = 21",
+              "97 + 76 = 173",
+              "76 - 97",
+              "97 : 76"
+            ],
+            "answer_index": 0,
+            "hints": [
+              "Số bị trừ - Số trừ = Hiệu → Số trừ = Số bị trừ - Hiệu."
+            ],
+            "explanation_vi": "★ = 97 - 76 = 21.",
+            "explanation_en": "Subtract the difference from 97: 97 - 76 = 21."
+          },
+          {
+            "id": "tp_07",
+            "puzzle_type": "rule_cloze",
+            "title_vi": "Cân thăng bằng",
+            "title_en": "Balance scale equation",
+            "prompt_vi": "Trên cân thăng bằng, nếu tổng bên trái BẰNG tổng bên phải và bên phải có 2 túi giống nhau cân nặng 30 kg, thì mỗi túi nặng ____ kg.",
+            "prompt_en": "Two equal bags on the right balance 30 kg on the left. Each bag weighs ____ kg.",
+            "options": [
+              "15",
+              "30",
+              "60",
+              "10"
+            ],
+            "answer_index": 0,
+            "hints": [
+              "2 túi bằng nhau tổng 30 kg.",
+              "30 : 2 = ?"
+            ],
+            "explanation_vi": "30 : 2 = 15 kg.",
+            "explanation_en": "30 ÷ 2 = 15 kg."
+          },
+          {
+            "id": "tp_08",
+            "puzzle_type": "true_false_myth",
+            "title_vi": "Phép trừ số chẵn lẻ",
+            "title_en": "Odd-Even subtraction",
+            "prompt_vi": "Chữ số tận cùng của (6 428 - 1 355) chắc chắn là số chẵn hay số lẻ?",
+            "prompt_en": "Is (6,428 - 1,355) even or odd?",
+            "options": [
+              "Số lẻ (vì Chẵn - Lẻ = Lẻ)",
+              "Số chẵn (vì có nhiều chữ số chẵn)",
+              "Chắc chắn bằng 0",
+              "Không thể biết nếu chưa trừ"
+            ],
+            "answer_index": 0,
+            "hints": [
+              "Chỉ cần nhìn chữ số tận cùng: 8 (chẵn) và 5 (lẻ).",
+              "8 - 5 = 3 là số lẻ."
+            ],
+            "explanation_vi": "Số chẵn trừ số lẻ luôn ra số lẻ.",
+            "explanation_en": "Even minus Odd is always Odd."
+          },
+          {
+            "id": "tp_09",
+            "puzzle_type": "quick_match",
+            "title_vi": "Nhận dạng giá trị chữ số khi tách",
+            "title_en": "Place value in partitioning",
+            "prompt_vi": "John viết 3 054 = 3 000 + 500 + 4. Tại sao John sai?",
+            "prompt_en": "Why is 3,054 = 3,000 + 500 + 4 wrong?",
+            "options": [
+              "Chữ số 5 ở hàng chục (giá trị 50), hàng trăm là 0",
+              "Chữ số 4 phải là 40",
+              "Chữ số 3 phải là 300",
+              "John viết đúng rồi"
+            ],
+            "answer_index": 0,
+            "hints": [
+              "Đọc từng hàng từ phải sang trái: 4 đơn vị, 5 chục, 0 trăm, 3 nghìn."
+            ],
+            "explanation_vi": "3 054 = 3 000 + 50 + 4.",
+            "explanation_en": "5 is in the tens place (50), not hundreds."
+          },
+          {
+            "id": "tp_10",
+            "puzzle_type": "rule_cloze",
+            "title_vi": "Sơ đồ tam giác tổng 70",
+            "title_en": "Triangle puzzle sum 70",
+            "prompt_vi": "Nếu 3 số trên 1 cạnh tam giác có tổng bằng 70, biết 2 góc là 10 và 35, thì số ở giữa cạnh là ____.",
+            "prompt_en": "Three numbers on a side sum to 70; two are 10 and 35. The middle one is ____.",
+            "options": [
+              "25",
+              "35",
+              "15",
+              "45"
+            ],
+            "answer_index": 0,
+            "hints": [
+              "10 + 35 = 45.",
+              "70 - 45 = ?"
+            ],
+            "explanation_vi": "70 - (10 + 35) = 25.",
+            "explanation_en": "70 - 45 = 25."
           }
         ]
       },
@@ -1729,6 +2496,379 @@
               "18 × 8 = 144 cuốn sách."
             ],
             "hint_vi": "10 × 8 + 8 × 8 = 80 + 64."
+          },
+          {
+            "id": "mp_13",
+            "problem_type": "numeric_input",
+            "prompt_vi": "Tính: 219 × 5 = ?",
+            "prompt_en": "Calculate: 219 × 5",
+            "answer_num": 1095,
+            "unit": null,
+            "tolerance": 0.0001,
+            "steps_solution": [
+              "200×5 + 19×5 = 1000 + 95 = 1 095."
+            ],
+            "hint_vi": "Tách 219 = 200 + 10 + 9 rồi nhân 5."
+          },
+          {
+            "id": "mp_14",
+            "problem_type": "numeric_input",
+            "prompt_vi": "Hoàn thiện mẹo tách nhân: 5 × 54 = ?",
+            "prompt_en": "Calculate: 5 × 54",
+            "answer_num": 270,
+            "unit": null,
+            "tolerance": 0.0001,
+            "steps_solution": [
+              "5 × 6 × 9 = 30 × 9 = 270."
+            ],
+            "hint_vi": "Tách 54 = 6 × 9."
+          },
+          {
+            "id": "mp_15",
+            "problem_type": "step_word_problem",
+            "prompt_vi": "Khối Ba có 12 lớp học trồng cây, mỗi lớp trồng 8 cây và thêm 24 cây ở vườn chung.",
+            "prompt_en": "12 classes plant 8 trees each plus 24 garden trees.",
+            "sub_steps": [
+              {
+                "prompt_vi": "12 lớp trồng được bao nhiêu cây?",
+                "answer_num": 96,
+                "unit": "cây",
+                "hint_vi": "12 × 8 = ?"
+              },
+              {
+                "prompt_vi": "Tổng số cây cả trường trồng được là bao nhiêu?",
+                "answer_num": 120,
+                "unit": "cây",
+                "hint_vi": "96 + 24 = ?"
+              }
+            ],
+            "steps_solution": [
+              "12 × 8 = 96; 96 + 24 = 120 cây."
+            ],
+            "hint_vi": "Nhân 12 × 8 rồi cộng 24."
+          },
+          {
+            "id": "mp_16",
+            "problem_type": "step_word_problem",
+            "prompt_vi": "Cửa hàng nhập 8 thùng táo, mỗi thùng có 105 quả táo.",
+            "prompt_en": "Store receives 8 boxes of 105 apples each.",
+            "sub_steps": [
+              {
+                "prompt_vi": "Ước lượng nhanh 100 × 8 là bao nhiêu quả?",
+                "answer_num": 800,
+                "unit": "quả",
+                "hint_vi": "100 × 8 = ?"
+              },
+              {
+                "prompt_vi": "Tổng số táo chính xác trong 8 thùng là bao nhiêu quả?",
+                "answer_num": 840,
+                "unit": "quả",
+                "hint_vi": "100×8 + 5×8 = ?"
+              }
+            ],
+            "steps_solution": [
+              "105 × 8 = 840 quả."
+            ],
+            "hint_vi": "Nhẩm 800 + 40."
+          },
+          {
+            "id": "mp_17",
+            "problem_type": "step_word_problem",
+            "prompt_vi": "Lan đọc sách 76 trang mỗi tuần trong 3 tuần đầu và 86 trang trong 5 ngày ôn.",
+            "prompt_en": "Lan reads 76 pages/week for 3 weeks, plus 86 × 5?",
+            "sub_steps": [
+              {
+                "prompt_vi": "Số trang đọc trong 3 tuần đầu (76 × 3) là bao nhiêu?",
+                "answer_num": 228,
+                "unit": "trang",
+                "hint_vi": "70×3 + 6×3 = ?"
+              },
+              {
+                "prompt_vi": "Tính 86 × 5 bằng tách số:",
+                "answer_num": 430,
+                "unit": "trang",
+                "hint_vi": "80×5 + 6×5 = ?"
+              }
+            ],
+            "steps_solution": [
+              "76 × 3 = 228; 86 × 5 = 430."
+            ],
+            "hint_vi": "Tách hàng chục và đơn vị để nhân."
+          },
+          {
+            "id": "mp_18",
+            "problem_type": "step_word_problem",
+            "prompt_vi": "Bác thợ làm 228 sản phẩm mỗi tháng trong 3 tháng.",
+            "prompt_en": "228 items per month for 3 months.",
+            "sub_steps": [
+              {
+                "prompt_vi": "Ước lượng làm tròn 228 xuống 200 rồi nhân 3 được bao nhiêu?",
+                "answer_num": 600,
+                "unit": "sản phẩm",
+                "hint_vi": "200 × 3 = ?"
+              },
+              {
+                "prompt_vi": "Số sản phẩm làm được chính xác sau 3 tháng là bao nhiêu?",
+                "answer_num": 684,
+                "unit": "sản phẩm",
+                "hint_vi": "600 + 28×3 = ?"
+              }
+            ],
+            "steps_solution": [
+              "228 × 3 = 684."
+            ],
+            "hint_vi": "200×3 + 20×3 + 8×3 = 600 + 60 + 24."
+          },
+          {
+            "id": "mp_19",
+            "problem_type": "step_word_problem",
+            "prompt_vi": "Một xe chở 175 hộp bánh, mỗi hộp nặng 6 gam (hoặc tính 175 × 6).",
+            "prompt_en": "6 cartons with 175 packs each.",
+            "sub_steps": [
+              {
+                "prompt_vi": "Tính nhẩm 100 × 6 + 70 × 6 được bao nhiêu?",
+                "answer_num": 1020,
+                "unit": null,
+                "hint_vi": "600 + 420 = ?"
+              },
+              {
+                "prompt_vi": "Kết quả đầy đủ của 175 × 6 là bao nhiêu?",
+                "answer_num": 1050,
+                "unit": null,
+                "hint_vi": "1020 + 5×6 = ?"
+              }
+            ],
+            "steps_solution": [
+              "175 × 6 = 1 050."
+            ],
+            "hint_vi": "Cộng thêm 30 vào 1 020."
+          },
+          {
+            "id": "mp_20",
+            "problem_type": "step_word_problem",
+            "prompt_vi": "Cô Thu chia 371 chiếc kẹo vào 8 túi mẫu (nhưng tính tổng 371 × 8 cho 8 lớp).",
+            "prompt_en": "8 classes each need 371 stickers.",
+            "sub_steps": [
+              {
+                "prompt_vi": "Tính 300 × 8 + 70 × 8 =",
+                "answer_num": 2960,
+                "unit": "nhãn",
+                "hint_vi": "2400 + 560 = ?"
+              },
+              {
+                "prompt_vi": "Tổng cộng 371 × 8 là bao nhiêu nhãn?",
+                "answer_num": 2968,
+                "unit": "nhãn",
+                "hint_vi": "2960 + 8 = ?"
+              }
+            ],
+            "steps_solution": [
+              "371 × 8 = 2 968."
+            ],
+            "hint_vi": "2400 + 560 + 8 = 2968."
+          }
+        ],
+        "theory_puzzles": [
+          {
+            "id": "tp_01",
+            "puzzle_type": "quick_match",
+            "title_vi": "Quan hệ Ước và Bội",
+            "title_en": "Factors vs Multiples",
+            "prompt_vi": "Từ phép nhân 4 × 5 = 20, khẳng định nào ĐÚNG?",
+            "prompt_en": "From 4 × 5 = 20, which is TRUE?",
+            "options": [
+              "4 và 5 là ước của 20; 20 là bội của 4 và 5",
+              "20 là ước của 4 và 5",
+              "4 là bội của 20",
+              "5 không chia hết 20"
+            ],
+            "answer_index": 0,
+            "hints": [
+              "Ước luôn nhỏ hơn hoặc bằng số gốc; bội lớn hơn hoặc bằng."
+            ],
+            "explanation_vi": "Ước chia hết 20 (4, 5 ≤ 20); 20 là bội của 4 và 5.",
+            "explanation_en": "4 and 5 are factors of 20; 20 is their multiple."
+          },
+          {
+            "id": "tp_02",
+            "puzzle_type": "true_false_myth",
+            "title_vi": "Số 0 là bội hay ước?",
+            "title_en": "Zero as multiple or factor",
+            "prompt_vi": "Quy tắc nào trong Bài 3.1 là ĐÚNG về số 1 và số 0?",
+            "prompt_en": "Which rule from Lesson 3.1 is TRUE?",
+            "options": [
+              "Mọi số bất kỳ luôn có ước là 1 và chính nó",
+              "Số 0 là ước của mọi số",
+              "Bội của 5 luôn nhỏ hơn 5",
+              "Ước của 12 có thể lớn hơn 12"
+            ],
+            "answer_index": 0,
+            "hints": [
+              "Không thể chia cho 0 nên 0 KHÔNG phải là ước.",
+              "12 : 1 = 12 và 12 : 12 = 1."
+            ],
+            "explanation_vi": "Một số bất kỳ luôn có ước là 1 và chính nó.",
+            "explanation_en": "Every number has 1 and itself as factors."
+          },
+          {
+            "id": "tp_03",
+            "puzzle_type": "rule_cloze",
+            "title_vi": "Bội của 10 và Bội của 2",
+            "title_en": "Multiples of 10 and 2",
+            "prompt_vi": "Saza nói: Mọi bội của 10 đều có chữ số tận cùng là 0, nên chúng ____ là bội của 2.",
+            "prompt_en": "Every multiple of 10 ends in 0, so it is ____ a multiple of 2.",
+            "options": [
+              "luôn luôn",
+              "thỉnh thoảng",
+              "không bao giờ",
+              "chỉ khi nhỏ hơn 100"
+            ],
+            "answer_index": 0,
+            "hints": [
+              "Vì 10 = 2 × 5, mọi số chia hết cho 10 đều là số chẵn."
+            ],
+            "explanation_vi": "Số chẵn luôn chia hết cho 2 → luôn luôn đúng.",
+            "explanation_en": "Always true since 10 = 2 × 5."
+          },
+          {
+            "id": "tp_04",
+            "puzzle_type": "true_false_myth",
+            "title_vi": "Bắt lỗi tính chất kết hợp của Noah",
+            "title_en": "Spot Noah's associative error",
+            "prompt_vi": "Noah viết: 9 × 2 × 5 = (9 + 2) × 5 = 55. Lỗi sai của Noah ở đâu?",
+            "prompt_en": "Where is Noah's mistake in 9×2×5 = (9+2)×5?",
+            "options": [
+              "Biến phép nhân thành phép cộng; đúng phải là 9 × (2 × 5) = 90",
+              "Phải tính 9 × 2 × 5 = 11 × 2",
+              "Đúng phải là (9 × 5) + 2 = 47",
+              "Noah làm đúng"
+            ],
+            "answer_index": 0,
+            "hints": [
+              "Tính chất kết hợp chỉ đổi ngoặc giữa các PHÉP NHÂN."
+            ],
+            "explanation_vi": "9 × (2 × 5) = 9 × 10 = 90.",
+            "explanation_en": "Do not turn multiplication into addition: 9 × (2 × 5) = 90."
+          },
+          {
+            "id": "tp_05",
+            "puzzle_type": "quick_match",
+            "title_vi": "Ước lượng phép nhân nhanh",
+            "title_en": "Estimating products",
+            "prompt_vi": "Trước khi tính 445 × 6, bạn Nami làm tròn 445 đến hàng trăm để ước lượng. Cách nào đúng?",
+            "prompt_en": "Best hundreds estimate for 445 × 6?",
+            "options": [
+              "400 × 6 = 2 400",
+              "500 × 6 = 3 000",
+              "440 × 10 = 4 400",
+              "400 × 5 = 2 000"
+            ],
+            "answer_index": 0,
+            "hints": [
+              "Chữ số hàng chục là 4 (< 5) nên làm tròn xuống."
+            ],
+            "explanation_vi": "445 làm tròn trăm xuống 400 → 400 × 6 = 2 400.",
+            "explanation_en": "445 rounds down to 400 → 2,400."
+          },
+          {
+            "id": "tp_06",
+            "puzzle_type": "rule_cloze",
+            "title_vi": "Tính chất giao hoán",
+            "title_en": "Commutative property",
+            "prompt_vi": "Khi đổi chỗ các thừa số trong một phép nhân (6 × 4 = 4 × 6), ____ của chúng không thay đổi.",
+            "prompt_en": "Swapping factors in multiplication keeps the ____ unchanged.",
+            "options": [
+              "tích",
+              "hiệu",
+              "thương",
+              "số dư"
+            ],
+            "answer_index": 0,
+            "hints": [
+              "Kết quả của phép nhân gọi là gì?"
+            ],
+            "explanation_vi": "Tích không thay đổi (giao hoán).",
+            "explanation_en": "The product stays the same."
+          },
+          {
+            "id": "tp_07",
+            "puzzle_type": "quick_match",
+            "title_vi": "Nhân theo phương pháp mở rộng",
+            "title_en": "Expanded multiplication check",
+            "prompt_vi": "Khi tính 253 × 3 theo phương pháp mở rộng, ta tính tổng nào sau đây?",
+            "prompt_en": "In expanded form for 253 × 3, which sum do we add?",
+            "options": [
+              "(200 × 3) + (50 × 3) + (3 × 3) = 600 + 150 + 9",
+              "(2 × 3) + (5 × 3) + (3 × 3)",
+              "(250 × 3) + 3",
+              "200 + 50 + 3 + 3"
+            ],
+            "answer_index": 0,
+            "hints": [
+              "Tách 253 = 200 + 50 + 3 rồi nhân từng phần với 3."
+            ],
+            "explanation_vi": "600 + 150 + 9 = 759.",
+            "explanation_en": "600 + 150 + 9 = 759."
+          },
+          {
+            "id": "tp_08",
+            "puzzle_type": "true_false_myth",
+            "title_vi": "Kiểm tra số ước của 32",
+            "title_en": "Factors of 32",
+            "prompt_vi": "Đúng hay Sai: Số 32 chỉ có tất cả 4 ước số.",
+            "prompt_en": "True or False: 32 has only 4 factors total.",
+            "options": [
+              "Sai, 32 có 6 ước (1, 2, 4, 8, 16, 32)",
+              "Đúng (1, 2, 16, 32)",
+              "Sai, 32 chỉ có 2 ước",
+              "Đúng vì 32 là số chẵn"
+            ],
+            "answer_index": 0,
+            "hints": [
+              "Liệt kê cặp: 1×32, 2×16, 4×8 → mấy số tất cả?"
+            ],
+            "explanation_vi": "32 có 6 ước số: 1, 2, 4, 8, 16, 32.",
+            "explanation_en": "32 has 6 factors: 1, 2, 4, 8, 16, 32."
+          },
+          {
+            "id": "tp_09",
+            "puzzle_type": "rule_cloze",
+            "title_vi": "Mẹo tách thừa số 5 × 54",
+            "title_en": "Factor-splitting trick",
+            "prompt_vi": "Lily tách 5 × 54 = 5 × 6 × 9 = (5 × 6) × 9 = ____ × 9 = 270.",
+            "prompt_en": "5 × 6 × 9 = ____ × 9 = 270.",
+            "options": [
+              "30",
+              "45",
+              "54",
+              "11"
+            ],
+            "answer_index": 0,
+            "hints": [
+              "5 × 6 bằng bao nhiêu?"
+            ],
+            "explanation_vi": "5 × 6 = 30 (tròn chục), 30 × 9 = 270 rất dễ nhẩm!",
+            "explanation_en": "5 × 6 = 30 makes 30 × 9 = 270 easy."
+          },
+          {
+            "id": "tp_10",
+            "puzzle_type": "quick_match",
+            "title_vi": "Sơ đồ Venn: Ước của 15 và Bội của 5",
+            "title_en": "Venn diagram intersection",
+            "prompt_vi": "Trong các số 1, 3, 5, 8, 10, 15, 20, những số nào nằm ở PHẦN GIAO (vừa là ước của 15, vừa là bội của 5)?",
+            "prompt_en": "Which numbers are BOTH factors of 15 and multiples of 5?",
+            "options": [
+              "5 và 15",
+              "1 và 3",
+              "10 và 20",
+              "Chỉ có 5"
+            ],
+            "answer_index": 0,
+            "hints": [
+              "Ước của 15 là 1, 3, 5, 15. Số nào chia hết cho 5?"
+            ],
+            "explanation_vi": "5 và 15 vừa là ước của 15 vừa là bội của 5.",
+            "explanation_en": "5 and 15 belong in the overlap."
           }
         ]
       },
@@ -2428,6 +3568,388 @@
               "Mina 8 quả, Ali 9 quả → không bằng nhau; tổng = 17 quả."
             ],
             "hint_vi": "Chia mỗi số cho 6 rồi cộng lại."
+          },
+          {
+            "id": "mp_13",
+            "problem_type": "fraction_input",
+            "prompt_vi": "Viết phân số tối giản bằng 2/6 (mảnh bánh hình tròn tô 2 trên 6 phần):",
+            "prompt_en": "Simplify 2/6:",
+            "answer_num": 1,
+            "answer_den": 3,
+            "steps_solution": [
+              "Chia cả tử và mẫu cho 2: 2/6 = 1/3."
+            ],
+            "hint_vi": "2 : 2 = 1; 6 : 2 = 3."
+          },
+          {
+            "id": "mp_14",
+            "problem_type": "fraction_input",
+            "prompt_vi": "Một tuần lễ có 7 ngày. Thứ Bảy và Chủ Nhật chiếm mấy phần của một tuần?",
+            "prompt_en": "What fraction of a 7-day week is the 2-day weekend?",
+            "answer_num": 2,
+            "answer_den": 7,
+            "steps_solution": [
+              "2 ngày trên tổng 7 ngày = 2/7 tuần."
+            ],
+            "hint_vi": "Tử số = 2, Mẫu số = 7."
+          },
+          {
+            "id": "mp_15",
+            "problem_type": "step_word_problem",
+            "prompt_vi": "Một lớp học có 32 học sinh. 1/4 số học sinh là học sinh giỏi Toán, 1/2 số học sinh thích Khoa học.",
+            "prompt_en": "32 students: 1/4 love Math, 1/2 love Science.",
+            "sub_steps": [
+              {
+                "prompt_vi": "Có bao nhiêu bạn giỏi Toán (1/4 của 32)?",
+                "answer_num": 8,
+                "unit": "bạn",
+                "hint_vi": "32 ÷ 4 = ?"
+              },
+              {
+                "prompt_vi": "Số bạn thích Khoa học (1/2 của 32) nhiều hơn số bạn giỏi Toán bao nhiêu bạn?",
+                "answer_num": 8,
+                "unit": "bạn",
+                "hint_vi": "16 - 8 = ?"
+              }
+            ],
+            "steps_solution": [
+              "Giỏi Toán: 8 bạn; Thích Khoa học: 16 bạn → nhiều hơn 8 bạn."
+            ],
+            "hint_vi": "Chia 32 cho 4 và cho 2."
+          },
+          {
+            "id": "mp_16",
+            "problem_type": "step_word_problem",
+            "prompt_vi": "Hộp có 36 cái bút màu. Minh lấy 2/3 số bút màu để vẽ.",
+            "prompt_en": "Box has 36 crayons. Minh takes 2/3.",
+            "sub_steps": [
+              {
+                "prompt_vi": "1/3 số bút màu trong hộp là bao nhiêu cái?",
+                "answer_num": 12,
+                "unit": "cái",
+                "hint_vi": "36 ÷ 3 = ?"
+              },
+              {
+                "prompt_vi": "Minh đã lấy bao nhiêu cái bút màu (2/3)?",
+                "answer_num": 24,
+                "unit": "cái",
+                "hint_vi": "12 × 2 = ?"
+              },
+              {
+                "prompt_vi": "Trong hộp còn lại bao nhiêu cái bút màu?",
+                "answer_num": 12,
+                "unit": "cái",
+                "hint_vi": "36 - 24 = ?"
+              }
+            ],
+            "steps_solution": [
+              "Minh lấy 24 cái, hộp còn 12 cái."
+            ],
+            "hint_vi": "Tìm 1/3 rồi nhân 2."
+          },
+          {
+            "id": "mp_17",
+            "problem_type": "step_word_problem",
+            "prompt_vi": "Một sợi dây dài 45 m. Người ta cắt đi 2/5 sợi dây để làm lều trại.",
+            "prompt_en": "A 45 m rope has 2/5 cut off.",
+            "sub_steps": [
+              {
+                "prompt_vi": "1/5 sợi dây dài bao nhiêu mét?",
+                "answer_num": 9,
+                "unit": "m",
+                "hint_vi": "45 ÷ 5 = ?"
+              },
+              {
+                "prompt_vi": "Đoạn dây CÒN LẠI (3/5) dài bao nhiêu mét?",
+                "answer_num": 27,
+                "unit": "m",
+                "hint_vi": "9 × 3 = ? (hoặc 45 - 18)."
+              }
+            ],
+            "steps_solution": [
+              "Cắt đi 18 m, còn lại 27 m."
+            ],
+            "hint_vi": "Chia 45 cho 5 rồi nhân 3 phần còn lại."
+          },
+          {
+            "id": "mp_18",
+            "problem_type": "step_word_problem",
+            "prompt_vi": "Tủ sách có 60 quyển, gồm 1/3 là truyện tranh, 1/4 là sách khoa học, còn lại là sách Toán.",
+            "prompt_en": "60 books: 1/3 comics, 1/4 science, rest math.",
+            "sub_steps": [
+              {
+                "prompt_vi": "Số truyện tranh (1/3 của 60) là bao nhiêu quyển?",
+                "answer_num": 20,
+                "unit": "quyển",
+                "hint_vi": "60 ÷ 3 = ?"
+              },
+              {
+                "prompt_vi": "Số sách khoa học (1/4 của 60) là bao nhiêu quyển?",
+                "answer_num": 15,
+                "unit": "quyển",
+                "hint_vi": "60 ÷ 4 = ?"
+              },
+              {
+                "prompt_vi": "Số sách Toán còn lại là bao nhiêu quyển?",
+                "answer_num": 25,
+                "unit": "quyển",
+                "hint_vi": "60 - 20 - 15 = ?"
+              }
+            ],
+            "steps_solution": [
+              "20 truyện + 15 khoa học → còn 25 sách Toán."
+            ],
+            "hint_vi": "Lấy 60 trừ tổng truyện và khoa học."
+          },
+          {
+            "id": "mp_19",
+            "problem_type": "step_word_problem",
+            "prompt_vi": "Bà có $40 chia cho 2 cháu: Jane nhận 1/5 số tiền, Tom nhận 1/4 số tiền.",
+            "prompt_en": "Grandma has $40: Jane gets 1/5, Tom gets 1/4.",
+            "sub_steps": [
+              {
+                "prompt_vi": "Số tiền Jane nhận được ($)?",
+                "answer_num": 8,
+                "unit": "$",
+                "hint_vi": "40 ÷ 5 = ?"
+              },
+              {
+                "prompt_vi": "Bà còn lại bao nhiêu tiền sau khi cho cả 2 cháu ($)?",
+                "answer_num": 22,
+                "unit": "$",
+                "hint_vi": "Tom nhận 40÷4=10; còn 40 - 8 - 10 = ?"
+              }
+            ],
+            "steps_solution": [
+              "Jane $8, Tom $10 → bà còn $22."
+            ],
+            "hint_vi": "Tính tiền của từng bạn rồi lấy 40 trừ đi."
+          },
+          {
+            "id": "mp_20",
+            "problem_type": "step_word_problem",
+            "prompt_vi": "Quãng đường từ nhà đến trường dài 24 km (hoặc 2 400 m). An đã đi được 3/8 quãng đường 24 km.",
+            "prompt_en": "A 24 km trip: An covered 3/8.",
+            "sub_steps": [
+              {
+                "prompt_vi": "1/8 quãng đường dài bao nhiêu km?",
+                "answer_num": 3,
+                "unit": "km",
+                "hint_vi": "24 ÷ 8 = ?"
+              },
+              {
+                "prompt_vi": "An đã đi được bao nhiêu km (3/8)?",
+                "answer_num": 9,
+                "unit": "km",
+                "hint_vi": "3 × 3 = ?"
+              }
+            ],
+            "steps_solution": [
+              "1/8 là 3 km; An đi được 9 km."
+            ],
+            "hint_vi": "24 : 8 × 3."
+          }
+        ],
+        "theory_puzzles": [
+          {
+            "id": "tp_01",
+            "puzzle_type": "rule_cloze",
+            "title_vi": "Quy tắc so sánh cùng tử số",
+            "title_en": "Same-numerator rule",
+            "prompt_vi": "Trong các phân số có cùng tử số, phân số nào có MẪU SỐ LỚN HƠN thì phân số đó ____.",
+            "prompt_en": "When numerators match, a larger denominator means a ____ fraction.",
+            "options": [
+              "bé hơn",
+              "lớn hơn",
+              "bằng 1",
+              "không so sánh được"
+            ],
+            "answer_index": 0,
+            "hints": [
+              "Nghĩ về chiếc bánh: chia cho 8 người hay 2 người thì phần nào nhỏ hơn?"
+            ],
+            "explanation_vi": "Mẫu số lớn hơn → chia nhiều phần hơn → mỗi phần bé hơn.",
+            "explanation_en": "More equal parts means each piece is smaller."
+          },
+          {
+            "id": "tp_02",
+            "puzzle_type": "true_false_myth",
+            "title_vi": "Bẫy chia 4 phần bất kỳ",
+            "title_en": "Equal-parts quarter myth",
+            "prompt_vi": "Jenny nói: “Nếu chia một hình thành 4 phần thì ta đã chia hình đó thành các phần tư (1/4).” Jenny đúng hay sai?",
+            "prompt_en": "Jenny says any 4 parts make quarters. True or false?",
+            "options": [
+              "Sai, bốn phần bắt buộc phải BẰNG NHAU",
+              "Đúng, cứ đủ 4 mảnh là được",
+              "Đúng với hình vuông",
+              "Sai với hình tròn"
+            ],
+            "answer_index": 0,
+            "hints": [
+              "Nếu cắt 1 miếng cực nhỏ và 3 miếng cực to, có công bằng gọi là 1/4 không?"
+            ],
+            "explanation_vi": "Phân số chỉ có nghĩa khi chia thành các phần BẰNG NHAU.",
+            "explanation_en": "Fractions require EQUAL parts."
+          },
+          {
+            "id": "tp_03",
+            "puzzle_type": "quick_match",
+            "title_vi": "Phân số là phép chia",
+            "title_en": "Fraction as division",
+            "prompt_vi": "Tám người chia đều 1 chiếc bánh. Phép chia biểu diễn phần bánh mỗi người là:",
+            "prompt_en": "8 people share 1 cake equally. Which fraction represents one share?",
+            "options": [
+              "1 ÷ 8 = 1/8",
+              "8 ÷ 1 = 8/1",
+              "1 ÷ 4 = 1/4",
+              "2 ÷ 8 = 2/8"
+            ],
+            "answer_index": 0,
+            "hints": [
+              "Lấy tổng số bánh (1) chia cho số người (8)."
+            ],
+            "explanation_vi": "Tử số chia mẫu số: 1 : 8 = 1/8 chiếc bánh.",
+            "explanation_en": "1 ÷ 8 = 1/8."
+          },
+          {
+            "id": "tp_04",
+            "puzzle_type": "rule_cloze",
+            "title_vi": "Hai bước tìm 3/4 của một số",
+            "title_en": "Finding non-unit fractions",
+            "prompt_vi": "Để tìm 3/4 của 16: Bước 1 lấy 16 : 4 = 4 (tìm 1/4); Bước 2 lấy 4 × ____ = 12.",
+            "prompt_en": "To find 3/4 of 16: first 16 ÷ 4 = 4, then 4 × ____ = 12.",
+            "options": [
+              "3",
+              "4",
+              "16",
+              "12"
+            ],
+            "answer_index": 0,
+            "hints": [
+              "Cần lấy 3 phần (tử số = 3)."
+            ],
+            "explanation_vi": "Lấy giá trị 1 phần nhân với tử số (3): 4 × 3 = 12.",
+            "explanation_en": "Multiply one part by the numerator 3."
+          },
+          {
+            "id": "tp_05",
+            "puzzle_type": "true_false_myth",
+            "title_vi": "1/6 táo của bạn này có bằng 1/6 bạn kia?",
+            "title_en": "Same fraction of different totals",
+            "prompt_vi": "Mina hái 48 quả táo, Ali hái 54 quả. Đúng hay Sai: 1/6 số táo của Mina bằng 1/6 số táo của Ali?",
+            "prompt_en": "Is 1/6 of 48 equal to 1/6 of 54?",
+            "options": [
+              "Sai, vì 8 quả ≠ 9 quả (tổng ban đầu khác nhau)",
+              "Đúng, vì đều là phân số 1/6",
+              "Đúng nếu cùng màu táo",
+              "Mina nhiều hơn Ali"
+            ],
+            "answer_index": 0,
+            "hints": [
+              "Tính riêng: 48 : 6 = 8 và 54 : 6 = 9."
+            ],
+            "explanation_vi": "Tổng ban đầu khác nhau nên cùng phân số 1/6 sẽ cho giá trị khác nhau (8 < 9).",
+            "explanation_en": "Same fraction of different wholes gives different amounts (8 ≠ 9)."
+          },
+          {
+            "id": "tp_06",
+            "puzzle_type": "quick_match",
+            "title_vi": "Bức tường phân số",
+            "title_en": "Fraction wall equivalence",
+            "prompt_vi": "Nhìn Bức tường phân số: phân số nào BẰNG 2/3?",
+            "prompt_en": "On the fraction wall, which equals 2/3?",
+            "options": [
+              "4/6",
+              "3/6",
+              "2/6",
+              "3/4"
+            ],
+            "answer_index": 0,
+            "hints": [
+              "Nhân cả tử và mẫu của 2/3 với 2."
+            ],
+            "explanation_vi": "2/3 = 4/6.",
+            "explanation_en": "2/3 = 4/6."
+          },
+          {
+            "id": "tp_07",
+            "puzzle_type": "rule_cloze",
+            "title_vi": "Phần còn lại sau khi cho đi",
+            "title_en": "Finding remaining fraction",
+            "prompt_vi": "Anna dùng hết 3/4 lít sữa trong hộp 1 lít. Lượng sữa còn lại trong hộp là ____ lít.",
+            "prompt_en": "3/4 L used out of 1 L leaves ____ L.",
+            "options": [
+              "1/4",
+              "3/4",
+              "2/4",
+              "4/4"
+            ],
+            "answer_index": 0,
+            "hints": [
+              "1 lít = 4/4 lít; 4/4 - 3/4 = ?"
+            ],
+            "explanation_vi": "Còn lại 1/4 lít.",
+            "explanation_en": "4/4 - 3/4 = 1/4 L."
+          },
+          {
+            "id": "tp_08",
+            "puzzle_type": "true_false_myth",
+            "title_vi": "Phân số nhỏ hơn 1/7",
+            "title_en": "Comparing unit fractions",
+            "prompt_vi": "Phân số nào NHỎ HƠN 1/7?",
+            "prompt_en": "Which fraction is LESS than 1/7?",
+            "options": [
+              "1/8 và 1/10",
+              "1/3 và 1/5",
+              "1/2 và 1/4",
+              "1/6"
+            ],
+            "answer_index": 0,
+            "hints": [
+              "Muốn nhỏ hơn 1/7 thì mẫu số phải LỚN HƠN 7."
+            ],
+            "explanation_vi": "Vì 8 > 7 và 10 > 7 nên 1/8 < 1/7 và 1/10 < 1/7.",
+            "explanation_en": "Larger denominators (8, 10 > 7) make smaller unit fractions."
+          },
+          {
+            "id": "tp_09",
+            "puzzle_type": "quick_match",
+            "title_vi": "Nhận dạng phân số hơn một nửa",
+            "title_en": "More than half shaded",
+            "prompt_vi": "Phân số nào sau đây LỚN HƠN một nửa (1/2)?",
+            "prompt_en": "Which fraction is GREATER than 1/2?",
+            "options": [
+              "5/7",
+              "3/8",
+              "1/3",
+              "2/6"
+            ],
+            "answer_index": 0,
+            "hints": [
+              "Một nửa của 7 là 3,5. Số 5 > 3,5!"
+            ],
+            "explanation_vi": "5/7 > 3,5/7 = 1/2.",
+            "explanation_en": "5 is more than half of 7, so 5/7 > 1/2."
+          },
+          {
+            "id": "tp_10",
+            "puzzle_type": "rule_cloze",
+            "title_vi": "Phân số chỉ nửa giờ",
+            "title_en": "Fractions on clock & scales",
+            "prompt_vi": "Trên mặt đồng hồ 60 phút, 1/4 giờ ứng với ____ phút.",
+            "prompt_en": "On a clock, 1/4 of an hour equals ____ minutes.",
+            "options": [
+              "15",
+              "20",
+              "30",
+              "45"
+            ],
+            "answer_index": 0,
+            "hints": [
+              "60 ÷ 4 = ?"
+            ],
+            "explanation_vi": "60 : 4 = 15 phút.",
+            "explanation_en": "60 ÷ 4 = 15 minutes."
           }
         ]
       },
@@ -3129,6 +4651,378 @@
               "23 ÷ 3 = 7 dư 2 → chia được cho 7 bạn."
             ],
             "hint_vi": "Tìm bội lớn nhất của 3 nhỏ hơn 23."
+          },
+          {
+            "id": "mp_13",
+            "problem_type": "numeric_input",
+            "prompt_vi": "Tính phép chia: 95 ÷ 4 có thương (phần nguyên) là bao nhiêu?",
+            "prompt_en": "Whole quotient of 95 ÷ 4:",
+            "answer_num": 23,
+            "unit": null,
+            "tolerance": 0.0001,
+            "steps_solution": [
+              "95 = 4 × 23 + 3 → thương là 23."
+            ],
+            "hint_vi": "4 × 20 = 80; 15 : 4 = 3."
+          },
+          {
+            "id": "mp_14",
+            "problem_type": "numeric_input",
+            "prompt_vi": "Làm tròn số 46 782 đến hàng chục nghìn:",
+            "prompt_en": "Round 46,782 to nearest 10,000:",
+            "answer_num": 50000,
+            "unit": null,
+            "tolerance": 0.0001,
+            "steps_solution": [
+              "Hàng nghìn là 6 (≥ 5) → làm tròn lên 50 000."
+            ],
+            "hint_vi": "Xem chữ số hàng nghìn là 6."
+          },
+          {
+            "id": "mp_15",
+            "problem_type": "step_word_problem",
+            "prompt_vi": "Thùng dầu 84 lít rót đều vào các can 5 lít.",
+            "prompt_en": "84 L of oil in 5 L cans.",
+            "sub_steps": [
+              {
+                "prompt_vi": "Nếu dùng 16 can thì chứa được tối đa bao nhiêu lít?",
+                "answer_num": 80,
+                "unit": "lít",
+                "hint_vi": "16 × 5 = ?"
+              },
+              {
+                "prompt_vi": "Cần ít nhất bao nhiêu can 5 lít để chứa hết 84 lít dầu?",
+                "answer_num": 17,
+                "unit": "can",
+                "hint_vi": "Dư 4 lít cần thêm 1 can nữa."
+              }
+            ],
+            "steps_solution": [
+              "16 × 5 = 80; còn 4 lít → cần 17 can."
+            ],
+            "hint_vi": "84 : 5 = 16 dư 4."
+          },
+          {
+            "id": "mp_16",
+            "problem_type": "step_word_problem",
+            "prompt_vi": "Có 75 học sinh đi tham quan bằng ô tô, mỗi xe chở được tối đa 8 bạn.",
+            "prompt_en": "75 students ride vans, max 8 per van.",
+            "sub_steps": [
+              {
+                "prompt_vi": "9 xe chở được bao nhiêu học sinh?",
+                "answer_num": 72,
+                "unit": "bạn",
+                "hint_vi": "9 × 8 = ?"
+              },
+              {
+                "prompt_vi": "Cần ít nhất bao nhiêu xe để chở hết 75 học sinh?",
+                "answer_num": 10,
+                "unit": "xe",
+                "hint_vi": "Còn dư 3 bạn cần thêm 1 xe."
+              }
+            ],
+            "steps_solution": [
+              "75 : 8 = 9 dư 3 → cần 10 xe."
+            ],
+            "hint_vi": "Dư 3 bạn vẫn cần thêm 1 xe."
+          },
+          {
+            "id": "mp_17",
+            "problem_type": "step_word_problem",
+            "prompt_vi": "Một cuộn ruy-băng dài 92 cm được cắt thành các đoạn bằng nhau, mỗi đoạn dài 7 cm.",
+            "prompt_en": "A 92 cm ribbon cut into 7 cm strips.",
+            "sub_steps": [
+              {
+                "prompt_vi": "Cắt được nhiều nhất bao nhiêu đoạn dài đúng 7 cm?",
+                "answer_num": 13,
+                "unit": "đoạn",
+                "hint_vi": "7 × 13 = 91 ≤ 92."
+              },
+              {
+                "prompt_vi": "Đoạn ruy-băng thừa lại dài bao nhiêu cm?",
+                "answer_num": 1,
+                "unit": "cm",
+                "hint_vi": "92 - 91 = ?"
+              }
+            ],
+            "steps_solution": [
+              "92 ÷ 7 = 13 dư 1 cm."
+            ],
+            "hint_vi": "7 × 10 = 70; còn 22 : 7 = 3 dư 1."
+          },
+          {
+            "id": "mp_18",
+            "problem_type": "step_word_problem",
+            "prompt_vi": "Bác thợ làm bánh chia 59 chiếc bánh vào các khay, mỗi khay 7 chiếc.",
+            "prompt_en": "59 pastries placed 7 per tray.",
+            "sub_steps": [
+              {
+                "prompt_vi": "Xếp đầy được bao nhiêu khay?",
+                "answer_num": 8,
+                "unit": "khay",
+                "hint_vi": "7 × 8 = 56."
+              },
+              {
+                "prompt_vi": "Cần nướng thêm ít nhất bao nhiêu chiếc bánh nữa để vừa đầy thêm khay thứ 9?",
+                "answer_num": 4,
+                "unit": "chiếc",
+                "hint_vi": "59 - 56 = 3 chiếc dư → thiếu 7 - 3 = ?"
+              }
+            ],
+            "steps_solution": [
+              "Còn dư 3 chiếc nên thiếu 7 - 3 = 4 chiếc nữa là đầy khay thứ 9."
+            ],
+            "hint_vi": "59 chia 7 dư 3; 7 - 3 = 4."
+          },
+          {
+            "id": "mp_19",
+            "problem_type": "step_word_problem",
+            "prompt_vi": "Bốn điểm thu gom chai nhựa tiếp nhận: A = 11 268; B = 13 625; C = 31 258; D = 13 286.",
+            "prompt_en": "Recycling totals: A=11268, B=13625, C=31258, D=13286.",
+            "sub_steps": [
+              {
+                "prompt_vi": "Làm tròn số chai của điểm C (31 258) đến hàng nghìn:",
+                "answer_num": 31000,
+                "unit": "chai",
+                "hint_vi": "Hàng trăm là 2 (<5)."
+              },
+              {
+                "prompt_vi": "Điểm B nhiều hơn điểm D bao nhiêu chai nhựa?",
+                "answer_num": 339,
+                "unit": "chai",
+                "hint_vi": "13 625 - 13 286 = ?"
+              }
+            ],
+            "steps_solution": [
+              "Điểm C làm tròn 31 000; 13 625 - 13 286 = 339 chai."
+            ],
+            "hint_vi": "Cẩn thận mượn khi trừ 625 - 286."
+          },
+          {
+            "id": "mp_20",
+            "problem_type": "step_word_problem",
+            "prompt_vi": "Một bánh xe phép chia có quy luật chia cho 9: 81, 63, 45, 27, ...",
+            "prompt_en": "Division wheel dividing by 9.",
+            "sub_steps": [
+              {
+                "prompt_vi": "Thương của 81 : 9 cộng với thương của 63 : 9 bằng bao nhiêu?",
+                "answer_num": 16,
+                "unit": null,
+                "hint_vi": "9 + 7 = ?"
+              },
+              {
+                "prompt_vi": "Nếu lấy 90 : 9 nhân với 45 : 9 được kết quả là:",
+                "answer_num": 50,
+                "unit": null,
+                "hint_vi": "10 × 5 = ?"
+              }
+            ],
+            "steps_solution": [
+              "9 + 7 = 16; 10 × 5 = 50."
+            ],
+            "hint_vi": "Tính từng phép chia cho 9 trước."
+          }
+        ],
+        "theory_puzzles": [
+          {
+            "id": "tp_01",
+            "puzzle_type": "rule_cloze",
+            "title_vi": "Quy tắc vàng Làm tròn số",
+            "title_en": "Golden rounding rule",
+            "prompt_vi": "Khi làm tròn số, nếu chữ số ngay bên phải hàng cần làm tròn từ 5 trở lên (5, 6, 7, 8, 9) thì ta ____.",
+            "prompt_en": "If the digit to the right is 5 or more, we round ____.",
+            "options": [
+              "làm tròn lên",
+              "làm tròn xuống",
+              "giữ nguyên toàn bộ số",
+              "nhân với 10"
+            ],
+            "answer_index": 0,
+            "hints": [
+              "Ví dụ làm tròn 469 543 đến hàng nghìn: hàng trăm là 5 → thành 470 000."
+            ],
+            "explanation_vi": "Chữ số từ 5 trở lên làm tròn lên; từ 4 trở xuống làm tròn xuống.",
+            "explanation_en": "5 or more rounds up; 4 or less rounds down."
+          },
+          {
+            "id": "tp_02",
+            "puzzle_type": "quick_match",
+            "title_vi": "Tìm lỗi sai khi làm tròn",
+            "title_en": "Rounding to hundreds",
+            "prompt_vi": "Marcus làm tròn 3 746 thành 3 700. Tại sao bạn ấy KHÔNG làm tròn thành 3 800?",
+            "prompt_en": "Why did 3,746 round down to 3,700 instead of 3,800?",
+            "options": [
+              "Vì chữ số hàng chục là 4 (< 5)",
+              "Vì chữ số hàng đơn vị là 6",
+              "Vì chữ số hàng nghìn là 3",
+              "Vì 3 746 gần 4 000"
+            ],
+            "answer_index": 0,
+            "hints": [
+              "Xét hàng chục ngay bên phải hàng trăm (số 7)."
+            ],
+            "explanation_vi": "Hàng chục là 4 (< 5) nên làm tròn xuống thành 3 700.",
+            "explanation_en": "Tens digit is 4 (< 5), so round down to 3,700."
+          },
+          {
+            "id": "tp_03",
+            "puzzle_type": "true_false_myth",
+            "title_vi": "Phép chia còn dư: Cộng thêm 1 hộp hay bỏ đi?",
+            "title_en": "Remainder: round up or down?",
+            "prompt_vi": "Kate nướng 67 bánh, mỗi hộp đựng 8 chiếc. Để xếp HẾT toàn bộ số bánh vào hộp, ta chọn 8 hộp hay 9 hộp?",
+            "prompt_en": "67 cakes, 8 per box. How many boxes to pack ALL cakes?",
+            "options": [
+              "9 hộp (vì 3 bánh dư vẫn cần 1 hộp nữa)",
+              "8 hộp (vì 67 : 8 = 8)",
+              "7 hộp",
+              "8,3 hộp"
+            ],
+            "answer_index": 0,
+            "hints": [
+              "8 hộp chứa 64 bánh, 3 bánh còn dư đặt ở đâu?"
+            ],
+            "explanation_vi": "Khi bài toán yêu cầu đựng/chở HẾT → luôn làm tròn lên thêm 1.",
+            "explanation_en": "To hold everything, round up by 1 for the remainder."
+          },
+          {
+            "id": "tp_04",
+            "puzzle_type": "true_false_myth",
+            "title_vi": "Phép chia còn dư: Mua được tối đa bao nhiêu cái kẹo?",
+            "title_en": "Remainder: buying items",
+            "prompt_vi": "Amy có 85 cent, mỗi cái kẹo giá 4 cent (85 : 4 = 21 dư 1). Amy mua được tối đa 21 hay 22 cái kẹo?",
+            "prompt_en": "85 cents, 4 cents per candy (21 R 1). Max candies Amy can buy?",
+            "options": [
+              "21 cái kẹo (1 cent dư không đủ mua thêm)",
+              "22 cái kẹo",
+              "20 cái kẹo",
+              "25 cái kẹo"
+            ],
+            "answer_index": 0,
+            "hints": [
+              "1 cent có đủ trả 4 cent cho cái kẹo thứ 22 không?"
+            ],
+            "explanation_vi": "Khi hỏi 'mua được NHIỀU NHẤT', phần tiền dư không đủ mua thêm nên lấy thương 21.",
+            "explanation_en": "1 cent left isn't enough for another candy, so max is 21."
+          },
+          {
+            "id": "tp_05",
+            "puzzle_type": "rule_cloze",
+            "title_vi": "Ước lượng thương phép chia",
+            "title_en": "Bracketing quotient",
+            "prompt_vi": "Để ước lượng 72 ÷ 4, ta kẹp giữa hai số tròn chục chia hết cho 4 là 40 ÷ 4 = 10 và ____ ÷ 4 = 20.",
+            "prompt_en": "Estimate 72 ÷ 4 between 40÷4=10 and ____÷4=20.",
+            "options": [
+              "80",
+              "60",
+              "100",
+              "44"
+            ],
+            "answer_index": 0,
+            "hints": [
+              "4 × 20 = ?"
+            ],
+            "explanation_vi": "4 × 10 = 40 và 4 × 20 = 80 → thương nằm giữa 10 và 20.",
+            "explanation_en": "80 ÷ 4 = 20 brackets 72 ÷ 4."
+          },
+          {
+            "id": "tp_06",
+            "puzzle_type": "quick_match",
+            "title_vi": "Dấu hiệu Bội số của 5",
+            "title_en": "Multiples of 5 rule",
+            "prompt_vi": "Tất cả các bội số của 5 đều có chữ số hàng đơn vị là gì?",
+            "prompt_en": "Multiples of 5 always end in:",
+            "options": [
+              "0 hoặc 5",
+              "2 hoặc 5",
+              "Chỉ 5",
+              "0, 2, 4, 6, 8"
+            ],
+            "answer_index": 0,
+            "hints": [
+              "Nhẩm 5, 10, 15, 20, 25..."
+            ],
+            "explanation_vi": "Mọi bội của 5 tận cùng bằng 0 hoặc 5.",
+            "explanation_en": "They always end in 0 or 5."
+          },
+          {
+            "id": "tp_07",
+            "puzzle_type": "true_false_myth",
+            "title_vi": "So sánh hai số khác số chữ số",
+            "title_en": "Comparing digit lengths",
+            "prompt_vi": "Bạn Nam viết 100 145 < 10 145. Nam sai ở điểm nào?",
+            "prompt_en": "Why is 100,145 < 10,145 wrong?",
+            "options": [
+              "100 145 có 6 chữ số (hàng trăm nghìn) nên lớn hơn số có 5 chữ số",
+              "Hai số bằng nhau",
+              "Chữ số 4 ở 10 145 lớn hơn",
+              "Đúng vì có nhiều số 0"
+            ],
+            "answer_index": 0,
+            "hints": [
+              "Đếm số lượng chữ số của hai số trước khi so sánh."
+            ],
+            "explanation_vi": "100 145 (6 chữ số) > 10 145 (5 chữ số).",
+            "explanation_en": "6-digit numbers are always greater than 5-digit numbers."
+          },
+          {
+            "id": "tp_08",
+            "puzzle_type": "rule_cloze",
+            "title_vi": "Điều kiện của Số dư",
+            "title_en": "Remainder condition",
+            "prompt_vi": "Trong phép chia cho 8, số dư LỚN NHẤT có thể nhận được là ____.",
+            "prompt_en": "When dividing by 8, the LARGEST possible remainder is ____.",
+            "options": [
+              "7",
+              "8",
+              "9",
+              "1"
+            ],
+            "answer_index": 0,
+            "hints": [
+              "Số dư luôn phải BÉ HƠN số chia (8)."
+            ],
+            "explanation_vi": "Nếu dư 8 thì chia tiếp được 1 lần nữa, nên dư tối đa là 7.",
+            "explanation_en": "Remainder must always be smaller than divisor 8 → max 7."
+          },
+          {
+            "id": "tp_09",
+            "puzzle_type": "quick_match",
+            "title_vi": "Làm tròn 469 543 đến hàng trăm nghìn",
+            "title_en": "Round to nearest 100,000",
+            "prompt_vi": "Số 469 543 làm tròn đến hàng TRĂM NGHÌN bằng bao nhiêu?",
+            "prompt_en": "Round 469,543 to the nearest 100,000:",
+            "options": [
+              "500 000",
+              "400 000",
+              "470 000",
+              "469 000"
+            ],
+            "answer_index": 0,
+            "hints": [
+              "Nhìn chữ số hàng chục nghìn là 6 (≥ 5)."
+            ],
+            "explanation_vi": "Hàng chục nghìn là 6 ≥ 5 nên làm tròn lên 500 000.",
+            "explanation_en": "Ten-thousands digit is 6 → rounds up to 500,000."
+          },
+          {
+            "id": "tp_10",
+            "puzzle_type": "rule_cloze",
+            "title_vi": "Tỉ số tương đương trong phép chia",
+            "title_en": "Equivalent division",
+            "prompt_vi": "Nếu 48 : 12 = 4 thì 12 : 3 cũng bằng ____.",
+            "prompt_en": "If 48 ÷ 12 = 4 then 12 ÷ 3 equals ____.",
+            "options": [
+              "4",
+              "3",
+              "6",
+              "12"
+            ],
+            "answer_index": 0,
+            "hints": [
+              "Chia cả 48 và 12 cho 4."
+            ],
+            "explanation_vi": "12 : 3 = 4.",
+            "explanation_en": "12 ÷ 3 = 4."
           }
         ]
       },
@@ -3825,6 +5719,378 @@
               "1 + 1 + 2 = 4 trục/ô; 4 × 3 = 12 trục."
             ],
             "hint_vi": "Cộng dọc, ngang, chéo rồi nhân 3."
+          },
+          {
+            "id": "mp_13",
+            "problem_type": "numeric_input",
+            "prompt_vi": "Tổng số cạnh của 1 hình tam giác đều và 1 hình tứ giác là bao nhiêu?",
+            "prompt_en": "Total sides of 1 triangle + 1 quadrilateral:",
+            "answer_num": 7,
+            "unit": null,
+            "tolerance": 0.0001,
+            "steps_solution": [
+              "3 + 4 = 7 cạnh."
+            ],
+            "hint_vi": "Tam giác 3 cạnh, tứ giác 4 cạnh."
+          },
+          {
+            "id": "mp_14",
+            "problem_type": "numeric_input",
+            "prompt_vi": "Một hình thất giác (7 cạnh) và một hình ngũ giác (5 cạnh) có tổng cộng bao nhiêu góc?",
+            "prompt_en": "Total angles in a heptagon and a pentagon:",
+            "answer_num": 12,
+            "unit": null,
+            "tolerance": 0.0001,
+            "steps_solution": [
+              "7 + 5 = 12 góc."
+            ],
+            "hint_vi": "Thất = 7, Ngũ = 5."
+          },
+          {
+            "id": "mp_15",
+            "problem_type": "step_word_problem",
+            "prompt_vi": "Một ô gạch vuông có 1 trục dọc, 1 trục ngang và 2 trục chéo. Bức tường gắn 5 ô gạch giống nhau.",
+            "prompt_en": "5 square tiles, each with 4 lines of symmetry.",
+            "sub_steps": [
+              {
+                "prompt_vi": "Tổng số trục đối xứng dọc và ngang trên 1 ô là bao nhiêu?",
+                "answer_num": 2,
+                "unit": "trục",
+                "hint_vi": "1 + 1 = ?"
+              },
+              {
+                "prompt_vi": "Cả 5 ô xét riêng có tổng cộng bao nhiêu trục đối xứng tất cả?",
+                "answer_num": 20,
+                "unit": "trục",
+                "hint_vi": "5 × 4 = ?"
+              }
+            ],
+            "steps_solution": [
+              "1 ô có 4 trục → 5 ô có 20 trục."
+            ],
+            "hint_vi": "4 × 5 = 20."
+          },
+          {
+            "id": "mp_16",
+            "problem_type": "step_word_problem",
+            "prompt_vi": "Cô giáo cắt 4 hình tam giác đều giống hệt nhau (mỗi tam giác có 3 trục đối xứng) để ghép thành 1 hình tứ giác/hình thoi lớn.",
+            "prompt_en": "4 equilateral triangles (3 symmetry lines each) make a rhombus.",
+            "sub_steps": [
+              {
+                "prompt_vi": "Tổng số cạnh của 4 hình tam giác rời là bao nhiêu?",
+                "answer_num": 12,
+                "unit": "cạnh",
+                "hint_vi": "4 × 3 = ?"
+              },
+              {
+                "prompt_vi": "Hình thoi mới tạo thành có bao nhiêu trục đối xứng?",
+                "answer_num": 2,
+                "unit": "trục",
+                "hint_vi": "Hai đường chéo của hình thoi."
+              }
+            ],
+            "steps_solution": [
+              "4 × 3 = 12 cạnh rời; hình thoi có 2 trục đối xứng."
+            ],
+            "hint_vi": "Hình thoi có 2 đường chéo đối xứng."
+          },
+          {
+            "id": "mp_17",
+            "problem_type": "step_word_problem",
+            "prompt_vi": "Một mẫu lát mặt phẳng gồm 6 viên gạch hình lục giác đều và 8 viên gạch hình tam giác.",
+            "prompt_en": "Tessellation pattern with 6 hexagons and 8 triangles.",
+            "sub_steps": [
+              {
+                "prompt_vi": "6 viên lục giác đều (xét rời) có bao nhiêu đỉnh?",
+                "answer_num": 36,
+                "unit": "đỉnh",
+                "hint_vi": "6 × 6 = ?"
+              },
+              {
+                "prompt_vi": "Cộng thêm tổng số đỉnh của 8 viên tam giác rời được bao nhiêu đỉnh?",
+                "answer_num": 60,
+                "unit": "đỉnh",
+                "hint_vi": "36 + 8×3 = 36 + 24 = ?"
+              }
+            ],
+            "steps_solution": [
+              "36 + 24 = 60 đỉnh."
+            ],
+            "hint_vi": "6×6 + 8×3."
+          },
+          {
+            "id": "mp_18",
+            "problem_type": "step_word_problem",
+            "prompt_vi": "An ghép 2 hình vuông cạnh nhau thành 1 hình chữ nhật dài gấp đôi chiều rộng.",
+            "prompt_en": "2 squares joined side-by-side form a rectangle.",
+            "sub_steps": [
+              {
+                "prompt_vi": "Hình chữ nhật mới tạo thành có bao nhiêu đỉnh?",
+                "answer_num": 4,
+                "unit": "đỉnh",
+                "hint_vi": "Vẫn là hình chữ nhật (tứ giác)."
+              },
+              {
+                "prompt_vi": "Hình chữ nhật mới đó có bao nhiêu trục đối xứng?",
+                "answer_num": 2,
+                "unit": "trục",
+                "hint_vi": "Chỉ còn 1 trục dọc và 1 trục ngang."
+              }
+            ],
+            "steps_solution": [
+              "4 đỉnh và 2 trục đối xứng."
+            ],
+            "hint_vi": "Hình chữ nhật có 2 trục đối xứng."
+          },
+          {
+            "id": "mp_19",
+            "problem_type": "step_word_problem",
+            "prompt_vi": "Một cánh cửa kính có hoa văn hình bát giác đều ở giữa và 2 hình thoi hai bên.",
+            "prompt_en": "Window has 1 regular octagon and 2 rhombuses.",
+            "sub_steps": [
+              {
+                "prompt_vi": "Hình bát giác đều có bao nhiêu trục đối xứng?",
+                "answer_num": 8,
+                "unit": "trục",
+                "hint_vi": "Bát = 8."
+              },
+              {
+                "prompt_vi": "Tổng số cạnh của 1 bát giác và 2 hình thoi (xét rời) là:",
+                "answer_num": 16,
+                "unit": "cạnh",
+                "hint_vi": "8 + 4 + 4 = ?"
+              }
+            ],
+            "steps_solution": [
+              "8 trục đối xứng; 8 + 8 = 16 cạnh."
+            ],
+            "hint_vi": "Mỗi hình thoi có 4 cạnh."
+          },
+          {
+            "id": "mp_20",
+            "problem_type": "step_word_problem",
+            "prompt_vi": "Nam tô màu 3 hình ngũ giác đều (5 cạnh) và 2 hình thất giác đều (7 cạnh).",
+            "prompt_en": "3 regular pentagons and 2 regular heptagons.",
+            "sub_steps": [
+              {
+                "prompt_vi": "Tổng số trục đối xứng của 3 hình ngũ giác đều là:",
+                "answer_num": 15,
+                "unit": "trục",
+                "hint_vi": "3 × 5 = ?"
+              },
+              {
+                "prompt_vi": "Cộng thêm tổng số trục đối xứng của 2 hình thất giác đều được:",
+                "answer_num": 29,
+                "unit": "trục",
+                "hint_vi": "15 + 2×7 = ?"
+              }
+            ],
+            "steps_solution": [
+              "15 + 14 = 29 trục đối xứng."
+            ],
+            "hint_vi": "Đa giác đều: số trục đối xứng = số cạnh."
+          }
+        ],
+        "theory_puzzles": [
+          {
+            "id": "tp_01",
+            "puzzle_type": "true_false_myth",
+            "title_vi": "Hình nào KHÔNG lát được mặt phẳng?",
+            "title_en": "Tessellation rule",
+            "prompt_vi": "Trong Bài 6.1, hai hình nào sau đây KHÔNG lát kín được mặt phẳng (luôn hở khe)?",
+            "prompt_en": "Which two shapes do NOT tessellate?",
+            "options": [
+              "Hình ngũ giác đều và Hình tròn",
+              "Hình tam giác và Hình vuông",
+              "Hình tứ giác và Hình lục giác đều",
+              "Hình chữ nhật và Hình thoi"
+            ],
+            "answer_index": 0,
+            "hints": [
+              "Hình tròn cong lồi; góc ngũ giác đều là 108° (3×108=324° < 360°)."
+            ],
+            "explanation_vi": "Hình ngũ giác đều và hình tròn không lát khít được mặt phẳng.",
+            "explanation_en": "Regular pentagons and circles leave gaps."
+          },
+          {
+            "id": "tp_02",
+            "puzzle_type": "rule_cloze",
+            "title_vi": "Đa giác đều và Trục đối xứng",
+            "title_en": "Regular polygon symmetry",
+            "prompt_vi": "Phát biểu trong Đề ôn Chương 6–7: Trong một hình đa giác ĐỀU, số cạnh bằng ____.",
+            "prompt_en": "In a regular polygon, number of sides equals ____.",
+            "options": [
+              "số trục đối xứng",
+              "số đường chéo cộng 1",
+              "luôn bằng 4",
+              "gấp đôi số góc"
+            ],
+            "answer_index": 0,
+            "hints": [
+              "Tam giác đều 3 cạnh → 3 trục; Hình vuông 4 cạnh → 4 trục; Lục giác đều 6 cạnh → 6 trục."
+            ],
+            "explanation_vi": "Đa giác đều có số trục đối xứng đúng bằng số cạnh.",
+            "explanation_en": "Number of lines of symmetry = number of sides."
+          },
+          {
+            "id": "tp_03",
+            "puzzle_type": "true_false_myth",
+            "title_vi": "Đường chéo Hình chữ nhật có đối xứng?",
+            "title_en": "Rectangle diagonal trap",
+            "prompt_vi": "Đúng hay Sai: Đường chéo của một hình chữ nhật (dài 6 cm, rộng 4 cm) là trục đối xứng của nó.",
+            "prompt_en": "True or False: The diagonal of a 6×4 rectangle is a line of symmetry.",
+            "options": [
+              "Sai, khi gấp theo đường chéo hai nửa bị lệch nhau",
+              "Đúng, hình chữ nhật có 4 trục giống hình vuông",
+              "Chỉ đúng nếu gấp chéo từ trái sang phải",
+              "Đúng vì chia đôi diện tích"
+            ],
+            "answer_index": 0,
+            "hints": [
+              "Thử gấp chéo một tờ giấy A4 xem hai góc nhọn có khớp nhau không!"
+            ],
+            "explanation_vi": "Hình chữ nhật chỉ có 2 trục đối xứng (1 dọc, 1 ngang), KHÔNG có trục chéo.",
+            "explanation_en": "Rectangles have only 2 lines of symmetry (horizontal & vertical)."
+          },
+          {
+            "id": "tp_04",
+            "puzzle_type": "quick_match",
+            "title_vi": "Gọi tên đa giác theo tiền tố",
+            "title_en": "Polygon naming match",
+            "prompt_vi": "Ghép đúng: Hình 5 cạnh — 6 cạnh — 7 cạnh — 8 cạnh lần lượt là:",
+            "prompt_en": "Match 5, 6, 7, 8 sides:",
+            "options": [
+              "Ngũ giác, Lục giác, Thất giác, Bát giác",
+              "Tứ giác, Ngũ giác, Lục giác, Thất giác",
+              "Ngũ giác, Thất giác, Lục giác, Bát giác",
+              "Bát giác, Thất giác, Lục giác, Ngũ giác"
+            ],
+            "answer_index": 0,
+            "hints": [
+              "Ngũ = 5, Lục = 6, Thất = 7, Bát = 8."
+            ],
+            "explanation_vi": "5: Ngũ giác, 6: Lục giác, 7: Thất giác, 8: Bát giác.",
+            "explanation_en": "Pentagon, Hexagon, Heptagon, Octagon."
+          },
+          {
+            "id": "tp_05",
+            "puzzle_type": "true_false_myth",
+            "title_vi": "Cắt tam giác của Marcus",
+            "title_en": "Marcus triangle cut myth",
+            "prompt_vi": "Marcus nói: “Cắt hình tam giác bằng 1 nhát thẳng luôn thu được 2 hình tam giác.” Đúng hay sai?",
+            "prompt_en": "Marcus says one straight cut always splits a triangle into 2 triangles.",
+            "options": [
+              "Sai, cắt ngang qua 2 cạnh sẽ ra 1 tam giác + 1 tứ giác",
+              "Luôn đúng",
+              "Chỉ ra 2 hình vuông",
+              "Không cắt được"
+            ],
+            "answer_index": 0,
+            "hints": [
+              "Thử vẽ tam giác và kẻ 1 đường song song với cạnh đáy."
+            ],
+            "explanation_vi": "Chỉ khi cắt đi qua 1 đỉnh xuống cạnh đối diện mới ra 2 tam giác; cắt 2 cạnh sẽ ra 1 tam giác + 1 hình thang.",
+            "explanation_en": "Cutting across two edges creates a triangle and a quadrilateral."
+          },
+          {
+            "id": "tp_06",
+            "puzzle_type": "rule_cloze",
+            "title_vi": "Định nghĩa Đa giác (Polygon)",
+            "title_en": "Polygon definition",
+            "prompt_vi": "Hình đa giác là hình phẳng khép kín chỉ gồm toàn các cạnh ____ (không có đường cong).",
+            "prompt_en": "A polygon is a closed flat shape made of ____ sides only.",
+            "options": [
+              "thẳng",
+              "cong",
+              "tròn",
+              "chấm đứt"
+            ],
+            "answer_index": 0,
+            "hints": [
+              "Hình tròn không phải là đa giác."
+            ],
+            "explanation_vi": "Đa giác chỉ có các cạnh thẳng.",
+            "explanation_en": "Polygons have only straight sides."
+          },
+          {
+            "id": "tp_07",
+            "puzzle_type": "true_false_myth",
+            "title_vi": "Hình tứ giác có luôn có 4 góc vuông?",
+            "title_en": "All quadrilaterals have right angles?",
+            "prompt_vi": "Đúng hay Sai: Mọi hình tứ giác đều có bốn góc vuông.",
+            "prompt_en": "True or False: Every quadrilateral has four right angles.",
+            "options": [
+              "Sai, hình thoi, hình bình hành, hình thang, hình diều cũng là tứ giác",
+              "Đúng, mọi hình 4 cạnh đều vuông góc",
+              "Chỉ sai với hình tam giác",
+              "Đúng nếu 4 cạnh bằng nhau"
+            ],
+            "answer_index": 0,
+            "hints": [
+              "Hình bình hành hay hình diều có 4 cạnh nhưng các góc không vuông."
+            ],
+            "explanation_vi": "Chỉ hình chữ nhật và hình vuông mới có 4 góc vuông.",
+            "explanation_en": "Only rectangles and squares guarantee 4 right angles."
+          },
+          {
+            "id": "tp_08",
+            "puzzle_type": "quick_match",
+            "title_vi": "Ghép hình từ Bài 6.1",
+            "title_en": "Combining 2D shapes",
+            "prompt_vi": "Khi ghép 2 hình ngũ giác đều giống hệt nhau sao cho tạo thành vỏ bao ngoài như Bài 6.1, hoặc ghép 4 hình tam giác đều, hình mới là:",
+            "prompt_en": "From Lesson 6.1: joining 4 triangles or 2 pentagons forms:",
+            "options": [
+              "Hình vuông / tứ giác / lục giác",
+              "Hình tròn",
+              "Hình trụ",
+              "Đoạn thẳng"
+            ],
+            "answer_index": 0,
+            "hints": [
+              "Xem mục Hình lát mặt phẳng trong Bài 6.1."
+            ],
+            "explanation_vi": "4 tam giác tạo thành hình vuông/tứ giác; 2 ngũ giác ghép tạo hình lục giác.",
+            "explanation_en": "4 triangles form a square/quadrilateral; 2 pentagons form a hexagon."
+          },
+          {
+            "id": "tp_09",
+            "puzzle_type": "rule_cloze",
+            "title_vi": "Trục đối xứng hình bình hành",
+            "title_en": "Parallelogram symmetry",
+            "prompt_vi": "Hình bình hành thông thường (các cạnh liền kề không bằng nhau, góc không vuông) có ____ trục đối xứng.",
+            "prompt_en": "A general parallelogram has ____ lines of symmetry.",
+            "options": [
+              "0",
+              "1",
+              "2",
+              "4"
+            ],
+            "answer_index": 0,
+            "hints": [
+              "Thử gấp đôi hình bình hành: hai cạnh xiên không chồng khít lên nhau."
+            ],
+            "explanation_vi": "Hình bình hành thông thường có 0 trục đối xứng.",
+            "explanation_en": "0 lines of symmetry."
+          },
+          {
+            "id": "tp_10",
+            "puzzle_type": "quick_match",
+            "title_vi": "Hình có trục đối xứng chéo",
+            "title_en": "Diagonal symmetry check",
+            "prompt_vi": "Hình nào sau đây có ĐÚNG 1 trục đối xứng là đường chéo (hoặc đứng dọc qua 2 đỉnh nhọn)?",
+            "prompt_en": "Which shape has 1 line of symmetry?",
+            "options": [
+              "Hình diều (Kite)",
+              "Hình vuông",
+              "Hình tròn",
+              "Hình bình hành nghiêng"
+            ],
+            "answer_index": 0,
+            "hints": [
+              "Hình diều cân xứng hai bên trái-phải qua trục nối 2 đỉnh."
+            ],
+            "explanation_vi": "Hình diều có đúng 1 trục đối xứng.",
+            "explanation_en": "A kite has exactly 1 line of symmetry."
           }
         ]
       },
@@ -4512,6 +6778,378 @@
               "90 + 40 = 130°; còn thiếu 180 - 130 = 50°."
             ],
             "hint_vi": "Cộng 90 + 40 rồi lấy 180 trừ đi."
+          },
+          {
+            "id": "mp_13",
+            "problem_type": "numeric_input",
+            "prompt_vi": "Một hình tam giác có tổng 3 góc bằng 180°. Nếu biết 2 góc là 40° và 50°, góc thứ ba bằng bao nhiêu độ?",
+            "prompt_en": "Triangle angles sum to 180°. Two are 40° and 50°; find the third:",
+            "answer_num": 90,
+            "unit": "°",
+            "tolerance": 0.0001,
+            "steps_solution": [
+              "180 - (40 + 50) = 90° (góc vuông)."
+            ],
+            "hint_vi": "180 - 90 = ?"
+          },
+          {
+            "id": "mp_14",
+            "problem_type": "numeric_input",
+            "prompt_vi": "Từ 12 giờ đến 5 giờ đúng, mỗi giờ kim giờ quay thêm 30°. Lúc 5 giờ đúng góc giữa kim giờ và kim phút là bao nhiêu độ?",
+            "prompt_en": "At 5:00 (each hour = 30°), what is the angle?",
+            "answer_num": 150,
+            "unit": "°",
+            "tolerance": 0.0001,
+            "steps_solution": [
+              "5 × 30° = 150° (góc tù)."
+            ],
+            "hint_vi": "5 × 30 = ?"
+          },
+          {
+            "id": "mp_15",
+            "problem_type": "step_word_problem",
+            "prompt_vi": "Một hình thang vuông có 2 góc vuông (90°) và 1 góc tù đo được 135°. Tổng 4 góc của tứ giác là 360°.",
+            "prompt_en": "A trapezoid has two 90° angles and one 135° angle (total 360°).",
+            "sub_steps": [
+              {
+                "prompt_vi": "Tổng số đo của 3 góc đã biết (90 + 90 + 135) là bao nhiêu độ?",
+                "answer_num": 315,
+                "unit": "°",
+                "hint_vi": "180 + 135 = ?"
+              },
+              {
+                "prompt_vi": "Góc nhọn còn lại đo được bao nhiêu độ?",
+                "answer_num": 45,
+                "unit": "°",
+                "hint_vi": "360 - 315 = ?"
+              }
+            ],
+            "steps_solution": [
+              "315°; góc còn lại = 360 - 315 = 45°."
+            ],
+            "hint_vi": "Cộng 3 góc rồi lấy 360 trừ đi."
+          },
+          {
+            "id": "mp_16",
+            "problem_type": "step_word_problem",
+            "prompt_vi": "Bạn Mai vẽ góc A = 25°, góc B gấp 3 lần góc A, góc C gấp 2 lần góc B.",
+            "prompt_en": "Angle A = 25°, B = 3 × A, C = 2 × B.",
+            "sub_steps": [
+              {
+                "prompt_vi": "Góc B đo được bao nhiêu độ?",
+                "answer_num": 75,
+                "unit": "°",
+                "hint_vi": "25 × 3 = ?"
+              },
+              {
+                "prompt_vi": "Góc C đo được bao nhiêu độ? (góc tù)",
+                "answer_num": 150,
+                "unit": "°",
+                "hint_vi": "75 × 2 = ?"
+              }
+            ],
+            "steps_solution": [
+              "B = 75° (nhọn); C = 150° (tù)."
+            ],
+            "hint_vi": "Nhân 3 rồi nhân 2."
+          },
+          {
+            "id": "mp_17",
+            "problem_type": "step_word_problem",
+            "prompt_vi": "Hai góc kề nhau tạo thành một đường thẳng (180°). Góc thứ nhất đo được 125°.",
+            "prompt_en": "Two angles on a straight line (180°); one is 125°.",
+            "sub_steps": [
+              {
+                "prompt_vi": "Góc thứ hai (góc nhọn) đo được bao nhiêu độ?",
+                "answer_num": 55,
+                "unit": "°",
+                "hint_vi": "180 - 125 = ?"
+              },
+              {
+                "prompt_vi": "Góc thứ nhất lớn hơn góc thứ hai bao nhiêu độ?",
+                "answer_num": 70,
+                "unit": "°",
+                "hint_vi": "125 - 55 = ?"
+              }
+            ],
+            "steps_solution": [
+              "180 - 125 = 55°; hiệu = 70°."
+            ],
+            "hint_vi": "Tổng hai góc trên đường thẳng là 180°."
+          },
+          {
+            "id": "mp_18",
+            "problem_type": "step_word_problem",
+            "prompt_vi": "Cần trục quay một góc nhọn 55° rồi quay tiếp thêm một góc nhọn 65° nữa.",
+            "prompt_en": "A crane turns 55° then 65° more.",
+            "sub_steps": [
+              {
+                "prompt_vi": "Tổng góc cần trục đã quay là bao nhiêu độ?",
+                "answer_num": 120,
+                "unit": "°",
+                "hint_vi": "55 + 65 = ?"
+              },
+              {
+                "prompt_vi": "Góc đó lớn hơn một góc vuông (90°) bao nhiêu độ?",
+                "answer_num": 30,
+                "unit": "°",
+                "hint_vi": "120 - 90 = ?"
+              }
+            ],
+            "steps_solution": [
+              "55 + 65 = 120°; lớn hơn góc vuông 30°."
+            ],
+            "hint_vi": "Cộng hai góc rồi trừ 90."
+          },
+          {
+            "id": "mp_19",
+            "problem_type": "step_word_problem",
+            "prompt_vi": "Lúc 1 giờ đúng, góc giữa hai kim đồng hồ là 30°. Mỗi giờ kim quay thêm 30°.",
+            "prompt_en": "Clock angle increases 30° per hour from 1:00 (30°).",
+            "sub_steps": [
+              {
+                "prompt_vi": "Lúc 3 giờ đúng góc giữa hai kim là bao nhiêu độ?",
+                "answer_num": 90,
+                "unit": "°",
+                "hint_vi": "3 × 30 = ?"
+              },
+              {
+                "prompt_vi": "Lúc 6 giờ đúng hai kim thẳng hàng tạo góc bao nhiêu độ?",
+                "answer_num": 180,
+                "unit": "°",
+                "hint_vi": "6 × 30 = ?"
+              }
+            ],
+            "steps_solution": [
+              "3 giờ: 90°; 6 giờ: 180°."
+            ],
+            "hint_vi": "Nhân số giờ với 30°."
+          },
+          {
+            "id": "mp_20",
+            "problem_type": "step_word_problem",
+            "prompt_vi": "Cánh cửa mở ra một góc 110°. Bạn nhỏ khép bớt cửa lại 20° rồi lại khép tiếp 35° nữa.",
+            "prompt_en": "A door opens 110°, then closes by 20° and 35°.",
+            "sub_steps": [
+              {
+                "prompt_vi": "Sau khi khép bớt 20°, góc mở của cửa là bao nhiêu độ (góc vuông)?",
+                "answer_num": 90,
+                "unit": "°",
+                "hint_vi": "110 - 20 = ?"
+              },
+              {
+                "prompt_vi": "Sau khi khép tiếp 35°, góc mở cuối cùng là bao nhiêu độ?",
+                "answer_num": 55,
+                "unit": "°",
+                "hint_vi": "90 - 35 = ?"
+              }
+            ],
+            "steps_solution": [
+              "110 - 20 = 90°; 90 - 35 = 55°."
+            ],
+            "hint_vi": "Trừ 20 rồi trừ tiếp 35."
+          }
+        ],
+        "theory_puzzles": [
+          {
+            "id": "tp_01",
+            "puzzle_type": "true_false_myth",
+            "title_vi": "Độ dài cạnh có làm góc to ra không?",
+            "title_en": "Arm length myth",
+            "prompt_vi": "Sarah nói: “Góc A lớn hơn góc B vì hai cạnh vẽ của góc A dài hơn.” Đúng hay Sai?",
+            "prompt_en": "Sarah thinks longer lines make a bigger angle. True or false?",
+            "options": [
+              "Sai, độ lớn góc chỉ phụ thuộc độ mở giữa 2 cạnh",
+              "Đúng, cạnh dài thì góc lớn hơn",
+              "Đúng nếu dùng thước đo cm",
+              "Chỉ đúng với góc tù"
+            ],
+            "answer_index": 0,
+            "hints": [
+              "Độ lớn góc đo bằng độ (°), không đo bằng độ dài cm của cạnh."
+            ],
+            "explanation_vi": "Kéo dài cạnh không làm thay đổi số đo góc.",
+            "explanation_en": "Angle size measures turn, independent of line length."
+          },
+          {
+            "id": "tp_02",
+            "puzzle_type": "rule_cloze",
+            "title_vi": "Định nghĩa Góc nhọn (Acute)",
+            "title_en": "Acute angle definition",
+            "prompt_vi": "Góc nhọn là góc có số đo ____ 90° (nhỏ hơn một góc vuông).",
+            "prompt_en": "An acute angle measures ____ 90°.",
+            "options": [
+              "nhỏ hơn",
+              "lớn hơn",
+              "đúng bằng",
+              "từ 90° đến 180°"
+            ],
+            "answer_index": 0,
+            "hints": [
+              "Góc vuông là mốc 90°."
+            ],
+            "explanation_vi": "0° < Góc nhọn < 90°.",
+            "explanation_en": "An acute angle is less than 90°."
+          },
+          {
+            "id": "tp_03",
+            "puzzle_type": "rule_cloze",
+            "title_vi": "Định nghĩa Góc tù (Obtuse)",
+            "title_en": "Obtuse angle definition",
+            "prompt_vi": "Góc tù là góc lớn hơn 90° (1 góc vuông) và nhỏ hơn ____ (2 góc vuông).",
+            "prompt_en": "An obtuse angle is > 90° and < ____.",
+            "options": [
+              "180°",
+              "90°",
+              "360°",
+              "100°"
+            ],
+            "answer_index": 0,
+            "hints": [
+              "Hai góc vuông = 90° + 90°."
+            ],
+            "explanation_vi": "90° < Góc tù < 180°.",
+            "explanation_en": "Between 90° and 180°."
+          },
+          {
+            "id": "tp_04",
+            "puzzle_type": "true_false_myth",
+            "title_vi": "Thử thách Góc 88° và Góc 92°",
+            "title_en": "88° vs 92° border check",
+            "prompt_vi": "Câu nào ĐÚNG trong Đề ôn Chương 6–7?",
+            "prompt_en": "Which statement is TRUE?",
+            "options": [
+              "Góc 88° là góc nhọn và góc 92° là góc tù",
+              "Góc 88° là góc vuông",
+              "Góc 92° là góc nhọn",
+              "Cả hai đều là góc vuông"
+            ],
+            "answer_index": 0,
+            "hints": [
+              "90° mới là góc vuông chuẩn; 88 < 90 và 92 > 90."
+            ],
+            "explanation_vi": "88° < 90° (nhọn) và 90° < 92° < 180° (tù).",
+            "explanation_en": "88° is acute (< 90°) and 92° is obtuse (> 90°)."
+          },
+          {
+            "id": "tp_05",
+            "puzzle_type": "quick_match",
+            "title_vi": "Cách dùng giấy can so sánh góc",
+            "title_en": "Tracing paper steps",
+            "prompt_vi": "Để so sánh hai góc A và B bằng giấy can (Bài 7.1), ta cần làm bước gì?",
+            "prompt_en": "How to compare angles with tracing paper?",
+            "options": [
+              "Vẽ lại góc A lên giấy can rồi đặt chồng đỉnh và 1 cạnh lên góc B",
+              "Cắt đôi tờ giấy can",
+              "Đo độ dài hai cạnh bằng thước kẻ",
+              "Cộng hai góc lại"
+            ],
+            "answer_index": 0,
+            "hints": [
+              "Xem Bước 1 & Bước 2 của Bài 7.1."
+            ],
+            "explanation_vi": "Đặt trùng đỉnh và 1 cạnh để xem cạnh kia mở rộng hơn hay hẹp hơn.",
+            "explanation_en": "Trace one angle and lay vertex + one arm over the other."
+          },
+          {
+            "id": "tp_06",
+            "puzzle_type": "quick_match",
+            "title_vi": "Nhận biết Góc trong thực tế",
+            "title_en": "Angles on a clock",
+            "prompt_vi": "Vào lúc 3 giờ đúng (hoặc 9 giờ đúng), kim giờ và kim phút tạo thành góc gì?",
+            "prompt_en": "At 3:00 or 9:00, what angle do clock hands make?",
+            "options": [
+              "Góc vuông (90°)",
+              "Góc nhọn",
+              "Góc tù",
+              "Góc 180°"
+            ],
+            "answer_index": 0,
+            "hints": [
+              "Kim phút chỉ số 12 (thẳng đứng), kim giờ chỉ số 3 (nằm ngang)."
+            ],
+            "explanation_vi": "Tạo thành góc vuông chuẩn 90°.",
+            "explanation_en": "They form an exact 90° right angle."
+          },
+          {
+            "id": "tp_07",
+            "puzzle_type": "rule_cloze",
+            "title_vi": "Nửa góc vuông & Gấp rưỡi góc vuông",
+            "title_en": "Benchmarks 45° and 135°",
+            "prompt_vi": "Góc nằm chính giữa góc vuông (90°) và đường thẳng (180°) có số đo ____ độ.",
+            "prompt_en": "Halfway between 90° and 180° is ____ degrees.",
+            "options": [
+              "135",
+              "45",
+              "120",
+              "150"
+            ],
+            "answer_index": 0,
+            "hints": [
+              "90 + 45 = ?"
+            ],
+            "explanation_vi": "90° + 45° = 135° (một góc tù điển hình).",
+            "explanation_en": "90° + 45° = 135°."
+          },
+          {
+            "id": "tp_08",
+            "puzzle_type": "true_false_myth",
+            "title_vi": "Có thể có 2 góc tù trong 1 hình tam giác?",
+            "title_en": "Can a triangle have 2 obtuse angles?",
+            "prompt_vi": "Nếu 1 góc tù đã lớn hơn 90° (ví dụ 100°), liệu 2 góc tù có đóng kín thành 1 hình tam giác (tổng 3 góc = 180°) được không?",
+            "prompt_en": "Can a triangle have two obtuse angles?",
+            "options": [
+              "Không, vì tổng 2 góc tù đã > 180° nên hai cạnh không thể khép lại",
+              "Có, tam giác nào cũng có 2 góc tù",
+              "Có, nếu cạnh rất dài",
+              "Tùy màu tam giác"
+            ],
+            "answer_index": 0,
+            "hints": [
+              "100° + 100° = 200° > 180°."
+            ],
+            "explanation_vi": "Một hình tam giác chỉ có tối đa 1 góc tù (hoặc 1 góc vuông).",
+            "explanation_en": "Two obtuse angles exceed 180°, so they can't close a triangle."
+          },
+          {
+            "id": "tp_09",
+            "puzzle_type": "quick_match",
+            "title_vi": "Ước lượng góc nhọn gần 90°",
+            "title_en": "Estimating acute angles",
+            "prompt_vi": "Trong ba số đo 25°, 50°, 80°, số đo nào hợp với một góc NHỌN hơi hẹp hơn góc vuông một chút?",
+            "prompt_en": "Which measurement matches an acute angle just under a right angle?",
+            "options": [
+              "80°",
+              "25°",
+              "50°",
+              "110°"
+            ],
+            "answer_index": 0,
+            "hints": [
+              "Số nào sát với 90° nhất mà vẫn nhỏ hơn 90°?"
+            ],
+            "explanation_vi": "80° gần 90° nhất trong nhóm góc nhọn.",
+            "explanation_en": "80° is just under 90°."
+          },
+          {
+            "id": "tp_10",
+            "puzzle_type": "rule_cloze",
+            "title_vi": "Bốn góc vuông ghép thành vòng tròn",
+            "title_en": "Full turn = 360°",
+            "prompt_vi": "Một vòng xoay trọn vẹn gồm 4 góc vuông bằng nhau có tổng số đo là ____ độ.",
+            "prompt_en": "A full turn of 4 right angles is ____ degrees.",
+            "options": [
+              "360",
+              "180",
+              "270",
+              "90"
+            ],
+            "answer_index": 0,
+            "hints": [
+              "90° × 4 = ?"
+            ],
+            "explanation_vi": "90° × 4 = 360°.",
+            "explanation_en": "4 × 90° = 360°."
           }
         ]
       },

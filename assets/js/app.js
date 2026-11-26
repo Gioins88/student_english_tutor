@@ -93,6 +93,7 @@
       mistakes: {},
       games: {},
       stickers: {},
+      sections: {},
       pet: { fed: 0, level: 1 },
       shields: 0,
       shieldGrantedFor: 0,
@@ -113,7 +114,7 @@
           base[key] = parsed[key] == null && base[key] !== null ? base[key] : parsed[key];
         }
       });
-      ["remembered", "review", "answered", "voice", "lego", "mistakes", "games", "stickers"].forEach(function (key) {
+      ["remembered", "review", "answered", "voice", "lego", "mistakes", "games", "stickers", "sections"].forEach(function (key) {
         if (!base[key] || typeof base[key] !== "object") base[key] = {};
       });
       return base;
@@ -328,6 +329,160 @@
     }).length;
   }
 
+  function getComprehensionQuestions(lesson) {
+    if (!lesson) return [];
+    var all = Array.isArray(lesson.quiz) ? lesson.quiz : [];
+    var rq = all.filter(function (q) { return q && q.skill === "reading"; });
+    var target = Math.min(10, all.length);
+    if (rq.length >= target) return rq;
+    var out = rq.slice();
+    var seen = {};
+    out.forEach(function (q) { if (q && q.id) seen[q.id] = true; });
+    all.forEach(function (q) {
+      if (out.length < target && q && (!q.id || !seen[q.id])) {
+        out.push(q);
+        if (q.id) seen[q.id] = true;
+      }
+    });
+    return out;
+  }
+
+  function markSectionProgress(lessonId, sectionKey, itemId, totalCount) {
+    if (!lessonId || !sectionKey) return;
+    if (!progress.sections || typeof progress.sections !== "object") progress.sections = {};
+    var key = lessonId + ":" + sectionKey;
+    var rec = progress.sections[key] || { solved: {}, total: totalCount || 0, updatedAt: 0 };
+    if (itemId) rec.solved[String(itemId)] = true;
+    var done = Object.keys(rec.solved).length;
+    rec.total = Math.max(rec.total || 0, totalCount || 0, done);
+    rec.done = done;
+    rec.completed = rec.total > 0 && done >= rec.total;
+    rec.updatedAt = Date.now();
+    progress.sections[key] = rec;
+    saveProgress();
+  }
+
+  function subjectGamesOrder(subject) {
+    if (subject === "science") return ["boss", "balloon", "memory", "detective"];
+    if (subject === "math") return ["boss", "balloon", "detective"];
+    return ["balloon", "boss", "memory", "detective", "listen", "typing", "speak"];
+  }
+
+  function getLessonSections(lesson) {
+    if (!lesson) return [];
+    var dueCount = dueMistakes(lesson.id).length;
+    var roundCap = window.SET_GAMES && window.SET_GAMES.getRoundCount
+      ? window.SET_GAMES.getRoundCount("boss", lesson, lesson.quiz)
+      : Math.min(10, (lesson.quiz || []).length);
+
+    if (lesson.subject === "science") {
+      var sb = lesson.scienceBlocks || {};
+      var cards = Array.isArray(sb.concept_cards) ? sb.concept_cards : [];
+      var sorts = Array.isArray(sb.sort_challenges) ? sb.sort_challenges : [];
+      var seqs = Array.isArray(sb.sequence_challenges) ? sb.sequence_challenges : [];
+      var compQs = getComprehensionQuestions(lesson);
+      return [
+        { key: "science-concepts", shortLabel: "Khái niệm", icon: "flask", title: "Thẻ Khái niệm 3D", desc: "Lật thẻ nắm vững khái niệm và ví dụ thực tế (hỗ trợ song ngữ).", total: cards.length, meta: cards.length + " khái niệm" },
+        { key: "comprehension", shortLabel: "Đọc hiểu", icon: "book", title: "Đọc hiểu Khoa học", desc: "Đọc giải thích hiện tượng và trả lời câu hỏi trắc nghiệm.", total: compQs.length, meta: compQs.length + " câu hỏi" },
+        { key: "science-sort", shortLabel: "Phân loại", icon: "target", title: "Phân loại (Category Sorter)", desc: "Chạm xếp các vật/hiện tượng vào đúng giỏ thuộc tính.", total: sorts.length, meta: sorts.length + " thử thách" },
+        { key: "science-seq", shortLabel: "Quy trình", icon: "refresh", title: "Xếp Quy trình (Sequencer)", desc: "Sắp xếp đúng thứ tự chu trình tự nhiên và thí nghiệm.", total: seqs.length, meta: seqs.length + " quy trình" },
+        { key: "games", shortLabel: "Games", icon: "spark", title: "Mini-games Khoa học", desc: "Đấu Boss, Bóng bay, Lật thẻ khái niệm và Thám tử Khoa học.", total: subjectGamesOrder("science").length, meta: roundCap + " câu/lượt · 4 game" },
+        { key: "review", shortLabel: "Ôn tập", icon: "refresh", title: "Kho báu cần chinh phục", desc: "Ôn lại các câu hay nhầm theo lịch Spaced Repetition.", total: dueCount, meta: dueCount + " mục cần ôn" }
+      ];
+    }
+    if (lesson.subject === "math") {
+      var mb = lesson.mathBlocks || {};
+      var puzzles = Array.isArray(mb.theory_puzzles) ? mb.theory_puzzles : [];
+      var examples = Array.isArray(mb.worked_examples) ? mb.worked_examples : [];
+      var allProbs = Array.isArray(mb.math_problems) ? mb.math_problems : [];
+      var wordProbs = allProbs.filter(function (p) { return p && p.problem_type === "step_word_problem"; });
+      var pracProbs = allProbs.filter(function (p) { return p && p.problem_type !== "step_word_problem"; });
+      return [
+        { key: "math-theory", shortLabel: "Lý thuyết", icon: "spark", title: "Giải đố Lý thuyết", desc: "Ôn quy tắc cốt lõi qua trò chơi phá giải hiểu nhầm kèm gợi ý từng bước.", total: puzzles.length, meta: puzzles.length + " câu đố" },
+        { key: "math-examples", shortLabel: "Ví dụ mẫu", icon: "book", title: "Ví dụ mẫu từng bước", desc: "Mở từng bước giải để hiểu bản chất bài toán (có chế độ Song ngữ).", total: examples.length, meta: examples.length + " ví dụ" },
+        { key: "math-practice", shortLabel: "Luyện tập", icon: "calc", title: "Luyện tập & Bảng nháp", desc: "Giải bài trên Math NumPad, phân số, so sánh kèm bảng vẽ nháp iPad.", total: pracProbs.length, meta: pracProbs.length + " bài toán" },
+        { key: "math-word", shortLabel: "Toán đố", icon: "pen", title: "Toán có lời văn chia chặng", desc: "Giải từng bước nhỏ giúp trẻ không bị ngợp trước đề dài.", total: wordProbs.length, meta: wordProbs.length + " bài toán đố" },
+        { key: "games", shortLabel: "Games", icon: "spark", title: "Speed Math & Boss Battle", desc: "Tính nhanh tiếp nhiên liệu tên lửa và hạ Boss Số học.", total: subjectGamesOrder("math").length, meta: roundCap + " câu/lượt · 3 game" },
+        { key: "review", shortLabel: "Ôn tập", icon: "refresh", title: "Kho báu cần chinh phục", desc: "Ôn lại bài toán từng làm sai đúng thời điểm.", total: dueCount, meta: dueCount + " mục cần ôn" }
+      ];
+    }
+    var engCompQs = getComprehensionQuestions(lesson);
+    return [
+      { key: "vocab", shortLabel: "Từ vựng", icon: "book", title: "Flashcard 3D + Word Builder", desc: "Lật thẻ, nghe phát âm, ghép chữ và luyện đọc to.", total: lesson.vocabulary.length, meta: lesson.vocabulary.length + " thẻ" },
+      { key: "grammar", shortLabel: "Ngữ pháp", icon: "target", title: "Sentence Lego", desc: "Xếp khối từ theo màu để lắp mẫu câu đúng.", total: lesson.grammar.length, meta: lesson.grammar.length + " mẫu câu" },
+      { key: "read", shortLabel: "Đọc & Nghe", icon: "ear", title: "Đọc & Nghe", desc: "Chạm từng từ để nghe, nghe chậm từng câu và luyện micro.", total: lesson.readings.length, meta: lesson.readings.length + " đoạn hội thoại" },
+      { key: "comprehension", shortLabel: "Đọc hiểu", icon: "book", title: "Đọc hiểu (Reading)", desc: "Đọc cả đoạn văn và trả lời danh sách câu hỏi trắc nghiệm.", total: engCompQs.length, meta: engCompQs.length + " câu hỏi" },
+      { key: "games", shortLabel: "Games", icon: "spark", title: "7 Mini-games", desc: "Bóng bay, Boss, Kho báu, Thám tử, Nghe, Gõ từ và Đọc to.", total: subjectGamesOrder("english").length, meta: "7 trò chơi" },
+      { key: "quiz", shortLabel: "Luyện nhanh", icon: "bolt", title: "Luyện nhanh", desc: "Thử nhanh một lượt câu hỏi trắc nghiệm.", total: lesson.quiz.length, meta: lesson.quiz.length + " câu hỏi" },
+      { key: "review", shortLabel: "Ôn tập", icon: "refresh", title: "Kho báu cần chinh phục", desc: "Ôn lại đúng lúc con sắp quên theo Spaced Repetition.", total: dueCount, meta: dueCount + " mục cần ôn" }
+    ];
+  }
+
+  function getSectionStatus(lesson, sectionKey, totalOverride) {
+    if (!lesson) return { status: "not_started", done: 0, total: 0, label: "Chưa học" };
+    var sec = (progress.sections || {})[lesson.id + ":" + sectionKey];
+    var done = sec && sec.solved ? Object.keys(sec.solved).length : 0;
+    var total = typeof totalOverride === "number" ? totalOverride : (sec ? sec.total || 0 : 0);
+
+    if (sectionKey === "vocab") {
+      total = lesson.vocabulary.length;
+      done = Math.max(done, countRemembered(lesson));
+    } else if (sectionKey === "grammar") {
+      total = lesson.grammar.length;
+      var legoDone = lesson.grammar.filter(function (p) { return !!progress.lego[lesson.id + ":" + p.id]; }).length;
+      done = Math.max(done, legoDone);
+    } else if (sectionKey === "games") {
+      var order = subjectGamesOrder(lesson.subject);
+      total = order.length;
+      var played = order.filter(function (g) { return !!progress.games["game:" + lesson.id + ":" + g]; }).length;
+      done = Math.max(done, played);
+    } else if (sectionKey === "quiz") {
+      total = lesson.quiz.length;
+      var ans = lesson.quiz.filter(function (q) { return !!progress.answered[lesson.id + ":" + q.id]; }).length;
+      done = Math.max(done, ans);
+    } else if (sectionKey === "review") {
+      var due = dueMistakes(lesson.id).length;
+      if (due === 0 && done === 0) return { status: "done", done: 0, total: 0, label: "Không còn lỗi" };
+      total = Math.max(due, done);
+    }
+
+    if (total > 0 && done >= total) return { status: "done", done: done, total: total, label: "Đã học ✓" };
+    if (done > 0) return { status: "in_progress", done: done, total: total, label: total ? "Đang học " + done + "/" + total : "Đang học" };
+    return { status: "not_started", done: 0, total: total, label: "Chưa học" };
+  }
+
+  function getLessonStatus(lesson) {
+    var sections = getLessonSections(lesson).filter(function (s) { return s.key !== "review" && s.key !== "quiz"; });
+    var completed = 0;
+    var started = 0;
+    sections.forEach(function (s) {
+      var st = getSectionStatus(lesson, s.key, s.total);
+      if (st.status === "done") {
+        completed += 1;
+        started += 1;
+      } else if (st.status === "in_progress") {
+        started += 1;
+      }
+    });
+    if (sections.length && completed >= sections.length) {
+      return { status: "done", done: completed, total: sections.length, label: "Đã học xong ✓" };
+    }
+    if (started > 0) {
+      return { status: "in_progress", done: completed, total: sections.length, label: "Đang học (" + completed + "/" + sections.length + " phần)" };
+    }
+    return { status: "not_started", done: 0, total: sections.length, label: "Chưa học" };
+  }
+
+  function statusPillHtml(st) {
+    var cls = st.status === "done" ? "status-pill--done" : st.status === "in_progress" ? "status-pill--progress" : "status-pill--todo";
+    return '<span class="status-pill ' + cls + '">' + esc(st.label) + "</span>";
+  }
+
+  function tabDotHtml(st) {
+    if (!st || st.status === "not_started") return "";
+    return '<span class="tab-dot ' + (st.status === "done" ? "tab-dot--done" : "tab-dot--progress") + '" aria-hidden="true"></span>';
+  }
+
   function findMeaning(lesson, word) {
     var key = normWord(word);
     if (!key) return null;
@@ -359,6 +514,7 @@
         delete progress.review[key];
         award(first ? 8 : 2, first ? 1 : 0);
         maybeAwardLessonSticker(lesson);
+        markSectionProgress(lesson.id, "vocab", item.id, lesson.vocabulary.length);
         saveProgress();
         toast(first ? "Ghép đúng! +8 XP và +1 Sao." : "Ghép lại đúng rồi! +2 XP.");
       },
@@ -367,6 +523,7 @@
         var first = !progress.lego[key];
         progress.lego[key] = true;
         award(first ? 8 : 2, first ? 1 : 0);
+        markSectionProgress(lesson.id, "grammar", pattern.id, lesson.grammar.length);
         saveProgress();
         toast(first ? "Lắp câu đúng! +8 XP và +1 Sao." : "Lắp lại đúng rồi! +2 XP.");
       },
@@ -516,6 +673,7 @@
     } else {
       award(2, 0);
     }
+    markSectionProgress(lesson.id, "games", payload.type, subjectGamesOrder(lesson.subject).length);
     saveProgress();
     return {
       newSticker: newSticker,
@@ -857,16 +1015,19 @@
     var cards = list.map(function (lesson) {
       var isEng = lesson.subject === "english";
       var remembered = countRemembered(lesson);
+      var lStatus = getLessonStatus(lesson);
       var totalItems = isEng
         ? lesson.vocabulary.length
         : lesson.subject === "science"
           ? ((lesson.scienceBlocks && lesson.scienceBlocks.concept_cards ? lesson.scienceBlocks.concept_cards.length : 0) || lesson.quiz.length)
           : ((lesson.mathBlocks && lesson.mathBlocks.math_problems ? lesson.mathBlocks.math_problems.length : 0) || lesson.quiz.length);
-      var percent = pct(remembered, Math.max(1, totalItems));
-      var itemLabel = isEng ? lesson.vocabulary.length + " từ" : lesson.subject === "science" ? totalItems + " khái niệm/câu" : totalItems + " bài tập";
+      var percent = isEng ? pct(remembered, Math.max(1, totalItems)) : pct(lStatus.done, Math.max(1, lStatus.total));
+      var itemLabel = isEng ? lesson.vocabulary.length + " từ" : lesson.subject === "science" ? totalItems + " khái niệm" : totalItems + " bài tập";
       var emblem = lesson.subject === "science" ? "flask" : lesson.subject === "math" ? "calc" : "book";
       return (
         '<a class="card lesson-card" href="#/lesson/' + encodeURIComponent(lesson.id) + '">' +
+        '<div class="lesson-card__topmeta">' + statusPillHtml(lStatus) +
+        '<span class="chip">' + icon("bolt") + esc(lesson.minutes) + " phút</span></div>" +
         '<div class="lesson-card__head">' +
         '<span class="lesson-emblem">' + icon(emblem) + "</span>" +
         "<div>" +
@@ -878,13 +1039,12 @@
         '<div class="meta-row">' +
         '<span class="chip chip--cyan">' + icon("target") + "Lớp " + esc(lesson.grade) + "</span>" +
         (isEng ? '<span class="chip">' + esc(lesson.cefr) + "</span>" : '<span class="chip">' + (lesson.contentLang === "bilingual" ? "Song ngữ" : "Tiếng Việt") + "</span>") +
-        '<span class="chip">' + icon("bolt") + esc(lesson.minutes) + " phút</span>" +
         '<span class="chip chip--star">' + icon("star") + esc(itemLabel) + "</span>" +
         "</div>" +
         (isEng
           ? '<div class="progress-line"><div class="progress-line__top"><span>Đã nhớ</span><strong>' + remembered + "/" + lesson.vocabulary.length + '</strong></div><div class="progress-track"><span class="progress-track__fill" style="width:' + percent + '%"></span></div></div>'
-          : '<div class="progress-line"><div class="progress-line__top"><span>Câu hỏi luyện tập</span><strong>' + lesson.quiz.length + " câu</strong></div></div>") +
-        '<div class="cta-row"><span class="btn btn--primary btn--wide">Vào học ' + icon("arrow-right") + "</span></div>" +
+          : '<div class="progress-line"><div class="progress-line__top"><span>Tiến độ hoàn thành</span><strong>' + lStatus.done + "/" + lStatus.total + ' phần</strong></div><div class="progress-track"><span class="progress-track__fill" style="width:' + percent + '%"></span></div></div>') +
+        '<div class="cta-row"><span class="btn btn--primary btn--wide">' + (lStatus.status === "done" ? "Ôn lại bài " : lStatus.status === "in_progress" ? "Học tiếp " : "Vào học ") + icon("arrow-right") + "</span></div>" +
         "</a>"
       );
     }).join("");
@@ -968,42 +1128,22 @@
 
   function lessonTabs(lesson, active) {
     var base = "#/lesson/" + encodeURIComponent(lesson.id);
-    var tabs;
-    if (lesson.subject === "science") {
-      tabs = [
-        { key: "hub", label: "Tổng quan", icon: "compass", href: base },
-        { key: "science-concepts", label: "Khái niệm", icon: "flask", href: base + "/science-concepts" },
-        { key: "comprehension", label: "Đọc hiểu", icon: "book", href: base + "/comprehension" },
-        { key: "science-sort", label: "Phân loại", icon: "target", href: base + "/science-sort" },
-        { key: "science-seq", label: "Quy trình", icon: "refresh", href: base + "/science-seq" },
-        { key: "games", label: "Games", icon: "spark", href: base + "/games" },
-        { key: "review", label: "Ôn tập", icon: "refresh", href: base + "/review" }
-      ];
-    } else if (lesson.subject === "math") {
-      tabs = [
-        { key: "hub", label: "Tổng quan", icon: "compass", href: base },
-        { key: "math-examples", label: "Ví dụ mẫu", icon: "book", href: base + "/math-examples" },
-        { key: "math-practice", label: "Luyện tập & Nháp", icon: "calc", href: base + "/math-practice" },
-        { key: "math-word", label: "Toán đố", icon: "pen", href: base + "/math-word" },
-        { key: "games", label: "Games", icon: "spark", href: base + "/games" },
-        { key: "review", label: "Ôn tập", icon: "refresh", href: base + "/review" }
-      ];
-    } else {
-      tabs = [
-        { key: "hub", label: "Tổng quan", icon: "compass", href: base },
-        { key: "vocab", label: "Từ vựng", icon: "book", href: base + "/vocab" },
-        { key: "grammar", label: "Ngữ pháp", icon: "target", href: base + "/grammar" },
-        { key: "read", label: "Đọc & Nghe", icon: "ear", href: base + "/read" },
-        { key: "comprehension", label: "Đọc hiểu", icon: "book", href: base + "/comprehension" },
-        { key: "games", label: "Games", icon: "spark", href: base + "/games" },
-        { key: "review", label: "Ôn tập", icon: "refresh", href: base + "/review" }
-      ];
-    }
+    var sections = getLessonSections(lesson);
+    var tabs = [{ key: "hub", label: "Tổng quan", icon: "compass", href: base, status: null }]
+      .concat(sections.filter(function (s) { return s.key !== "quiz"; }).map(function (s) {
+        return {
+          key: s.key,
+          label: s.shortLabel,
+          icon: s.icon,
+          href: base + "/" + s.key,
+          status: getSectionStatus(lesson, s.key, s.total)
+        };
+      }));
     return (
       '<div class="lesson-bar"><a class="backlink" href="#/home">' + icon("arrow-left") + "Bài học</a>" +
       '<nav class="lesson-tabs" aria-label="Các phần của bài học">' +
       tabs.map(function (tab) {
-        return '<a class="tab-link" href="' + tab.href + '"' + (tab.key === active ? ' aria-current="page"' : "") + ">" + icon(tab.icon) + tab.label + "</a>";
+        return '<a class="tab-link" href="' + tab.href + '"' + (tab.key === active ? ' aria-current="page"' : "") + ">" + icon(tab.icon) + tab.label + tabDotHtml(tab.status) + "</a>";
       }).join("") +
       "</nav></div>"
     );
@@ -1018,44 +1158,11 @@
   function renderLessonHub(lesson) {
     setTitle(lesson.title);
     var remembered = countRemembered(lesson);
-    var percent = pct(remembered, lesson.vocabulary.length);
-    var dueCount = dueMistakes(lesson.id).length;
-    var modules;
-    var startHref;
-    if (lesson.subject === "science") {
-      var sb = lesson.scienceBlocks || {};
-      modules = [
-        { key: "science-concepts", icon: "flask", title: "Thẻ Khái niệm 3D", desc: "Lật thẻ nắm vững khái niệm và ví dụ thực tế (hỗ trợ song ngữ).", meta: (sb.concept_cards ? sb.concept_cards.length : 0) + " khái niệm" },
-        { key: "comprehension", icon: "book", title: "Đọc hiểu Khoa học", desc: "Đọc giải thích hiện tượng và trả lời câu hỏi trắc nghiệm.", meta: lesson.readings.length + " bài đọc" },
-        { key: "science-sort", icon: "target", title: "Phân loại (Category Sorter)", desc: "Chạm xếp các vật/hiện tượng vào đúng giỏ thuộc tính.", meta: (sb.sort_challenges ? sb.sort_challenges.length : 0) + " thử thách" },
-        { key: "science-seq", icon: "refresh", title: "Xếp Quy trình (Sequencer)", desc: "Sắp xếp đúng thứ tự chu trình tự nhiên và thí nghiệm.", meta: (sb.sequence_challenges ? sb.sequence_challenges.length : 0) + " quy trình" },
-        { key: "games", icon: "spark", title: "Mini-games Khoa học", desc: "Đấu Boss Khoa học, Bóng bay, Thám tử và Lật thẻ.", meta: lesson.quiz.length + " câu hỏi" },
-        { key: "review", icon: "refresh", title: "Kho báu cần chinh phục", desc: "Ôn lại các câu hay nhầm theo lịch Spaced Repetition.", meta: dueCount + " mục cần ôn" }
-      ];
-      startHref = "#/lesson/" + encodeURIComponent(lesson.id) + "/science-concepts";
-    } else if (lesson.subject === "math") {
-      var mb = lesson.mathBlocks || {};
-      modules = [
-        { key: "math-examples", icon: "book", title: "Ví dụ mẫu từng bước", desc: "Mở từng bước giải để hiểu bản chất bài toán (có chế độ Song ngữ).", meta: (mb.worked_examples ? mb.worked_examples.length : 0) + " ví dụ" },
-        { key: "math-practice", icon: "calc", title: "Luyện tập & Bảng nháp", desc: "Giải bài trên Math NumPad, phân số, so sánh kèm bảng vẽ nháp iPad.", meta: (mb.math_problems ? mb.math_problems.length : 0) + " bài toán" },
-        { key: "math-word", icon: "pen", title: "Toán có lời văn chia chặng", desc: "Giải từng bước nhỏ giúp trẻ không bị ngợp trước đề dài.", meta: "Theo từng bước" },
-        { key: "games", icon: "spark", title: "Speed Math & Boss Battle", desc: "Tính nhanh tiếp nhiên liệu tên lửa và hạ Boss Số học.", meta: lesson.quiz.length + " câu hỏi" },
-        { key: "review", icon: "refresh", title: "Kho báu cần chinh phục", desc: "Ôn lại bài toán từng làm sai đúng thời điểm.", meta: dueCount + " mục cần ôn" }
-      ];
-      startHref = "#/lesson/" + encodeURIComponent(lesson.id) + "/math-examples";
-    } else {
-      var readingQuizCount = lesson.quiz.filter(function (q) { return q && q.skill === "reading"; }).length;
-      modules = [
-        { key: "vocab", icon: "book", title: "Flashcard 3D + Word Builder", desc: "Lật thẻ, nghe phát âm, ghép chữ và luyện đọc to.", meta: lesson.vocabulary.length + " thẻ" },
-        { key: "grammar", icon: "target", title: "Sentence Lego", desc: "Xếp khối từ theo màu để lắp mẫu câu đúng.", meta: lesson.grammar.length + " mẫu câu" },
-        { key: "read", icon: "ear", title: "Đọc & Nghe", desc: "Chạm từng từ để nghe, nghe chậm từng câu và luyện micro.", meta: lesson.readings.length + " đoạn hội thoại" },
-        { key: "comprehension", icon: "book", title: "Đọc hiểu (Reading)", desc: "Đọc cả đoạn văn và trả lời danh sách câu hỏi trắc nghiệm.", meta: (readingQuizCount || Math.min(5, lesson.quiz.length)) + " câu hỏi" },
-        { key: "games", icon: "spark", title: "7 Mini-games", desc: "Bóng bay, Boss, Kho báu, Thám tử, Nghe, Gõ từ và Đọc to.", meta: "7 trò chơi" },
-        { key: "quiz", icon: "bolt", title: "Luyện nhanh", desc: "Thử nhanh một lượt câu hỏi trắc nghiệm.", meta: lesson.quiz.length + " câu hỏi" },
-        { key: "review", icon: "refresh", title: "Kho báu cần chinh phục", desc: "Ôn lại đúng lúc con sắp quên theo Spaced Repetition.", meta: dueCount + " mục cần ôn" }
-      ];
-      startHref = "#/lesson/" + encodeURIComponent(lesson.id) + "/vocab";
-    }
+    var lStatus = getLessonStatus(lesson);
+    var isEng = lesson.subject === "english";
+    var percent = isEng ? pct(remembered, Math.max(1, lesson.vocabulary.length)) : pct(lStatus.done, Math.max(1, lStatus.total));
+    var modules = getLessonSections(lesson);
+    var startHref = "#/lesson/" + encodeURIComponent(lesson.id) + "/" + (lesson.subject === "science" ? "science-concepts" : lesson.subject === "math" ? "math-theory" : "vocab");
     var objectiveHtml = lesson.objectives.map(function (text) {
       return '<li class="objective">' + icon("check") + "<span>" + esc(text) + "</span></li>";
     }).join("");
@@ -1063,22 +1170,23 @@
     setView(
       lessonTabs(lesson, "hub") +
       '<section class="surface lesson-head">' +
-      '<a class="backlink" href="#/home">' + icon("arrow-left") + "Về kho bài học</a>" +
+      '<div class="lesson-card__topmeta"><a class="backlink" href="#/home">' + icon("arrow-left") + "Về kho bài học</a>" + statusPillHtml(lStatus) + "</div>" +
       '<div><div class="eyebrow">' + esc(lesson.unit || "Bài học") + "</div>" +
       '<h1 class="lesson-head__title">' + esc(lesson.title) + "</h1>" +
       '<p class="lesson-head__vi">' + esc(lesson.subtitleVi || "") + "</p>" +
-      '<p class="lesson-head__sub">Lớp ' + esc(lesson.grade) + " · " + esc(lesson.cefr) + " · " + esc(lesson.minutes) + " phút" +
+      '<p class="lesson-head__sub">Lớp ' + esc(lesson.grade) + (isEng ? " · " + esc(lesson.cefr) : "") + " · " + esc(lesson.minutes) + " phút" +
       (lesson.sourcePdf ? " · Nguồn: " + esc(lesson.sourcePdf) : "") + "</p></div>" +
-      '<div class="progress-line"><div class="progress-line__top"><span>Tiến độ từ vựng</span><strong>' + remembered + "/" + lesson.vocabulary.length + "</strong></div>" +
+      '<div class="progress-line"><div class="progress-line__top"><span>' + (isEng ? "Tiến độ từ vựng" : "Tiến độ chương") + '</span><strong>' + (isEng ? remembered + "/" + lesson.vocabulary.length : lStatus.done + "/" + lStatus.total + " phần") + "</strong></div>" +
       '<div class="progress-track"><span class="progress-track__fill" style="width:' + percent + '%"></span></div></div>' +
       "</section>" +
       '<section class="section"><div class="section__head"><div><div class="eyebrow">Mục tiêu</div><h2 class="section__title">Hôm nay con sẽ làm được gì?</h2></div></div>' +
       '<ul class="objectives">' + (objectiveHtml || '<li class="objective">Cùng học và chơi với bài học này nhé!</li>') + "</ul></section>" +
-      '<section class="section"><div class="section__head"><div><div class="eyebrow">4 phân hệ</div><h2 class="section__title">Chọn hoạt động</h2></div>' +
+      '<section class="section"><div class="section__head"><div><div class="eyebrow">Hoạt động học</div><h2 class="section__title">Chọn hoạt động</h2></div>' +
       '<span class="section__hint">Tất cả đều thao tác bằng chạm</span></div><div class="module-grid">' +
       modules.map(function (mod) {
+        var st = getSectionStatus(lesson, mod.key, mod.total);
         return '<a class="module-card" href="#/lesson/' + encodeURIComponent(lesson.id) + "/" + mod.key + '">' +
-          '<span class="module-card__icon">' + icon(mod.icon, "icon--lg") + "</span>" +
+          '<div class="module-card__head-row"><span class="module-card__icon">' + icon(mod.icon, "icon--lg") + "</span>" + statusPillHtml(st) + "</div>" +
           '<span class="module-card__title">' + esc(mod.title) + "</span>" +
           '<span class="module-card__desc">' + esc(mod.desc) + "</span>" +
           '<span class="module-card__meta">' + esc(mod.meta) + "</span>" +
@@ -1202,6 +1310,7 @@
       delete progress.review[key];
       if (!was) award(5, 1);
       maybeAwardLessonSticker(lesson);
+      markSectionProgress(lesson.id, "vocab", item.id, lesson.vocabulary.length);
       saveProgress();
       event.currentTarget.setAttribute("aria-pressed", "true");
       event.currentTarget.innerHTML = icon("check") + "Đã nhớ";
@@ -1300,33 +1409,29 @@
       setView(lessonTabs(lesson, "games") + '<div class="card empty-state">' + icon("spark", "icon--lg") + '<h2 class="empty-state__title">Mini-games chưa tải</h2><p>Hãy kiểm tra kết nối hoặc tải lại trang.</p></div>');
       return;
     }
-    var order = lesson.subject === "science"
-      ? ["boss", "balloon", "memory", "detective"]
-      : lesson.subject === "math"
-        ? ["boss", "balloon", "detective"]
-        : ["balloon", "boss", "memory", "detective", "listen", "typing", "speak"];
-    var isExtraSubj = lesson.subject === "science" || lesson.subject === "math";
-    var sciCardsCount = lesson.scienceBlocks && Array.isArray(lesson.scienceBlocks.concept_cards)
-      ? lesson.scienceBlocks.concept_cards.length
-      : 0;
+    var order = subjectGamesOrder(lesson.subject);
     var cards = order.map(function (key) {
       var info = meta[key];
       if (!info) return "";
       var plays = progress.games["game:" + lesson.id + ":" + key];
+      var cnt = window.SET_GAMES.getRoundCount
+        ? window.SET_GAMES.getRoundCount(key, lesson, lesson.quiz)
+        : Math.min(10, (lesson.quiz || []).length);
       var countText = key === "memory"
-        ? Math.min(6, sciCardsCount || lesson.vocabulary.length) + " cặp thẻ"
+        ? cnt + " cặp thẻ"
         : key === "listen"
-          ? "5 câu nghe"
+          ? cnt + " câu nghe"
           : key === "typing"
-            ? Math.min(6, lesson.vocabulary.length) + " từ"
+            ? cnt + " từ"
             : key === "speak"
-              ? "5 câu đọc"
-              : (isExtraSubj ? Math.min(10, (lesson.quiz || []).length) : 6) + " câu";
+              ? cnt + " câu đọc"
+              : cnt + " câu";
       return '<button class="module-card" type="button" data-game="' + key + '">' +
-        '<span class="module-card__icon">' + icon(info.icon, "icon--lg") + "</span>" +
+        '<div class="module-card__head-row"><span class="module-card__icon">' + icon(info.icon, "icon--lg") + "</span>" +
+        (plays ? '<span class="status-pill status-pill--done">Đã chơi ' + plays.plays + " lần ✓</span>" : '<span class="status-pill status-pill--todo">Chưa chơi</span>') + "</div>" +
         '<span class="module-card__title">' + esc(info.title) + "</span>" +
         '<span class="module-card__desc">' + esc(info.subtitle) + "</span>" +
-        '<span class="module-card__meta">' + esc(countText) + (plays ? " · đã chơi " + plays.plays + " lần" : "") + "</span>" +
+        '<span class="module-card__meta">' + esc(countText) + (plays && plays.bestStars ? " · cao nhất " + plays.bestStars + "★" : "") + "</span>" +
         "</button>";
     }).join("");
 
@@ -1601,6 +1706,7 @@
           status.textContent = "Đã đọc xong. Con đọc lại nhé!";
           playAllBtn.disabled = false;
           stopBtn.disabled = true;
+          markSectionProgress(lesson.id, "read", dialogue.id || ("r_" + ui.readIndex), lesson.readings.length);
           return;
         }
         var line = dialogue.lines[index];
@@ -1704,9 +1810,7 @@
     }
     ui.readIndex = clamp(ui.readIndex || 0, 0, lesson.readings.length - 1);
     var dialogue = lesson.readings[ui.readIndex];
-    var rq = lesson.quiz.filter(function (q) { return q && q.skill === "reading"; });
-    var isFallback = !rq.length;
-    var questions = isFallback ? lesson.quiz.slice(0, 5) : rq;
+    var questions = getComprehensionQuestions(lesson);
     var showVi = false;
     var solvedCount = 0;
 
@@ -1903,6 +2007,7 @@
             progress.answered[lesson.id + ":" + item.id] = true;
             award(10, 1);
           }
+          markSectionProgress(lesson.id, "comprehension", item.id || ("q_" + qIndex), questions.length);
           fb.hidden = false;
           fb.className = "feedback feedback--ok";
           fb.innerHTML = icon("check") + '<div><span class="feedback__title">Chính xác!' + (firstTime ? " +10 XP" : "") + '</span><span class="feedback__text">' + esc(item.explanation_vi || item.hint_vi || "Con đọc hiểu rất tốt!") + "</span></div>";
@@ -2408,6 +2513,7 @@
         },
         bilingual: function () { return Boolean(progress.bilingual); },
         toggleBilingual: function () { progress.bilingual = !progress.bilingual; saveProgress(); return progress.bilingual; },
+        markProgress: function (sectionKey, itemId, totalCount) { markSectionProgress(lesson.id, sectionKey, itemId, totalCount); },
         tabsHtml: function (activeKey) { return lessonTabs(lesson, activeKey); },
         headerHtml: moduleHeader,
         mountTo: function (html) { setView(html); return view; }
@@ -2429,7 +2535,7 @@
       else if (moduleName === "science-concepts" || moduleName === "science-sort" || moduleName === "science-seq") {
         if (window.SET_SCIENCE) window.SET_SCIENCE.render(moduleName, lesson, subjectApi);
         else notFound("Module Khoa học chưa tải.");
-      } else if (moduleName === "math-examples" || moduleName === "math-practice" || moduleName === "math-word") {
+      } else if (moduleName === "math-theory" || moduleName === "math-examples" || moduleName === "math-practice" || moduleName === "math-word") {
         if (window.SET_MATH) window.SET_MATH.render(moduleName, lesson, subjectApi);
         else notFound("Module Toán học chưa tải.");
       } else if (moduleName === "hub") renderLessonHub(lesson);
@@ -2459,6 +2565,113 @@
     if (view) view.focus({ preventScroll: true });
   }
 
+  /* ---------------- quick navigation drawer ---------------- */
+
+  var qnavEl = document.getElementById("quick-nav-drawer");
+  var qnavSubject = null;
+  var qnavExpanded = {};
+
+  function closeQuickNav() {
+    if (!qnavEl) return;
+    qnavEl.hidden = true;
+    var btn = document.getElementById("open-quick-nav");
+    if (btn) {
+      btn.setAttribute("aria-expanded", "false");
+      btn.focus({ preventScroll: true });
+    }
+  }
+
+  function renderQuickNav() {
+    if (!qnavEl) return;
+    var parts = parseHash();
+    var currentLessonId = parts[0] === "lesson" ? parts[1] : null;
+    var currentSection = parts[0] === "lesson" ? (parts[2] || "hub") : null;
+    var curLesson = currentLessonId ? lessonById(currentLessonId) : null;
+    if (!qnavSubject) qnavSubject = (curLesson && curLesson.subject) || progress.activeSubject || "english";
+    if (curLesson && curLesson.subject === qnavSubject && qnavExpanded[curLesson.id] === undefined) {
+      qnavExpanded[curLesson.id] = true;
+    }
+
+    var list = subjectLessons(qnavSubject);
+    var subjBtns = ["english", "science", "math"].map(function (key) {
+      var m = SUBJECT_META[key];
+      var active = key === qnavSubject;
+      return '<button class="qnav__subject-btn' + (active ? " is-active" : "") + '" type="button" data-qnav-subj="' + key + '">' +
+        icon(m.icon) + "<span>" + esc(m.title) + "</span></button>";
+    }).join("");
+
+    var unitsHtml = !MODEL.loaded[qnavSubject]
+      ? '<div class="loading"><span class="loading__dot"></span>Đang tải ' + esc(SUBJECT_META[qnavSubject].title) + "…</div>"
+      : (!list.length
+        ? '<p style="color:#94a3b8;padding:12px">Chưa có bài học trong môn này.</p>'
+        : list.map(function (lesson) {
+          var lStat = getLessonStatus(lesson);
+          var isCur = lesson.id === currentLessonId;
+          var expanded = qnavExpanded[lesson.id] !== undefined ? qnavExpanded[lesson.id] : (isCur || list.length <= 4);
+          var sections = getLessonSections(lesson).filter(function (s) { return s.key !== "quiz"; });
+          var secHtml = expanded
+            ? '<div class="qnav__sections">' +
+              '<a class="qnav__sec-link' + (isCur && currentSection === "hub" ? " is-active" : "") + '" href="#/lesson/' + encodeURIComponent(lesson.id) + '" data-qnav-go>' +
+              '<span class="qnav__sec-left">' + icon("compass") + '<span>Tổng quan chương</span></span><span class="qnav__sec-right">Bắt đầu</span></a>' +
+              sections.map(function (s) {
+                var st = getSectionStatus(lesson, s.key, s.total);
+                var activeSec = isCur && currentSection === s.key;
+                return '<a class="qnav__sec-link' + (activeSec ? " is-active" : "") + '" href="#/lesson/' + encodeURIComponent(lesson.id) + "/" + s.key + '" data-qnav-go>' +
+                  '<span class="qnav__sec-left">' + tabDotHtml(st) + icon(s.icon) + "<span>" + esc(s.shortLabel) + "</span></span>" +
+                  '<span class="qnav__sec-right">' + esc(s.meta) + " · " + esc(st.label) + "</span></a>";
+              }).join("") + "</div>"
+            : "";
+          return '<div class="qnav__unit' + (isCur ? " is-current" : "") + '">' +
+            '<button class="qnav__unit-head" type="button" data-qnav-toggle="' + esc(lesson.id) + '" aria-expanded="' + Boolean(expanded) + '">' +
+            '<div><div class="qnav__unit-kicker">' + esc(lesson.unit || SUBJECT_META[lesson.subject].title) + '</div><div class="qnav__unit-title">' + esc(lesson.title) + "</div></div>" +
+            statusPillHtml(lStat) + "</button>" + secHtml + "</div>";
+        }).join(""));
+
+    qnavEl.innerHTML =
+      '<div class="qnav__panel" role="dialog" aria-modal="true" aria-label="Menu truy cập nhanh">' +
+      '<div class="qnav__head"><div><div style="font-size:12px;color:#38bdf8;font-weight:800;text-transform:uppercase">Truy cập nhanh</div><div class="qnav__title">Môn học · Chương · Phần</div></div>' +
+      '<button class="btn btn--ghost btn--icon" type="button" id="qnav-close" aria-label="Đóng mục lục">' + icon("x") + "</button></div>" +
+      '<div class="qnav__subjects" role="tablist">' + subjBtns + "</div>" +
+      '<div class="qnav__list">' + unitsHtml + "</div></div>";
+
+    var closeBtn = qnavEl.querySelector("#qnav-close");
+    if (closeBtn) closeBtn.addEventListener("click", closeQuickNav);
+    qnavEl.querySelectorAll("[data-qnav-subj]").forEach(function (btn) {
+      btn.addEventListener("click", function () {
+        qnavSubject = btn.getAttribute("data-qnav-subj");
+        if (!MODEL.loaded[qnavSubject]) {
+          renderQuickNav();
+          loadSubjectData(qnavSubject).then(renderQuickNav);
+        } else {
+          renderQuickNav();
+        }
+      });
+    });
+    qnavEl.querySelectorAll("[data-qnav-toggle]").forEach(function (btn) {
+      btn.addEventListener("click", function () {
+        var id = btn.getAttribute("data-qnav-toggle");
+        qnavExpanded[id] = !(qnavExpanded[id] !== undefined ? qnavExpanded[id] : (id === currentLessonId || list.length <= 4));
+        renderQuickNav();
+      });
+    });
+    qnavEl.querySelectorAll("[data-qnav-go]").forEach(function (a) {
+      a.addEventListener("click", function () {
+        qnavEl.hidden = true;
+        var openBtn = document.getElementById("open-quick-nav");
+        if (openBtn) openBtn.setAttribute("aria-expanded", "false");
+      });
+    });
+  }
+
+  function openQuickNav() {
+    if (!qnavEl) return;
+    qnavSubject = null;
+    qnavEl.hidden = false;
+    var btn = document.getElementById("open-quick-nav");
+    if (btn) btn.setAttribute("aria-expanded", "true");
+    renderQuickNav();
+  }
+
   /* ---------------- init ---------------- */
 
   function registerServiceWorker() {
@@ -2477,6 +2690,16 @@
     window.addEventListener("hashchange", onRouteChange);
     window.addEventListener("resize", hideWordTip);
     window.addEventListener("scroll", hideWordTip, { passive: true });
+    var qBtn = document.getElementById("open-quick-nav");
+    if (qBtn) qBtn.addEventListener("click", openQuickNav);
+    if (qnavEl) {
+      qnavEl.addEventListener("click", function (event) {
+        if (event.target === qnavEl) closeQuickNav();
+      });
+    }
+    window.addEventListener("keydown", function (event) {
+      if (event.key === "Escape" && qnavEl && !qnavEl.hidden) closeQuickNav();
+    });
 
     if (!window.location.hash) window.location.hash = "#/home";
 

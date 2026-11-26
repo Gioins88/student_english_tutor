@@ -264,6 +264,8 @@
             <select id="pdf-grade"><option value="3">Lớp 3</option><option value="4" selected>Lớp 4</option><option value="5">Lớp 5</option></select>
           </label>
           <label class="file-drop" for="pdf-file">${icon("ear", "icon--lg")}<span>Chọn tệp PDF bài giảng</span><input id="pdf-file" type="file" accept="application/pdf,.pdf" hidden></label>
+          <label style="display:flex;align-items:center;gap:8px;font-size:14px;margin-top:8px"><input id="pdf-skip-existing" type="checkbox" checked><span>Bỏ qua nếu tài liệu PDF đã được nạp trước đó (chỉ nạp mới)</span></label>
+          <div class="dev-note" id="pdf-dup-warn" style="color:#f59e0b" hidden></div>
           <div class="parent-steps" id="pdf-steps" aria-live="polite"></div>
           <button class="btn btn--outline btn--sm" id="save-key" type="button">${icon("lock")}Lưu key trên thiết bị</button>
           <p class="dev-note">Key chỉ dùng cho yêu cầu Gemini từ trình duyệt. Không commit key lên GitHub.</p>
@@ -474,8 +476,27 @@
     return error;
   }
 
+  function findDuplicateLesson(fileName) {
+    var norm = normalizeText(fileName);
+    return (api.lessons || []).filter(function (l) {
+      return l && l.sourcePdf && normalizeText(l.sourcePdf) === norm;
+    })[0] || null;
+  }
+
   function runPdfImport(file) {
     if (state.pdfBusy) return;
+    var skipChk = rootEl.querySelector("#pdf-skip-existing");
+    var dupWarn = rootEl.querySelector("#pdf-dup-warn");
+    var existing = findDuplicateLesson(file.name);
+    if (dupWarn) dupWarn.hidden = true;
+    if (existing && (!skipChk || skipChk.checked)) {
+      if (dupWarn) {
+        dupWarn.hidden = false;
+        dupWarn.textContent = "Đã bỏ qua “" + file.name + "” vì đã có trong kho (bài: " + existing.title + "). Bỏ tích ô bên trên nếu muốn nạp cập nhật lại.";
+      }
+      toast("Tài liệu này đã có trong kho — đã bỏ qua.");
+      return;
+    }
     if (file.size > 25 * 1024 * 1024) {
       toast("PDF quá lớn (giới hạn 25 MB).");
       return;

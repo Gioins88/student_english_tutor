@@ -173,7 +173,7 @@
       return item && item.game_type === type;
     });
     var pool = filtered.slice();
-    if (lesson && lesson.subject !== "english" && pool.length < count) {
+    if (pool.length < count) {
       var seen = {};
       pool.forEach(function (entry) { if (entry && entry.id) seen[entry.id] = true; });
       shuffle(source).forEach(function (item) {
@@ -334,13 +334,65 @@
 
   /* ---------------- 1. Balloon Pop ---------------- */
 
-  function gameQuestionCap(defaultCap) {
-    var total = lesson && Array.isArray(lesson.quiz) ? lesson.quiz.length : 0;
-    return lesson && lesson.subject !== "english" && total >= 8 ? Math.min(10, total) : defaultCap;
+  function speakItemsFor(lessonObj) {
+    var items = [];
+    var readings = Array.isArray(lessonObj && lessonObj.readings) ? lessonObj.readings : [];
+    readings.forEach(function (dlg, dIdx) {
+      (dlg.lines || []).forEach(function (line, lIdx) {
+        if (line && line.en && line.en.split(/\s+/).length <= 16) {
+          items.push({
+            id: "spk_r_" + dIdx + "_" + lIdx,
+            target: line.en,
+            meaning_vi: line.vi || (dlg.title || "Câu hội thoại"),
+            kind: "Câu đọc",
+            skill: "reading"
+          });
+        }
+      });
+    });
+    var vocab = Array.isArray(lessonObj && lessonObj.vocabulary) ? lessonObj.vocabulary : [];
+    vocab.forEach(function (entry) {
+      if (!entry || !entry.word) return;
+      items.push({
+        id: entry.id,
+        target: entry.example_en && entry.example_en.split(/\s+/).length <= 10 ? entry.example_en : entry.word,
+        meaning_vi: entry.example_vi || entry.meaning_vi || "",
+        kind: "Từ & Mẫu câu",
+        skill: "vocabulary"
+      });
+    });
+    return items;
+  }
+
+  function getRoundCount(type, lessonObj, quizItems) {
+    var l = lessonObj || {};
+    var list = Array.isArray(quizItems) ? quizItems : (Array.isArray(l.quiz) ? l.quiz : []);
+    var validQuiz = list.filter(function (item) {
+      return item && Array.isArray(item.options) && item.options.length >= 2;
+    }).length;
+    if (type === "memory") {
+      var vocabLen = Array.isArray(l.vocabulary) ? l.vocabulary.length : 0;
+      var sciLen = l.scienceBlocks && Array.isArray(l.scienceBlocks.concept_cards) ? l.scienceBlocks.concept_cards.length : 0;
+      return Math.min(6, vocabLen || sciLen);
+    }
+    if (type === "typing") {
+      return Math.min(10, Array.isArray(l.vocabulary) ? l.vocabulary.length : 0);
+    }
+    if (type === "speak") {
+      return Math.min(10, speakItemsFor(l).length);
+    }
+    return Math.min(10, validQuiz);
+  }
+
+  function gameQuestionCap() {
+    var total = (Array.isArray(originalOptions) ? originalOptions : (lesson && Array.isArray(lesson.quiz) ? lesson.quiz : [])).filter(function (item) {
+      return item && Array.isArray(item.options) && item.options.length >= 2;
+    }).length;
+    return Math.min(10, Math.max(1, total));
   }
 
   function startBalloon() {
-    var pool = pickItems("balloon_pop", gameQuestionCap(6));
+    var pool = pickItems("balloon_pop", gameQuestionCap());
     game = { type: "balloon", round: 0, correct: 0, combo: 0, bestCombo: 0, xp: 0, locked: false };
     renderBalloonRound(pool);
   }
@@ -710,7 +762,7 @@
   /* ---------------- 5. Listen & Tap ---------------- */
 
   function startListen() {
-    var pool = pickItems("listen_tap", 5);
+    var pool = pickItems("listen_tap", gameQuestionCap());
     game = { type: "listen", pool: pool, round: 0, correct: 0, xp: 0, wrong: {} };
     renderListenRound();
   }
@@ -861,7 +913,7 @@
 
   function startTyping() {
     var vocab = Array.isArray(lesson && lesson.vocabulary) ? lesson.vocabulary : [];
-    var pool = shuffle(vocab).slice(0, 6);
+    var pool = shuffle(vocab).slice(0, 10);
     if (!pool.length) {
       modal.body.innerHTML = '<div class="gx-empty">' + icon("book", "icon--lg") + '<h3>Chưa có từ vựng</h3><p>Bài học này chưa có từ vựng để luyện gõ.</p><button class="btn btn--primary" data-gx-done>Đóng</button></div>';
       $("[data-gx-done]", modal.body).addEventListener("click", close);
@@ -987,33 +1039,7 @@
   /* ---------------- 7. Voice Commander (Speaking Game) ---------------- */
 
   function buildSpeakPool() {
-    var items = [];
-    var readings = Array.isArray(lesson && lesson.readings) ? lesson.readings : [];
-    readings.forEach(function (dlg, dIdx) {
-      (dlg.lines || []).forEach(function (line, lIdx) {
-        if (line && line.en && line.en.split(/\s+/).length <= 16) {
-          items.push({
-            id: "spk_r_" + dIdx + "_" + lIdx,
-            target: line.en,
-            meaning_vi: line.vi || (dlg.title || "Câu hội thoại"),
-            kind: "Câu đọc",
-            skill: "reading"
-          });
-        }
-      });
-    });
-    var vocab = Array.isArray(lesson && lesson.vocabulary) ? lesson.vocabulary : [];
-    vocab.forEach(function (entry) {
-      if (!entry || !entry.word) return;
-      items.push({
-        id: entry.id,
-        target: entry.example_en && entry.example_en.split(/\s+/).length <= 10 ? entry.example_en : entry.word,
-        meaning_vi: entry.example_vi || entry.meaning_vi || "",
-        kind: "Từ & Mẫu câu",
-        skill: "vocabulary"
-      });
-    });
-    return shuffle(items).slice(0, 5);
+    return shuffle(speakItemsFor(lesson)).slice(0, 10);
   }
 
   function startSpeak() {
@@ -1179,6 +1205,7 @@
   window.SET_GAMES = {
     open: open,
     close: close,
-    meta: META
+    meta: META,
+    getRoundCount: getRoundCount
   };
 })();

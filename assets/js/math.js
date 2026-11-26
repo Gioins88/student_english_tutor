@@ -4,9 +4,22 @@
 (function () {
   "use strict";
 
+  var lastLessonId = null;
+  var theoryIndex = 0;
   var exIndex = 0;
   var probIndex = 0;
   var wordIndex = 0;
+
+  function syncLesson(lesson) {
+    var id = lesson && lesson.id ? lesson.id : null;
+    if (id !== lastLessonId) {
+      lastLessonId = id;
+      theoryIndex = 0;
+      exIndex = 0;
+      probIndex = 0;
+      wordIndex = 0;
+    }
+  }
 
   function gcd(a, b) {
     a = Math.abs(Math.round(a));
@@ -160,6 +173,191 @@
       "</section>";
   }
 
+  /* ---------------- 0. Theory Puzzle Game (Ôn Lý thuyết Giải đố) ---------------- */
+
+  function renderTheoryGame(lesson, api) {
+    var mb = lesson.mathBlocks || {};
+    var puzzles = Array.isArray(mb.theory_puzzles) ? mb.theory_puzzles : [];
+    if (!puzzles.length) {
+      api.mountTo(api.tabsHtml("math-theory") + '<div class="card empty-state">' + api.icon("spark", "icon--lg") + '<h2 class="empty-state__title">Chưa có trò chơi lý thuyết</h2><p>Chương này chưa có câu đố lý thuyết. Con có thể xem ngay Ví dụ mẫu nhé.</p><a class="btn btn--primary" href="#/lesson/' + encodeURIComponent(lesson.id) + '/math-examples">Sang Ví dụ mẫu</a></div>');
+      return;
+    }
+
+    theoryIndex = Math.max(0, Math.min(theoryIndex, puzzles.length - 1));
+    var solvedIds = {};
+    var streak = 0;
+    var bestStreak = 0;
+    var wrongChoices = {};
+    var hintStep = 0;
+    var answeredRight = false;
+    var finishedScreen = false;
+
+    function typeBadge(ptype) {
+      if (ptype === "true_false_myth") return "Phá giải Đúng / Sai";
+      if (ptype === "rule_cloze") return "Lắp ghép Quy tắc";
+      return "Thử thách Nhanh";
+    }
+
+    function draw() {
+      var bi = api.bilingual();
+      if (finishedScreen) {
+        var totalSolved = Object.keys(solvedIds).length;
+        api.mountTo(
+          api.tabsHtml("math-theory") +
+          api.headerHtml("Toán học · Ôn Lý thuyết", "Giải mã Lý thuyết Hoàn tất!", "Con đã nắm chắc quy tắc trước khi bước vào giải toán.") +
+          '<div class="card mt-finish">' +
+          '<div class="mt-finish__icon">' + api.icon("star", "icon--lg") + "</div>" +
+          '<h2 style="font-size:26px;font-weight:900">Chúc mừng! Con giải xong ' + totalSolved + "/" + puzzles.length + " câu đố!</h2>" +
+          '<p style="color:var(--muted-on-card)">Chuỗi trả lời đúng liên tiếp cao nhất: <strong>' + bestStreak + "</strong>. Bây giờ con sẵn sàng chinh phục Ví dụ mẫu và Luyện tập rồi!</p>" +
+          '<div class="wb-actions" style="justify-content:center">' +
+          '<button class="btn btn--outline" type="button" id="mt-replay">' + api.icon("refresh") + "Chơi lại từ đầu</button>" +
+          '<a class="btn btn--primary" href="#/lesson/' + encodeURIComponent(lesson.id) + '/math-examples">Xem Ví dụ mẫu ' + api.icon("arrow-right") + "</a>" +
+          '<a class="btn btn--outline" href="#/lesson/' + encodeURIComponent(lesson.id) + '/math-practice">Sang Luyện tập & Nháp ' + api.icon("calc") + "</a>" +
+          "</div></div>"
+        );
+        var replayBtn = document.querySelector("#mt-replay");
+        if (replayBtn) {
+          replayBtn.addEventListener("click", function () {
+            theoryIndex = 0;
+            solvedIds = {};
+            streak = 0;
+            wrongChoices = {};
+            hintStep = 0;
+            answeredRight = false;
+            finishedScreen = false;
+            draw();
+          });
+        }
+        return;
+      }
+
+      var pz = puzzles[theoryIndex];
+      var opts = Array.isArray(pz.options) ? pz.options : [];
+      var hints = Array.isArray(pz.hints) ? pz.hints : [];
+      var doneCount = Object.keys(solvedIds).length;
+      var pctDone = Math.round((doneCount / puzzles.length) * 100);
+
+      var optsHtml = opts.map(function (opt, idx) {
+        var isCorrect = answeredRight && idx === pz.answer_index;
+        var isWrong = !!wrongChoices[idx];
+        var cls = "mt-opt" + (isCorrect ? " is-correct" : "") + (isWrong ? " is-wrong" : "");
+        return '<button class="' + cls + '" type="button" data-mt-opt="' + idx + '"' + (answeredRight || isWrong ? " disabled" : "") + ">" +
+          '<span class="answer__key">' + "ABCD".charAt(idx) + "</span>" +
+          '<span class="answer__text">' + formatMathHtml(opt, api.esc) + "</span>" +
+          "</button>";
+      }).join("");
+
+      var hintsHtml = hintStep > 0 && hints.length
+        ? '<div class="mt-hint-box">' + api.icon("info") + "<div><strong>Gợi ý " + hintStep + "/" + hints.length + ":</strong> " +
+          formatMathHtml(hints.slice(0, hintStep).join(" · "), api.esc) + "</div></div>"
+        : "";
+
+      var explainHtml = answeredRight
+        ? '<div class="wb-success">' + api.icon("star") + "<div><strong>Giải thích:</strong> " + formatMathHtml(pz.explanation_vi, api.esc) +
+          (bi && pz.explanation_en ? "<br><small>" + formatMathHtml(pz.explanation_en, api.esc) + "</small>" : "") + "</div></div>"
+        : "";
+
+      var root = api.mountTo(
+        api.tabsHtml("math-theory") +
+        api.headerHtml("Toán học · Giải đố Lý thuyết", "Mở khóa Quy tắc trước khi Luyện tập", "Phá giải các hiểu nhầm hay gặp và nắm vững mẹo tính nhanh qua trò chơi.") +
+        '<div class="sci-concept-meta"><div class="pager">' +
+        '<button class="btn btn--ghost btn--sm" type="button" id="mt-prev"' + (theoryIndex === 0 ? " disabled" : "") + ">" + api.icon("arrow-left") + "Câu trước</button>" +
+        '<span class="pager__label">Câu ' + (theoryIndex + 1) + " / " + puzzles.length + "</span>" +
+        '<button class="btn btn--ghost btn--sm" type="button" id="mt-next"' + (theoryIndex === puzzles.length - 1 ? " disabled" : "") + ">Câu sau " + api.icon("arrow-right") + "</button>" +
+        "</div>" + bilingualBar(api) + "</div>" +
+        '<div class="card math-problem-card">' +
+        '<div class="mt-hud">' +
+        '<span class="chip chip--cyan">' + api.icon("spark") + api.esc(typeBadge(pz.puzzle_type)) + "</span>" +
+        '<span class="chip chip--star">' + api.icon("flame") + "Chuỗi đúng: " + streak + "</span>" +
+        '<span class="chip chip--green">' + api.icon("check") + "Đã giải: " + doneCount + "/" + puzzles.length + "</span>" +
+        "</div>" +
+        '<div class="progress-track"><span class="progress-track__fill" style="width:' + pctDone + '%"></span></div>' +
+        (pz.title_vi ? '<div style="font-size:15px;font-weight:800;color:var(--primary-deep)">' + api.esc(pz.title_vi) + (bi && pz.title_en ? " · " + api.esc(pz.title_en) : "") + "</div>" : "") +
+        '<div class="wb-meaning" style="font-size:clamp(19px,2.8vw,23px)">' + formatMathHtml(pz.prompt_vi, api.esc) + "</div>" +
+        (bi && pz.prompt_en ? '<div class="sci-bilingual-line">' + formatMathHtml(pz.prompt_en, api.esc) + "</div>" : "") +
+        '<div class="mt-options" role="group" aria-label="Chọn đáp án giải đố">' + optsHtml + "</div>" +
+        hintsHtml +
+        explainHtml +
+        '<div class="wb-actions">' +
+        (!answeredRight && hintStep < hints.length ? '<button class="btn btn--outline" type="button" id="mt-hint">' + api.icon("info") + "Xem gợi ý (" + (hintStep + 1) + "/" + hints.length + ")</button>" : "") +
+        (answeredRight && theoryIndex < puzzles.length - 1 ? '<button class="btn btn--primary" type="button" id="mt-continue">Câu đố tiếp theo ' + api.icon("arrow-right") + "</button>" : "") +
+        (answeredRight && theoryIndex === puzzles.length - 1 ? '<button class="btn btn--primary" type="button" id="mt-done-btn">' + api.icon("star") + "Tổng kết Lý thuyết</button>" : "") +
+        '<a class="btn btn--ghost" href="#/lesson/' + encodeURIComponent(lesson.id) + '/math-examples">Sang Ví dụ mẫu ' + api.icon("arrow-right") + "</a>" +
+        "</div></div>"
+      );
+
+      bindBilingual(root, api, draw);
+      var prev = root.querySelector("#mt-prev");
+      var next = root.querySelector("#mt-next");
+      if (prev) prev.addEventListener("click", function () {
+        if (theoryIndex > 0) {
+          theoryIndex -= 1;
+          wrongChoices = {};
+          hintStep = 0;
+          answeredRight = !!solvedIds[puzzles[theoryIndex].id];
+          draw();
+        }
+      });
+      if (next) next.addEventListener("click", function () {
+        if (theoryIndex < puzzles.length - 1) {
+          theoryIndex += 1;
+          wrongChoices = {};
+          hintStep = 0;
+          answeredRight = !!solvedIds[puzzles[theoryIndex].id];
+          draw();
+        }
+      });
+      var hintBtn = root.querySelector("#mt-hint");
+      if (hintBtn) hintBtn.addEventListener("click", function () {
+        hintStep = Math.min(hints.length, hintStep + 1);
+        draw();
+      });
+      root.querySelectorAll("[data-mt-opt]").forEach(function (btn) {
+        btn.addEventListener("click", function () {
+          if (answeredRight) return;
+          var idx = parseInt(btn.getAttribute("data-mt-opt"), 10);
+          if (idx === pz.answer_index) {
+            answeredRight = true;
+            if (!solvedIds[pz.id]) {
+              solvedIds[pz.id] = true;
+              streak += 1;
+              bestStreak = Math.max(bestStreak, streak);
+              api.award(8, Object.keys(solvedIds).length === puzzles.length ? 2 : 0);
+              if (api.markProgress) api.markProgress("math-theory", pz.id, puzzles.length);
+              if (Object.keys(solvedIds).length === puzzles.length) {
+                api.unlockSticker("sticker_math_pad");
+                api.confetti();
+              }
+            }
+            api.toast("Chính xác! +8 XP");
+            draw();
+          } else {
+            wrongChoices[idx] = true;
+            streak = 0;
+            if (hintStep === 0 && hints.length) hintStep = 1;
+            api.recordMistake({ id: pz.id, skill: "grammar" });
+            draw();
+          }
+        });
+      });
+      var contBtn = root.querySelector("#mt-continue");
+      if (contBtn) contBtn.addEventListener("click", function () {
+        theoryIndex += 1;
+        wrongChoices = {};
+        hintStep = 0;
+        answeredRight = !!solvedIds[puzzles[theoryIndex].id];
+        draw();
+      });
+      var doneBtn = root.querySelector("#mt-done-btn");
+      if (doneBtn) doneBtn.addEventListener("click", function () {
+        finishedScreen = true;
+        api.confetti();
+        draw();
+      });
+    }
+    draw();
+  }
+
   /* ---------------- 1. Worked Examples ---------------- */
 
   function renderExamples(lesson, api) {
@@ -211,7 +409,16 @@
       if (prev) prev.addEventListener("click", function () { if (exIndex > 0) { exIndex -= 1; renderExamples(lesson, api); } });
       if (next) next.addEventListener("click", function () { if (exIndex < examples.length - 1) { exIndex += 1; renderExamples(lesson, api); } });
       var stepBtn = root.querySelector("#ex-step-next");
-      if (stepBtn) stepBtn.addEventListener("click", function () { revealed += 1; draw(); });
+      if (stepBtn) stepBtn.addEventListener("click", function () {
+        revealed += 1;
+        if (revealed >= steps.length && api.markProgress) {
+          api.markProgress("math-examples", ex.id, examples.length);
+        }
+        draw();
+      });
+      if (revealed >= steps.length && api.markProgress) {
+        api.markProgress("math-examples", ex.id, examples.length);
+      }
     }
     draw();
   }
@@ -394,6 +601,7 @@
                 : "Đúng giá trị rồi! (+10 XP) — Mẹo nhỏ: con có thể rút gọn phân số gọn hơn nữa đấy.";
               api.award(10, 1);
               api.unlockSticker("sticker_math_pad");
+              if (api.markProgress) api.markProgress(tabKey, p.id, pool.length);
               api.confetti();
             } else {
               fbKind = "hint";
@@ -410,6 +618,7 @@
               fbText = "Chính xác! +8 XP và +1 Sao.";
               api.award(8, 1);
               api.unlockSticker("sticker_math_pad");
+              if (api.markProgress) api.markProgress(tabKey, p.id, pool.length);
               api.confetti();
             } else {
               fbKind = "hint";
@@ -431,6 +640,7 @@
                 fbText = "Xuất sắc! Con giải xong bài toán có lời văn (+12 XP và +1 Sao).";
                 api.award(12, 1);
                 api.unlockSticker("sticker_math_word");
+                if (api.markProgress) api.markProgress(tabKey, p.id, pool.length);
                 api.confetti();
               }
             } else {
@@ -446,6 +656,7 @@
               fbText = "Chính xác! +10 XP và +1 Sao.";
               api.award(10, 1);
               api.unlockSticker("sticker_math_pad");
+              if (api.markProgress) api.markProgress(tabKey, p.id, pool.length);
               api.confetti();
             } else {
               fbKind = "hint";
@@ -464,7 +675,9 @@
   }
 
   function render(moduleName, lesson, api) {
-    if (moduleName === "math-examples") renderExamples(lesson, api);
+    syncLesson(lesson);
+    if (moduleName === "math-theory") renderTheoryGame(lesson, api);
+    else if (moduleName === "math-examples") renderExamples(lesson, api);
     else if (moduleName === "math-practice") renderPractice(lesson, api, false);
     else if (moduleName === "math-word") renderPractice(lesson, api, true);
   }
