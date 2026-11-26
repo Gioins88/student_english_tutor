@@ -1,7 +1,7 @@
 /* Space Explorer · offline app shell
    Network-first for HTML & JSON so updates appear right away;
    Cache-first for static CSS/JS/icons with offline fallback. */
-const CACHE = "set-v2.2.1";
+const CACHE = "set-v2.2.2";
 const SHELL = [
   "./",
   "index.html",

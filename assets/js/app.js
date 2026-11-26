@@ -442,8 +442,9 @@
       done = Math.max(done, ans);
     } else if (sectionKey === "review") {
       var due = dueMistakes(lesson.id).length;
-      if (due === 0 && done === 0) return { status: "done", done: 0, total: 0, label: "Không còn lỗi" };
-      total = Math.max(due, done);
+      if (done === 0) return { status: "not_started", done: 0, total: due, label: "Chưa học" };
+      if (due > 0) return { status: "in_progress", done: done, total: done + due, label: "Đang học " + done + "/" + (done + due) };
+      return { status: "done", done: done, total: done, label: "Đã học ✓" };
     }
 
     if (total > 0 && done >= total) return { status: "done", done: done, total: total, label: "Đã học ✓" };
@@ -1541,6 +1542,7 @@
             button.querySelector(".answer__mark").innerHTML = icon("check");
             $$("[data-review-option]", card).forEach(function (node) { node.disabled = true; });
             reviewItem(lesson, item, true);
+            markSectionProgress(lesson.id, "review", item.id, items.length);
             correct += 1;
             award(5, 0);
             feedback.className = "feedback feedback--ok";
@@ -1802,20 +1804,52 @@
 
   /* ---------------- reading comprehension ---------------- */
 
+  function buildFallbackReading(lesson) {
+    var lines = [];
+    (lesson.vocabulary || []).slice(0, 6).forEach(function (v) {
+      if (v && v.example_en) {
+        lines.push({ speaker: "Narrator", en: v.example_en, vi: v.example_vi || v.meaning_vi || "" });
+      }
+    });
+    if (!lines.length) {
+      (lesson.grammar || []).slice(0, 5).forEach(function (g) {
+        var sent = (g.lego_blocks || []).map(function (b) { return b.text; }).join(" ").trim();
+        if (sent) lines.push({ speaker: "Narrator", en: sent, vi: g.explanation_vi || "" });
+      });
+    }
+    if (!lines.length) return null;
+    return {
+      id: "read_auto",
+      title: "Đoạn tổng hợp: " + (lesson.title || "Bài đọc"),
+      lines: lines
+    };
+  }
+
   function renderComprehension(lesson) {
     setTitle("Đọc hiểu · " + lesson.title);
-    if (!lesson.readings.length) {
-      setView(lessonTabs(lesson, "comprehension") + '<div class="card empty-state">' + icon("book", "icon--lg") + '<h2 class="empty-state__title">Chưa có đoạn văn đọc hiểu</h2><p>Bài học này chưa có bài đọc.</p></div>');
+    var readings = Array.isArray(lesson.readings) && lesson.readings.length ? lesson.readings.slice() : [];
+    var autoPassage = false;
+    if (!readings.length) {
+      var synthetic = buildFallbackReading(lesson);
+      if (synthetic) {
+        readings.push(synthetic);
+        autoPassage = true;
+      }
+    }
+    if (!readings.length) {
+      setView(lessonTabs(lesson, "comprehension") + '<div class="card empty-state">' + icon("book", "icon--lg") + '<h2 class="empty-state__title">Chưa có đoạn văn đọc hiểu</h2><p>Bài học này chưa có bài đọc hoặc câu ví dụ để tổng hợp.</p></div>');
       return;
     }
-    ui.readIndex = clamp(ui.readIndex || 0, 0, lesson.readings.length - 1);
-    var dialogue = lesson.readings[ui.readIndex];
+    ui.readIndex = clamp(ui.readIndex || 0, 0, readings.length - 1);
+    var dialogue = readings[ui.readIndex];
+    var hasDedicatedReading = (lesson.quiz || []).some(function (q) { return q && q.skill === "reading"; });
+    var isFallback = !hasDedicatedReading || autoPassage;
     var questions = getComprehensionQuestions(lesson);
     var showVi = false;
     var solvedCount = 0;
 
-    var switcherHtml = lesson.readings.length > 1
-      ? '<div class="read-switcher">' + lesson.readings.map(function (entry, idx) {
+    var switcherHtml = readings.length > 1
+      ? '<div class="read-switcher">' + readings.map(function (entry, idx) {
         return '<button class="btn ' + (idx === ui.readIndex ? "btn--primary" : "btn--outline") + ' btn--sm" type="button" data-rc-switch="' + idx + '">' + esc(entry.title || "Đoạn " + (idx + 1)) + "</button>";
       }).join("") + "</div>"
       : "";
@@ -1882,7 +1916,7 @@
       (questionsHtml || '<div class="card empty-state"><p>Bài học này chưa có câu hỏi trắc nghiệm.</p></div>') +
       "</section>" +
       "</div>" +
-      '<div class="cta-row" style="margin-top:22px"><a class="btn btn--primary" href="#/lesson/' + encodeURIComponent(lesson.id) + '/games">Chơi 7 Mini-games ' + icon("spark") + "</a></div>"
+      '<div class="cta-row" style="margin-top:22px"><a class="btn btn--primary" href="#/lesson/' + encodeURIComponent(lesson.id) + '/games">Chơi ' + subjectGamesOrder(lesson.subject).length + " Mini-games " + icon("spark") + "</a></div>"
     );
 
     var playBtn = $("#rc-play-all");
@@ -2574,6 +2608,7 @@
   function closeQuickNav() {
     if (!qnavEl) return;
     qnavEl.hidden = true;
+    document.body.style.overflow = "";
     var btn = document.getElementById("open-quick-nav");
     if (btn) {
       btn.setAttribute("aria-expanded", "false");
@@ -2657,6 +2692,7 @@
     qnavEl.querySelectorAll("[data-qnav-go]").forEach(function (a) {
       a.addEventListener("click", function () {
         qnavEl.hidden = true;
+        document.body.style.overflow = "";
         var openBtn = document.getElementById("open-quick-nav");
         if (openBtn) openBtn.setAttribute("aria-expanded", "false");
       });
@@ -2667,6 +2703,7 @@
     if (!qnavEl) return;
     qnavSubject = null;
     qnavEl.hidden = false;
+    document.body.style.overflow = "hidden";
     var btn = document.getElementById("open-quick-nav");
     if (btn) btn.setAttribute("aria-expanded", "true");
     renderQuickNav();
