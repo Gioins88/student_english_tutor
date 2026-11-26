@@ -1,6 +1,7 @@
 /* Space Explorer · offline app shell
-   Cache-first for the app shell; navigation falls back to cached index.html. */
-const CACHE = "set-v2.2.0";
+   Network-first for HTML & JSON so updates appear right away;
+   Cache-first for static CSS/JS/icons with offline fallback. */
+const CACHE = "set-v2.2.1";
 const SHELL = [
   "./",
   "index.html",
@@ -59,7 +60,30 @@ self.addEventListener("fetch", (event) => {
 
   if (request.mode === "navigate") {
     event.respondWith(
-      caches.match("index.html").then((cached) => cached || fetch(request))
+      fetch(request)
+        .then((response) => {
+          if (response && response.status === 200 && response.type === "basic") {
+            const copy = response.clone();
+            caches.open(CACHE).then((cache) => cache.put("index.html", copy));
+          }
+          return response;
+        })
+        .catch(() => caches.match("index.html"))
+    );
+    return;
+  }
+
+  if (url.pathname.endsWith(".json")) {
+    event.respondWith(
+      fetch(request)
+        .then((response) => {
+          if (response && response.status === 200 && response.type === "basic") {
+            const copy = response.clone();
+            caches.open(CACHE).then((cache) => cache.put(request, copy));
+          }
+          return response;
+        })
+        .catch(() => caches.match(request))
     );
     return;
   }
